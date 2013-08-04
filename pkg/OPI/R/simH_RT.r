@@ -125,18 +125,14 @@ simH_RT.present <- function(db, cap=6, fpr=0.03, fnr=0.01, tt=30, dist, A, B) {
         fpr <- 1.00  
 
     if (runif(1) < 0.5) {
-            # fp first, fn second
-        if (runif(1) < fpr) {
+            # test fp 
+        if (runif(1) < 2*fpr) {
             return(list(err=NULL, seen=TRUE, time=falsePosRt()))  # false P
-        } else if (runif(1) < fnr) {
-            return(list(err=NULL, seen=FALSE, time=0))                         # false N
         }
     } else {
-            # fn first, fp second
+            # test fn 
         if (runif(1) < fnr) {
             return(list(err=NULL, seen=FALSE, time=0))                         # false N
-        } else if (runif(1) < fpr) {
-            return(list(err=NULL, seen=TRUE, time=falsePosRt()))  # false P
         }
     }
 

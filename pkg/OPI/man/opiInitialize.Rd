@@ -41,14 +41,15 @@ opiInitialise(...)
 
     If the chosen OPI implementation is \code{SimHensonRT}, then
     the first three parameters are as in \code{SimHenson}, and 
-  \code{rtData} is a data frame with 3 columns:
-    \code{"Rt"}, reponse time; 
-    \code{"Dist"}, signifying that distance between assumed threshold and stimulus value is your units; and
-    \code{"Person"}, which identifies the subject from which the \code{Rt} and \code{Dist} was taken. 
+  \code{rtData} is a data frame with at least 2 columns:
+    \code{"Rt"}, reponse time; and
+    \code{"Dist"}, signifying that distance between assumed threshold and stimulus value in
+        your units.
 
     This package contains \code{RtSigmaUnits} or \code{RtDbUnits} 
     that can be loaded with the commands
-    \code{data(RtSigmaUnits)} or \code{data(RtDbUnits)}.
+    \code{data(RtSigmaUnits)} or \code{data(RtDbUnits)}, and are suitable to pass as values
+    for \code{rtData}.
 }
 \subsection{SimGaussian}{
     \code{opiInitialize(sd, display=NULL)}
@@ -136,7 +137,7 @@ if (!is.null(opiInitialize(type="C", cap=6, display=c(-30,30,-30,30))))
     stop("opiInitialize failed")
 
     # Set up a simple simulation for white-on-white perimetry
-    # and display the stimuli in a plot region
+    # and display the stimuli in a plot region and simulate response times
 chooseOpi("SimHensonRT")
 data(RtSigmaUnits)
 if (!is.null(opiInitialize(type="C", cap=6, display=c(-30,30,-30,30), rtData=RtSigmaUnits, rtFP=1:100)))

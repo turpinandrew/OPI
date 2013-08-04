@@ -22,7 +22,7 @@ chooseOpi(opiImplementation)
                 increases as true threshold (Humphrey dB) value 
                 decreases. 
     \item\code{"SimHensonRT"} as for SimHenson, but response times
-                in ms are sampled from the ResponseTimeData set 
+                in ms are sampled from a supplied response time data set 
                 for each true positive response.
     \item\code{"SimGaussian"} for a simulator that uses a cummulative gaussian 
                 psychometric function with 

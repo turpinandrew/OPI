@@ -33,6 +33,5 @@ In preperation, Aug 2013.
 }
 \examples{
 data(RtDbUnits)
-## maybe str(RtDbUnits) ; plot(RtDbUnits) ...
 }
 \keyword{datasets}
