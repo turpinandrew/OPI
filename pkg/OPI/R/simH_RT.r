@@ -70,7 +70,7 @@ simH_RT.opiInitialize <- function(type="C", cap=6, display=NULL, rtData, rtFP=1:
 
     if (nrow(rtData) < 100) 
         warning("opiInitialize (SimHensonRT): Less than 100 rows in rtData; that's wierd")
-    if (ncol(rtData) != 3 || !all(colnames(RtSigmaUnits) == c("Rt", "Dist", "Person"))) {
+    if (ncol(rtData) != 3 || !all(colnames(rtData) == c("Rt", "Dist", "Person"))) {
         msg <- "opiInitialize (SimHensonRT): rtData must have 3 columns: Rt, Dist, Person. See data(RtSigmaUnits) for example."
         warning(msg)
         return(msg)
