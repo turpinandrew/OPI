@@ -161,6 +161,10 @@ opiDistributor <- function(method, ...) {
 #print(paste("Allowed args: ", allowedArgs))
 #print(paste("Have args: ", haveArgs))
     argsToPass  <- intersect(allowedArgs, haveArgs)
+    argsNotPassed  <- setdiff(haveArgs, argsToPass)
+
+    if (length(argsNotPassed) > 0)
+        warning(paste(method, "Ignored argument ", argsNotPassed))
 #print(paste("Passing args: ", argsToPass))
     do.call(toCall, list(...)[argsToPass])
 }

@@ -77,6 +77,11 @@ ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
     if (ncol(likelihood) != length(domain))
         stop(paste("ZEST.start: not enough cols in likelihood. Expect",length(domain)))
 
+    if (!is.element(minStimulus, domain))
+        warning(paste("ZEST.start: you specified minStimulus=",minStimulus,"but it is not in domain."))
+    if (!is.element(maxStimulus, domain))
+        warning(paste("ZEST.start: you specified maxStimulus=",maxStimulus,"but it is not in domain."))
+
     pdf <- prior/sum(prior)
 
     return(list(name="ZEST",
@@ -144,10 +149,10 @@ ZEST.step <- function(state, nextStim=NULL) {
     state$numPresentations <- state$numPresentations + 1
     
     if(opiResp$seen) { 
-        if (state$domain[stimIndex] == state$maxStimulus) state$currSeenLimit <- state$currSeenLimit + 1
+        if (stim == state$maxStimulus) state$currSeenLimit <- state$currSeenLimit + 1
         state$pdf <- state$pdf * state$likelihood[stimIndex, ]
     } else {
-        if (state$domain[stimIndex] == state$minStimulus) state$currNotSeenLimit <- state$currNotSeenLimit + 1
+        if (stim == state$minStimulus) state$currNotSeenLimit <- state$currNotSeenLimit + 1
         state$pdf <- state$pdf * (1 - state$likelihood[stimIndex, ])
     }
     state$pdf <- state$pdf/sum(state$pdf)
