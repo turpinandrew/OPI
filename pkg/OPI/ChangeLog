@@ -54,3 +54,5 @@ OPI 1.5
 
 OPI 1.6
  - added SimHensonRT and related man and data
+ - fixed ZEST bug 
+ - added warnings about non-OPI parameters to opi functions
