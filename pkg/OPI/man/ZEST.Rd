@@ -10,7 +10,7 @@
 ZEST
 }
 \description{
-An implementation of the Bayesian test procedure of King-Smith et al.
+An implementation of the Bayesian test procedures of King-Smith et al. and Watson and Pelli. 
 Note that we use the term \code{pdf} throughout as in the original paper, even though
 they are discrete probability functions in this implementation.
 }
@@ -91,7 +91,8 @@ Extra parameters to pass to the opiPresent function
 }
 }
 \details{
-    This is an implementation of King-Smith et al.'s ZEST procedure.
+    This is an implementation of King-Smith et al.'s ZEST procedure 
+    and Watson and Pelli's QUEST procedure.
     All presentaions are rounded to an element of the supplied domain.
 
     Note this function will repeatedly call \code{opiPresent} for a stimulus 
@@ -155,7 +156,7 @@ contains the following.
 }
 
 
-\code{ZEST.stop} returns \code{TRUE} is the ZEST has reached its stopping criteria, and \code{FALSE} otherwise.
+\code{ZEST.stop} returns \code{TRUE} if the ZEST has reached its stopping criteria, and \code{FALSE} otherwise.
 
 \code{ZEST.final} returns an estimate of threshold based on state. 
 If \code{state$stimChoice} is \code{mean} then the mean is returned.
@@ -254,9 +255,10 @@ states <- lapply(locations, function(loc) {
 
     # Loop through until all states are "stop"
 while(!all(st <- unlist(lapply(states, ZEST.stop)))) {
-    i <- sample(which(!st), 1)  # choose a random, unstopped state
-    r <- ZEST.step(states[[i]]) # step it
-    states[[i]] <- r$state      # update the states
+    i <- which(!st)                         # choose a random, 
+    i <- i[runif(1, min=1, max=length(i))]  # unstopped state
+    r <- ZEST.step(states[[i]])             # step it
+    states[[i]] <- r$state                  # update the states
 }
 
 finals <- lapply(states, ZEST.final)    # get final estimates of threshold

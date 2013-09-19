@@ -7,6 +7,7 @@ OPI_VERSION := $(shell cat OPI/DESCRIPTION | grep Version | sed 's/Version: //')
 # R files for OPI package
 OPI_R			=	dbTocd.r \
 						full_threshold.r \
+						full_threshold_state.r \
 						mocs.r \
 						multiLocation.r \
 						octopus900.r \

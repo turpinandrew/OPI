@@ -56,3 +56,5 @@ OPI 1.6
  - added SimHensonRT and related man and data
  - fixed ZEST bug 
  - added warnings about non-OPI parameters to opi functions
+ - fixed small typos in ZEST man page
+ - added FT.start/step/stop/final/final.details

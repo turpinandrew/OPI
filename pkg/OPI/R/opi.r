@@ -164,7 +164,7 @@ opiDistributor <- function(method, ...) {
     argsNotPassed  <- setdiff(haveArgs, argsToPass)
 
     if (length(argsNotPassed) > 0)
-        warning(paste(method, "Ignored argument ", argsNotPassed))
+        warning(paste(method, "Ignored argument ", argsNotPassed, "\n"))
 #print(paste("Passing args: ", argsToPass))
     do.call(toCall, list(...)[argsToPass])
 }

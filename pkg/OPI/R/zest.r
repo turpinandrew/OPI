@@ -165,8 +165,8 @@ ZEST.step <- function(state, nextStim=NULL) {
 #
 # Input parameters
 #   State list as returned by ZEST.start/step
-# Returns a list containing
-#   TRUE/FALSE
+# Returns 
+#   TRUE or FALSE
 ################################################################################
 ZEST.stop <- function(state) {
     keepGoing <- (

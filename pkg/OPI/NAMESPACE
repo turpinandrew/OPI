@@ -8,6 +8,11 @@ export(ZEST.stop)
 export(ZEST.final)
 
 export(FT)
+export(FT.start)
+export(FT.step)
+export(FT.stop)
+export(FT.final)
+export(FT.final.details)
 
 export(chooseOpi)
 export(dbTocd, cdTodb)
