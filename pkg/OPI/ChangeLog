@@ -58,3 +58,6 @@ OPI 1.6
  - added warnings about non-OPI parameters to opi functions
  - fixed small typos in ZEST man page
  - added FT.start/step/stop/final/final.details
+
+OPI 1.6.2
+ - branch version that uses Tony's special size wheel, not GOLDMANN

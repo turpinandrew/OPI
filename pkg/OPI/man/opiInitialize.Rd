@@ -140,7 +140,9 @@ if (!is.null(opiInitialize(type="C", cap=6, display=c(-30,30,-30,30))))
     # and display the stimuli in a plot region and simulate response times
 chooseOpi("SimHensonRT")
 data(RtSigmaUnits)
-if (!is.null(opiInitialize(type="C", cap=6, display=c(-30,30,-30,30), rtData=RtSigmaUnits, rtFP=1:100)))
+oi <- opiInitialize(type="C", cap=6, 
+        display=c(-30,30,-30,30), rtData=RtSigmaUnits, rtFP=1:100)
+if (!is.null(oi))
     stop("opiInitialize failed")
 
     # Set up a simulation using a psychometric function that is

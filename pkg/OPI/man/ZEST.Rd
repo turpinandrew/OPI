@@ -16,7 +16,7 @@ they are discrete probability functions in this implementation.
 }
 \usage{
 ZEST(domain=0:40, prior=rep(1/length(domain),length(domain)), 
-     likelihood=sapply(domain, function(tt) { 0.03 + (1-0.03-0.03)*(1-pnorm(domain, tt, 1)) }),
+     likelihood=sapply(domain,function(tt) {0.03+(1-0.03-0.03)*(1-pnorm(domain,tt,1))}),
      stopType="S", stopValue=1.5,
      minStimulus=head(domain,1), 
      maxStimulus=tail(domain,1),
@@ -28,7 +28,7 @@ ZEST(domain=0:40, prior=rep(1/length(domain),length(domain)),
      ...) 
 
 ZEST.start(domain=0:40, prior=rep(1/length(domain),length(domain)), 
-     likelihood=sapply(domain, function(tt) { 0.03 + (1-0.03-0.03)*(1-pnorm(domain, tt, 1)) }),
+     likelihood=sapply(domain,function(tt) {0.03+(1-0.03-0.03)*(1-pnorm(domain,tt,1))}),
      stopType="S", stopValue=1.5,
      minStimulus=head(domain,1), 
      maxStimulus=tail(domain,1),
@@ -210,7 +210,7 @@ makeStim <- function(db, n) {
     return(s)
 }
 
-repp <- function(...) sapply(1:100, function(i) ZEST(makeStim=makeStim, ...))
+repp <- function(...) sapply(1:50, function(i) ZEST(makeStim=makeStim, ...))
 a <- repp(stopType="H", stopValue=  3, verbose=0, tt=30, fpr=0.03)
 b <- repp(stopType="S", stopValue=1.5, verbose=0, tt=30, fpr=0.03)
 c <- repp(stopType="S", stopValue=2.0, verbose=0, tt=30, fpr=0.03)
@@ -262,8 +262,10 @@ while(!all(st <- unlist(lapply(states, ZEST.stop)))) {
 }
 
 finals <- lapply(states, ZEST.final)    # get final estimates of threshold
-for(i in 1:length(locations))
-    #cat(sprintf("Location (%+2d,%+2d) has threshold %4.2f\n",locations[[i]][1], locations[[i]][2], finals[[i]]))
+for(i in 1:length(locations)) {
+    #cat(sprintf("Location (%+2d,%+2d) ",locations[[i]][1], locations[[i]][2]))
+    #cat(sprintf("has threshold %4.2f\n", finals[[i]]))
+}
 
 if (!is.null(opiClose()))
     warning("opiClose() failed")

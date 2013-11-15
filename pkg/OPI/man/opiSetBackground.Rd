@@ -98,7 +98,10 @@ if (!is.null(opiSetBackground(col="white",gridCol="grey")))
 
 \dontrun{
 chooseOpi("Octopus900")
-if (!is.null(opiInitialize( eyeSuiteJarLocation="c:/EyeSuite/",eyeSuiteSettingsLocation="c:/Documents and Settings/All Users/Haag-Streit/",eye="left"))
+oi <- opiInitialize(eyeSuiteJarLocation="c:/EyeSuite/",
+        eyeSuiteSettingsLocation="c:/Documents and Settings/All Users/Haag-Streit/",
+        eye="left")
+if (!is.null(oi))
     stop("opiInitialize failed")
 if (!is.null(opiSetBackground(fixation=.Octopus900Env$FIX_CENTRE)))
     stop("opiSetBackground failed")
