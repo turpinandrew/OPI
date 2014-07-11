@@ -123,13 +123,13 @@ chooseOpi <- function(opiImplementation) {
         #
         # Check OPIOctopus900 package exists
         #
-    if ((opiImplementation == "Octopus900") && !require(OPIOctopus900)) {
-        cat("***********************************************************************\n")
-        cat("* You cannot choose the Octopus900 OPI without installing the package *\n")
-        cat("* OPIOctopus900, which is available with permission from HAAG-STREIT. *\n")
-        cat("***********************************************************************\n")
-        stop("Get the Octopus900 package")
-    }
+    #if ((opiImplementation == "Octopus900") && !require(OPIOctopus900)) {
+    #    cat("***********************************************************************\n")
+    #    cat("* You cannot choose the Octopus900 OPI without installing the package *\n")
+    #    cat("* OPIOctopus900, which is available with permission from HAAG-STREIT. *\n")
+    #    cat("***********************************************************************\n")
+    #    stop("Get the Octopus900 package")
+    #}
 
         #
         # Find the index in opi.implementations

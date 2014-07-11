@@ -18,13 +18,15 @@ opiInitialise(...)
 }
 \details{
 \subsection{SimHenson}{
-    \code{opiInitialize(type="C", cap=6, display=NULL)}
+    \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL)}
 
     If the chosen OPI implementation is \code{SimHenson}, then
   \code{type} can be one of:
-    \code{"N"}, for normal patients; 
-    \code{"G"}, for POAG patients; and
-    \code{"C"}, for a combination. See Table 1 in Henson et al (2000).
+    \code{"N"}, for normal patients; \code{"G"}, for POAG patients;
+    and \code{"C"}, for a combination. See Table 1 in Henson et al
+    (2000).  If \code{type} is \code{"X"} then \code{A} and \code{B}
+    should be specified and are used in place of one of the three
+    A/B combinations as in Henson et al (2000).
     \code{cap} is the maximum
     standard deviation value that the simulator will use for
     the slope/spread of the psychometric function.
@@ -37,10 +39,10 @@ opiInitialise(...)
     color of the displayed point is determined by the stimulus passed to \code{opiPresent}.
 }
 \subsection{SimHensonRT}{
-    \code{opiInitialize(type="C", cap=6, display=NULL, rtData)}
+    \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, rtData)}
 
     If the chosen OPI implementation is \code{SimHensonRT}, then
-    the first three parameters are as in \code{SimHenson}, and 
+    the first five parameters are as in \code{SimHenson}, and 
   \code{rtData} is a data frame with at least 2 columns:
     \code{"Rt"}, reponse time; and
     \code{"Dist"}, signifying that distance between assumed threshold and stimulus value in
@@ -155,8 +157,8 @@ if (!is.null(opiInitialize(sd=2)))
     # Set up the Octopus 900
 chooseOpi("Octopus900")
 if (!is.null(opiInitialize(
-        eyeSuiteJarLocation="C:/EyeSuite/", 
-        eyeSuiteSettingsLocation="C:/Documents and Settings/All Users/HAAG-STREIT/EyeSuite/",
+        eyeSuiteJarLocation="C:/Program Files (x86)/Haag-Streit/EyeSuite/", 
+        eyeSuiteSettingsLocation="C:/ProgramData/Haag-Streit/EyeSuite/",
         eye="left")))
     stop("opiInitialize failed")
 }

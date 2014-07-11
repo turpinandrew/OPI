@@ -1,6 +1,8 @@
 # Author: Andrew Turpin    (aturpin@unimelb.edu.au)
 # Date: June 2012
 #
+# Modified Tue  8 Jul 2014: make generic for any dB scale
+#
 # Copyright 2012 Andrew Turpin and Jonathan Denniss
 # This program is part of the OPI (http://perimetry.org/OPI).
 # OPI is free software: you can redistribute it and/or modify
@@ -17,14 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-    # Convert HFA dB to cd/m^2
-dbTocd <- function(db) {
-    asb <- 10^((40-db)/10) 
-    return (asb/pi)
-}
+    # Convert dB to cd/m^2
+    # Default is HFA units (maxStim = 10000 apostilbs)
+dbTocd <- function(db, maxStim=10000/pi) { maxStim * 10^(-db/10) }
 
-    # Convert cd/m^2 to HFA dB
-cdTodb <- function(cd) {
-    asb <- cd * pi
-    return (40 - 10*log10(asb))
-}
+    # Convert cd/m^2 to dB
+    # default is HFA units (maxStim = 10000 apostilbs)
+cdTodb <- function(cd, maxStim=10000/pi) { -10*log10(cd/maxStim) }

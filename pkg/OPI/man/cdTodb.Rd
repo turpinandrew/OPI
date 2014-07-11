@@ -2,19 +2,23 @@
 \alias{cdTodb}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Convert cd/\eqn{\mbox{m}^2}{m^2} to Humphrey dB
+Convert cd/\eqn{\mbox{m}^2}{m^2} to dB
 }
 \description{
-Given a value in cd/\eqn{\mbox{m}^2}{m^2}, return the Humphrey dB equivalent.
+Given a value in cd/\eqn{\mbox{m}^2}{m^2}, return the dB equivalent.
+The default is HFA dB scale (maxumum stimulus 10000 apostilbs).
 }
 \usage{
-cdTodb(cd)
+cdTodb(cd, maxStim=10000/pi)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{cd}{
 Value to convert in cd/\eqn{\mbox{m}^2}{m^2}
 }
+  \item{maxStim}{
+    Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}
+    }
 }
 %\details{
 %}

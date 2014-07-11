@@ -6,6 +6,8 @@
 # Author: Andrew Turpin    (aturpin@unimelb.edu.au)
 # Date: August 2013
 #
+# Modified Tue  8 Jul 2014: added type="X" to opiInitialise and opiPresent
+#
 # Copyright 2012 Andrew Turpin
 # This program is part of the OPI (http://perimetry.org/OPI).
 # OPI is free software: you can redistribute it and/or modify
@@ -25,11 +27,12 @@
 simH_RT.opiClose         <- function() { return(NULL) }
 simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT")) }
 
-.SimHRTEnv <- new.env(size=2)
+.SimHRTEnv <- new.env(size=4)
 
 ################################################################################
 # Input
 #   type N|G|C for the three Henson params
+#   type X to specify your own A and B values (eg different dB scale)
 #   cap  dB value for capping stdev form Henson formula
 #   display Dimensions of plot area (-x,+x,-y,+y) to display stim. No display if NULL
 #   rtData data.frame with colnames == "Rt", "Dist", "Person"
@@ -37,12 +40,14 @@ simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT")) }
 # Side effects if successful:
 #   Set .SimHRTEnv$type   to type
 #   Set .SimHRTEnv$cap    to cap
+#   Set .SimHRTEnv$A      to A
+#   Set .SimHRTEnv$B      to B
 #   Set .SimHRTEnv$rtData to 3 col data frame to rtData
 #
 # Return NULL if successful, string error message otherwise  
 ################################################################################
-simH_RT.opiInitialize <- function(type="C", cap=6, display=NULL, rtData, rtFP=1:1600) {
-    if (!is.element(type,c("N","G","C"))) {
+simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, rtData, rtFP=1:1600) {
+    if (!is.element(type,c("N","G","C", "X"))) {
         msg <- paste("Bad 'type' specified for SimHensonRT in opiInitialize():",type)
         warning(msg)
         return(msg)
@@ -52,6 +57,11 @@ simH_RT.opiInitialize <- function(type="C", cap=6, display=NULL, rtData, rtFP=1:
         warning("cap is negative in call to opiInitialize (SimHensonRT)")
     .SimHRTEnv$type <- type
     .SimHRTEnv$cap  <-  cap
+    .SimHRTEnv$A    <-  A
+    .SimHRTEnv$B    <-  B
+
+    if (type == "X" && (is.na(A) || is.na(B)))
+        warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
 
     if(simDisplay.setupDisplay(display))
         warning("opiInitialize (SimHensonRT): display parameter may not contain 4 numbers.")
@@ -181,6 +191,8 @@ simH_RT.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, 
         return(simH_RT.present(cdTodb(stim$level), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.098, 3.62))
     } else if (.SimHRTEnv$type == "C") {
         return(simH_RT.present(cdTodb(stim$level), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.081, 3.27))
+    } else if (.SimHRTEnv$type == "X") {
+        return(simH_RT.present(cdTodb(stim$level), .SimHRTEnv$cap, fpr, fnr, tt, dist, .SimHRTEnv$A, .SimHRTEnv$B))
     } else {
         return ( list(
             err = "Unknown error in opiPresent() for SimHensonRT",

@@ -5,6 +5,8 @@
 # Author: Andrew Turpin    (aturpin@unimelb.edu.au)
 # Date: June 2012
 #
+# Modified Tue  8 Jul 2014: added type="X" to opiInitialise and opiPresent
+#
 # Copyright 2012 Andrew Turpin
 # This program is part of the OPI (http://perimetry.org/OPI).
 # OPI is free software: you can redistribute it and/or modify
@@ -29,13 +31,14 @@ simH.opiQueryDevice   <- function() { return (list(type="SimHenson")) }
 ################################################################################
 # Input
 #   type N|G|C for the three Henson params
+#   type X to specify your own A and B values (eg different dB scale)
 #   cap  dB value for capping stdev form Henson formula
 #   display Dimensions of plot area (-x,+x,-y,+y) to display stim. No display if NULL
 #
 # Return NULL if succesful, string error message otherwise  
 ################################################################################
-simH.opiInitialize <- function(type="C", cap=6, display=NULL) {
-    if (!is.element(type,c("N","G","C"))) {
+simH.opiInitialize <- function(type="C", A=NA, B=NA, cap=6, display=NULL) {
+    if (!is.element(type,c("N","G","C","X"))) {
         msg <- paste("Bad 'type' specified for SimHenson in opiInitialize():",type)
         warning(msg)
         return(msg)
@@ -45,6 +48,11 @@ simH.opiInitialize <- function(type="C", cap=6, display=NULL) {
         warning("cap is negative in call to opiInitialize (simHenson)")
     .SimHEnv$type <- type
     .SimHEnv$cap  <-  cap
+    .SimHEnv$A    <-  A
+    .SimHEnv$B    <-  B
+
+    if (type == "X" && (is.na(A) || is.na(B)))
+        warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
 
     if(simDisplay.setupDisplay(display))
         warning("opiInitialize (SimHenson): display parameter may not contain 4 numbers.")
@@ -120,6 +128,8 @@ simH.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr
         return(simH.present(cdTodb(stim$level), .SimHEnv$cap, fpr, fnr, tt, -0.098, 3.62))
     } else if (.SimHEnv$type == "C") {
         return(simH.present(cdTodb(stim$level), .SimHEnv$cap, fpr, fnr, tt, -0.081, 3.27))
+    } else if (.SimHEnv$type == "X") {
+        return(simH.present(cdTodb(stim$level), .SimHEnv$cap, fpr, fnr, tt, .SimHEnv$A, .SimHEnv$B))
     } else {
         return ( list(
             err = "Unknown error in opiPresent() for SimHenson",

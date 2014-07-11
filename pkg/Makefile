@@ -55,7 +55,7 @@ build:
 	R CMD build OPI
 
 install:
-	R CMD install OPI_$(OPI_VERSION).tar.gz
+	R CMD INSTALL OPI_$(OPI_VERSION).tar.gz
 
 OPI.Rcheck: $(OPI_FILES)
 	R CMD check OPI

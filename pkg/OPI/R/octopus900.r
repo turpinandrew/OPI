@@ -78,7 +78,8 @@ setupBackgroundConstants <- function() {
 
     assign("FIX_CENTER", .Octopus900Env$FIX_CENTRE, envir = .Octopus900Env) # help Americans
 
-    f <- .jfields("com.hs.eyesuite.ext.extperimetry.octo900.ifocto.remote.OCTO900")
+    # f <- .jfields("com.hs.eyesuite.ext.extperimetry.octo900.ifocto.remote.OCTO900")
+    f <- .jfields("com.hs.eyesuite.ext.extperimetry.octo900.ifocto.device.OCTO900")
 
         #
         # check if cName exists as a field in f. If so, set 
@@ -87,7 +88,8 @@ setupBackgroundConstants <- function() {
     getC <- function(cName) {
         if (length(grep(cName, f)) > 0) 
             assign(cName,
-                   .jfield("com.hs.eyesuite.ext.extperimetry.octo900.ifocto.remote.OCTO900",NULL,cName), 
+                   #.jfield("com.hs.eyesuite.ext.extperimetry.octo900.ifocto.remote.OCTO900",NULL,cName)
+                   .jfield("com.hs.eyesuite.ext.extperimetry.octo900.ifocto.device.OCTO900",NULL,cName), 
                    envir = .Octopus900Env)
     }
 
@@ -147,18 +149,28 @@ octo900.opiInitialize <- function(eyeSuiteJarLocation=NA, eyeSuiteSettingsLocati
     if (eye != "left" && eye != "right")
         stop("The eye argument of opiInitialize must be 'left' or 'right'")
 
-    #options("java.parameters"="-Xmx1024m -Xss64m")
+    #options("java.parameters"="-Xmx1024m -Xss64m –verbose:class")
 
-    hsJars <- dir(eyeSuiteJarLocation, pattern="*.jar", full.names=TRUE, recursive=TRUE)
+    Sys.setenv(JAVA_HOME = paste(eyeSuiteJarLocation, "jre", sep=""))
+    
+    hsJars <- c(paste(eyeSuiteJarLocation, "opi-6.0.2.0.jar", sep=""),
+                paste(eyeSuiteJarLocation, "HSEyeSuiteBasic.jar", sep=""),
+                paste(eyeSuiteJarLocation, "HSEyeSuiteExtPerimetry.jar", sep=""),
+                paste(eyeSuiteJarLocation, "HSEyeSuiteExtPerimetryViewer.jar", sep=""),
+                paste(eyeSuiteJarLocation, "i18n/HSEyeSuiteBasic_i18n-3.1.1.jar", sep=""),
+                paste(eyeSuiteJarLocation, "i18n/HSEyeSuitePerimetryExtension_i18n-3.2.1.jar", sep=""),
+                paste(eyeSuiteJarLocation, "i18n/HSEyeSuitePerimetryViewer_i18n-3.2.1.jar", sep=""),
+                paste(eyeSuiteJarLocation, "jre/lib/ext/jgoodies-common-1.4.0.jar", sep=""),
+                paste(eyeSuiteJarLocation, "jre/lib/ext/jgoodies-binding-2.7.0.jar", sep=""),
+                paste(eyeSuiteJarLocation, "jre/lib/ext/gettext-commons-0.9.6.jar", sep=""),
+                paste(eyeSuiteJarLocation, "jre/lib/ext/jcbios.jar", sep=""),
+                paste(eyeSuiteJarLocation, "jre/lib/ext/jh.jar", sep=""),
+                paste(eyeSuiteJarLocation, "jre/lib/ext/mysql-connector-java-5.1.17-bin.jar", sep=""))
+    
     .jinit(classpath=hsJars, 
         params=getOption("java.parameters"),
-        "some random stuff",
         force.init=TRUE
     )
-
-    .jaddClassPath(paste(.Library,"OPIOctopus900","java", "opi.jar", sep="/"))
-    .jaddClassPath(paste(.Library,"OPIOctopus900","jgoodies-binding-2.5.0.jar", sep="/"))
-    .jaddClassPath(paste(.Library,"OPIOctopus900","jgoodies-common-1.2.1.jar", sep="/"))
 
     print(.jclassPath())    # just for debugging, not really needed
 
