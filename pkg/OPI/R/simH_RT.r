@@ -146,7 +146,7 @@ simH_RT.present <- function(db, cap=6, fpr=0.03, fnr=0.01, tt=30, dist, A, B) {
         }
     }
 
-        # if get to hear then need to check Gaussian
+        # if get to here then need to check Gaussian
         # and if seen=TRUE need to get a time from .SimHRTEnv$rtData
         # assume pxVar is sigma for RT is in sigma units
 

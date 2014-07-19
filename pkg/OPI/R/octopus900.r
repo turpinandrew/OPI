@@ -150,13 +150,15 @@ octo900.opiInitialize <- function(eyeSuiteJarLocation=NA, eyeSuiteSettingsLocati
         stop("The eye argument of opiInitialize must be 'left' or 'right'")
 
     #options("java.parameters"="-Xmx1024m -Xss64m –verbose:class")
-
-    Sys.setenv(JAVA_HOME = paste(eyeSuiteJarLocation, "jre", sep=""))
     
     hsJars <- c(paste(eyeSuiteJarLocation, "opi-6.0.2.0.jar", sep=""),
                 paste(eyeSuiteJarLocation, "HSEyeSuiteBasic.jar", sep=""),
                 paste(eyeSuiteJarLocation, "HSEyeSuiteExtPerimetry.jar", sep=""),
                 paste(eyeSuiteJarLocation, "HSEyeSuiteExtPerimetryViewer.jar", sep=""),
+                paste(eyeSuiteJarLocation, "javacv.jar", sep=""),
+                paste(eyeSuiteJarLocation, "javacv-windows-x86.jar", sep=""),
+                paste(eyeSuiteJarLocation, "javacpp.jar", sep=""),
+                paste(eyeSuiteJarLocation, "opencv-2.4.5-windows-x86.jar", sep=""),
                 paste(eyeSuiteJarLocation, "i18n/HSEyeSuiteBasic_i18n-3.1.1.jar", sep=""),
                 paste(eyeSuiteJarLocation, "i18n/HSEyeSuitePerimetryExtension_i18n-3.2.1.jar", sep=""),
                 paste(eyeSuiteJarLocation, "i18n/HSEyeSuitePerimetryViewer_i18n-3.2.1.jar", sep=""),
@@ -232,7 +234,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 	    err =.jcall(ret, "S", "getErr"), 
 	    seen=ifelse(.jcall(ret, "I", "getSeen") == 0, 0, 1),
 	    time=.jcall(ret, "I", "getTime"),
-	    frames=.jcall(ret, "[I", "getFrameInt"),
+	    frames=NA,#.jcall(ret, "[I", "getFrameInt"),
         numFrames=.jcall(ret, "I", "getNumFrames"),
         width=.jcall(ret, "I", "getWidth"),
         height=.jcall(ret, "I", "getHeight")

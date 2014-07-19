@@ -278,14 +278,15 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 #opiInitialize("C",6)
 #
 #makeStim <- function(db, n) { 
-#         s <- list(x=9, y=9, level=dbTocd(db), size=0.43, color="white",
+#         s <- list(x=9, y=9, level=dbTocd(db,10000/pi), size=0.43, 
+#                  color="white",
 #                  duration=200, responseWindow=1500)
 #         class(s) <- "opiStaticStimulus"
 #     
 #         return(s)
 #     }
 #makeNextStim <- function(x,y) { 
-#         s <- list(x=9, y=9, level=dbTocd(db), size=0.43, color="white",
+#         s <- list(x=9, y=9, level=dbTocd(db,10000), size=0.43, color="white",
 #                  duration=200, responseWindow=1500)
 #         class(s) <- "opiStaticStimulus"
 #     
@@ -306,7 +307,7 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 #    ff <- function(db, n) db+n
 #
 #    body(ff) <- substitute(
-#        {s <- list(x=x, y=y, level=dbTocd(db), size=0.43, color="white",
+#        {s <- list(x=x, y=y, level=dbTocd(db,10000), size=0.43, color="white",
 #                  duration=200, responseWindow=1500)
 #         class(s) <- "opiStaticStimulus"
 #         return(s)

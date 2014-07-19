@@ -36,3 +36,8 @@ S3method(octo900.opiPresent, opiStaticStimulus)
 S3method(octo900.opiPresent, opiKineticStimulus)
 S3method(octo900.opiPresent, opiTemporalStimulus)
 export(.Octopus900Env)
+
+S3method(octo600.opiPresent, opiStaticStimulus)
+S3method(octo600.opiPresent, opiKineticStimulus)
+S3method(octo600.opiPresent, opiTemporalStimulus)
+export(.Octopus600Env)

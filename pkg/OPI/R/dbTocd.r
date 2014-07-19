@@ -21,8 +21,10 @@
 
     # Convert dB to cd/m^2
     # Default is HFA units (maxStim = 10000 apostilbs)
+    # maxStim is in cd/m^2
 dbTocd <- function(db, maxStim=10000/pi) { maxStim * 10^(-db/10) }
 
     # Convert cd/m^2 to dB
     # default is HFA units (maxStim = 10000 apostilbs)
+    # maxStim is in cd/m^2
 cdTodb <- function(cd, maxStim=10000/pi) { -10*log10(cd/maxStim) }
