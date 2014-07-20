@@ -9,6 +9,7 @@ OPI_R			=	dbTocd.r \
 						mocs.r \
 						multiLocation.r \
 						octopus900.r \
+                        octopus900Client.r \
 						octopus600.r \
 						opi.r \
 						simG.r \
