@@ -7,6 +7,7 @@
 # Date: August 2013
 #
 # Modified Tue  8 Jul 2014: added type="X" to opiInitialise and opiPresent
+# Modified 20 Jul 2014: added maxStim argument for cdTodB conversion
 #
 # Copyright 2012 Andrew Turpin
 # This program is part of the OPI (http://perimetry.org/OPI).
@@ -27,7 +28,8 @@
 simH_RT.opiClose         <- function() { return(NULL) }
 simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT")) }
 
-.SimHRTEnv <- new.env(size=4)
+if (!exists(".SimHRTEnv"))
+    .SimHRTEnv <- new.env(size=5)
 
 ################################################################################
 # Input
@@ -46,7 +48,7 @@ simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT")) }
 #
 # Return NULL if successful, string error message otherwise  
 ################################################################################
-simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, rtData, rtFP=1:1600) {
+simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, maxStim=10000/pi, rtData, rtFP=1:1600) {
     if (!is.element(type,c("N","G","C", "X"))) {
         msg <- paste("Bad 'type' specified for SimHensonRT in opiInitialize():",type)
         warning(msg)
@@ -59,6 +61,7 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, rtD
     .SimHRTEnv$cap  <-  cap
     .SimHRTEnv$A    <-  A
     .SimHRTEnv$B    <-  B
+    .SimHRTEnv$maxStim <- maxStim
 
     if (type == "X" && (is.na(A) || is.na(B)))
         warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
@@ -186,13 +189,13 @@ simH_RT.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, 
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 
     if (.SimHRTEnv$type == "N") {
-        return(simH_RT.present(cdTodb(stim$level), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.066, 2.81))
+        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.066, 2.81))
     } else if (.SimHRTEnv$type == "G") {
-        return(simH_RT.present(cdTodb(stim$level), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.098, 3.62))
+        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.098, 3.62))
     } else if (.SimHRTEnv$type == "C") {
-        return(simH_RT.present(cdTodb(stim$level), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.081, 3.27))
+        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.081, 3.27))
     } else if (.SimHRTEnv$type == "X") {
-        return(simH_RT.present(cdTodb(stim$level), .SimHRTEnv$cap, fpr, fnr, tt, dist, .SimHRTEnv$A, .SimHRTEnv$B))
+        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, .SimHRTEnv$A, .SimHRTEnv$B))
     } else {
         return ( list(
             err = "Unknown error in opiPresent() for SimHensonRT",

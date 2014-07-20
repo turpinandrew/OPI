@@ -18,7 +18,7 @@ opiInitialise(...)
 }
 \details{
 \subsection{SimHenson}{
-    \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL)}
+    \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi)}
 
     If the chosen OPI implementation is \code{SimHenson}, then
   \code{type} can be one of:
@@ -37,12 +37,15 @@ opiInitialise(...)
     display a point on the area.
     The color of the plot area can be set with \code{opiSetBackground}, and the 
     color of the displayed point is determined by the stimulus passed to \code{opiPresent}.
+
+    \code{maxStim} is the maximum stimuls value in cd/\eqn{\mbox{m}^2}{m^2}. This is 
+    used in converting cd/\eqn{\mbox{m}^2}{m^2} to dB values, and vice versa.
 }
 \subsection{SimHensonRT}{
-    \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, rtData)}
+    \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData, rtFP=1:1600)}
 
     If the chosen OPI implementation is \code{SimHensonRT}, then
-    the first five parameters are as in \code{SimHenson}, and 
+    the first six parameters are as in \code{SimHenson}, and 
   \code{rtData} is a data frame with at least 2 columns:
     \code{"Rt"}, reponse time; and
     \code{"Dist"}, signifying that distance between assumed threshold and stimulus value in
@@ -52,15 +55,19 @@ opiInitialise(...)
     that can be loaded with the commands
     \code{data(RtSigmaUnits)} or \code{data(RtDbUnits)}, and are suitable to pass as values
     for \code{rtData}.
+
+    \code{rtFp} gives the vector of values in milliseconds from
+    which a response time for a false positive response is randomly
+    sampled.
 }
 \subsection{SimGaussian}{
-    \code{opiInitialize(sd, display=NULL)}
+    \code{opiInitialize(sd, display=NULL, maxStim=10000/pi)}
 
     If the chosen OPI implementation is \code{SimGaussian}, then \code{sd}
     is the standard deviation value that the simulator will use for 
     the slope/spread of the psychometric function.
 
-    \code{display} is as for SimHenson.
+    \code{display} and \code{maxStim} is as for SimHenson.
 }
 \subsection{Octopus900}{
     \code{opiInitialize(eyeSuiteJarLocation, eyeSuiteSettingsLocation, eye, gazeFeed=0)}

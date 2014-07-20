@@ -5,6 +5,8 @@
 # Author: Andrew Turpin    (aturpin@unimelb.edu.au)
 # Date: June 2012
 #
+# Modified 20 Jul 2014: added maxStim argument for cdTodB conversion
+#
 # Copyright 2012 Andrew Turpin
 # This program is part of the OPI (http://perimetry.org/OPI).
 # OPI is free software: you can redistribute it and/or modify
@@ -24,7 +26,8 @@
 simG.opiClose         <- function() { return(NULL) }
 simG.opiQueryDevice   <- function() { return (list(type="SimGaussian")) }
 
-.SimGEnv <- new.env(size=1)
+if (!exists(".SimGEnv"))
+    .SimGEnv <- new.env(size=2)
 
 ################################################################################
 # Input
@@ -33,7 +36,7 @@ simG.opiQueryDevice   <- function() { return (list(type="SimGaussian")) }
 #
 # Return NULL if succesful, string error message otherwise  
 ################################################################################
-simG.opiInitialize <- function(sd, display=NULL) {
+simG.opiInitialize <- function(sd, display=NULL, maxStim=10000/pi) {
     if (!is.numeric(sd) || (sd < 0)) {
         msg <- paste("Invalid standard deviation in opiInitialize for SimGaussian:",sd)
         warning(msg)
@@ -41,6 +44,7 @@ simG.opiInitialize <- function(sd, display=NULL) {
     }
 
     .SimGEnv$sd <- sd
+    .SimGEnv$maxStim <- maxStim
 
     if (simDisplay.setupDisplay(display))
         warning("opiInitialize (SimGaussian): perhaps display parameter does not contain 4 numbers?")
@@ -74,7 +78,7 @@ simG.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr
     if (as.numeric(.SimGEnv$sd) <= 0)
         warning("sd is <= 0 in SimGaussian call to opiPresent")
 
-    prSeeing <- fpr + (1-fpr-fnr)*(1-pnorm(cdTodb(stim$level), mean=tt, sd=as.numeric(.SimGEnv$sd)))
+    prSeeing <- fpr + (1-fpr-fnr)*(1-pnorm(cdTodb(stim$level, .SimGEnv$maxStim), mean=tt, sd=as.numeric(.SimGEnv$sd)))
 
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 

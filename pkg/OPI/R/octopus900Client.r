@@ -53,7 +53,7 @@ if (!exists(".Octopus900Env"))
 # SIDE EFFECTS: sets .Octopus900Env$* if possible.
 ###########################################################################
 setupBackgroundConstants <- function() {
-    // TODO add a server command to return these
+    # TODO add a server command to return these
     warning("setupBackgroundConstants not yet written in octopus900Client.r")
 }
 
@@ -107,7 +107,7 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
     assign("socket", socket, envir = .Octopus900Env)
     msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\ ",eye, " ", gazeFeed)
     writeLines(msg, socket)
-    res <- readLines(socket, n=1))
+    res <- readLines(socket, n=1)
 
 	if (res == "0")
 		return(NULL)
@@ -138,8 +138,8 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     } else {
         msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
         msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
-        msg <- paste(msg, stim$duration))
-	    msg <- paste(msg, stim$responseWindow))
+        msg <- paste(msg, stim$duration)
+	    msg <- paste(msg, stim$responseWindow)
         if (!is.null(nextStim)) {
             msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
         }
@@ -182,8 +182,8 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     } else {
         msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, stim$rate)
         msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
-        msg <- paste(msg, stim$duration))
-        msg <- paste(msg, stim$responseWindow))
+        msg <- paste(msg, stim$duration)
+        msg <- paste(msg, stim$responseWindow)
         if (!is.null(nextStim)) {
             msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
         }
