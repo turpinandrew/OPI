@@ -192,28 +192,12 @@ octo600.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
   reactionTimePAK = res[[1]][22]
   answer = res[[1]][23]
   
-  if (.Octopus600Env$pupilTrackingEnabled) {
-    res = sendCommand(.Octopus600Env$socket, 3003)
-    if (res[[2]] != 0)
-      return(list(err = res[[2]], seen=NA, time=NA))
-    
-    return(list(
-      err = 0, 
-      seen = answer == 1,
-      time = reactionTimePAK,
-      answer = answer,
-      pupilDiameterMM = res[[11]][8]*0.2057,
-      pupilX = res[[1]][9],
-      pupilY = res[[1]][10]
-    ))
-  } else {
-    return(list(
-      err = 0, 
-      seen = answer == 1,
-      time = reactionTimePAK,
-      answer = answer
-    ))
-  }
+  return(list(
+    err = 0, 
+    seen = answer == 1,
+    time = reactionTimePAK,
+    answer = answer
+  ))
   
 }
 

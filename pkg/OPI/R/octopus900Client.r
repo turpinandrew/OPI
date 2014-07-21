@@ -288,6 +288,7 @@ octo900.opiClose <- function() {
 # Call opiPresent with a NULL stimulus
 ###########################################################################
 octo900.opiQueryDevice <- function() {
-    ret <- octo900.opiPresent.opiStaticStimulus(NULL, NULL)
+  # use reflection to grab colour and background constants
+  ret <- octo900.opiPresent.opiStaticStimulus(NULL, NULL)
     return(ret$err)
 }
