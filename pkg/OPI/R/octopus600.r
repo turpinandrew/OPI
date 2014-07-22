@@ -158,7 +158,7 @@ octo600.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
   
   if (!.Octopus600Env$pupilBlackLevelSet) {
     # adjustPupilBlackLevel()
-    res = sendCommand(.Octopus600Env$socket, 2029, .Octopus600Env$eye=="left")
+    res = sendCommand(.Octopus600Env$socket, 2029, leftEye)
     if (res[[2]] != 0)
       return(list(err = res[[2]], seen=NA, time=NA))
     else
@@ -174,7 +174,7 @@ octo600.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     stim$y*10, #positionY [in 1/10deg]
     .Octopus600Env$pulsar*5, #method [0 = White-On-White, 5 = pulsar]
     0, #color [don't care]
-    0, #stimulusSize [don't care]
+    3, #stimulusSize [don't care] (has to be 3 for W-on-W, don't care for pulsar)
     cd2ddb(stim$level), #dLog (intensity) [in 1/10 dB]
     stim$duration, #duration [stimulus presentation duration in ms, for W/W 100ms, for pulsar 500ms]
     leftEye, #selectedEye [0 = OD, 1 = OS]
