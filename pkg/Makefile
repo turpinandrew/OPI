@@ -8,8 +8,8 @@ OPI_R			=	dbTocd.r \
 						full_threshold_state.r \
 						mocs.r \
 						multiLocation.r \
-						octopus900.r \
-                        octopus900Client.r \
+						#octopus900.r \
+            octopus900Client.r \
 						octopus600.r \
 						opi.r \
 						simG.r \
@@ -33,9 +33,7 @@ OPI_MAN		=	FT.Rd \
 						opiTemporalStimulus.Rd
 
 OPI_ROOT	=	DESCRIPTION \
-						LICENCE \
-						NAMESPACE \
-						GPL3
+						NAMESPACE 
 
 OPI_FILES	=	$(addprefix OPI/,$(OPI_ROOT)) \
 						$(addprefix OPI/man/,$(OPI_MAN)) \
