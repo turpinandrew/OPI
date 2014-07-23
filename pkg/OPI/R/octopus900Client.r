@@ -234,14 +234,12 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
         msg <- paste(msg, length(xs))
         tx <- paste(xs)
         ty <- paste(ys)
-print(tx)
         msg <- paste(msg, tx)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
         msg <- paste(msg, ty)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
         msg <- paste(msg, sapply(stim$levels, cdTodb, maxStim=4000))
         msg <- paste(msg, stim$speeds)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
     }
 
-print(msg)
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
