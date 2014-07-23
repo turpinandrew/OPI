@@ -91,7 +91,7 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
                       blocking = FALSE, open = "r",
                       timeout = 10)
         , error=function(e) { 
-            stop(paste("Cannot find a server on port",serverPort"))
+            stop(paste("Cannot find a server on port",serverPort))
         }
     ))
     close(v)
@@ -216,48 +216,42 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
 ########################################## TO DO
 octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
- #    if (is.null(stim)) {
- #        stimObj <- .jnull("opi/OpiTemporalStimulus")
- #    } else { 
- #            # convert sizes to GOLDMANN
- #        stim$sizes <- sapply(stim$sizes, function(s) {
- #            i <- which.min(abs(GOLDMANN - s))
- #            if(abs(GOLDMANN[i] - s) > 0.000001) {
- #                warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
- #            } 
- #            return(i)
- #        })
+        # convert sizes to GOLDMANN
+     stim$sizes <- sapply(stim$sizes, function(s) {
+         i <- which.min(abs(GOLDMANN - s))
+         if(abs(GOLDMANN[i] - s) > 0.000001) {
+             warning(paste("opiPresent: Rounding stimulus size",s,"to nearest Goldmann size"))
+         } 
+         return(i)
+     })
 
- #            # bit of a kludge as passing vector of one double seemed to barf
- #        if (length(stim$path$x) == 2)
- #            stimObj <- .jnew("opi/OpiKineticStimulus", 
- #                sapply(stim$path$x, as.double), 
- #                sapply(stim$path$y, as.double), 
- #                as.double(cdTodb(stim$levels[1])),
- #                as.double(stim$sizes[1]),
- #                as.double(stim$speeds[1]))
- #        else
- #            stimObj <- .jnew("opi/OpiKineticStimulus", 
- #                sapply(stim$path$x, as.double), 
- #                sapply(stim$path$y, as.double), 
- #                as.vector(sapply(sapply(stim$levels, cdTodb), as.double)),
- #                as.vector(sapply(stim$sizes, as.double)), 
- #                as.vector(sapply(stim$speeds, as.double)))
- #    }
+    msg <- "OPI_PRESENT_KINETIC "
+    if (is.null(stim)) {
+        msg <- paste(msg, "NULL")
+    } else {
+        xs <- xy.coords(stim$path)$x
+        ys <- xy.coords(stim$path)$y
+        msg <- paste(msg, length(xs))
+        tx <- paste(xs)
+        ty <- paste(ys)
+print(tx)
+        msg <- paste(msg, tx)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
+        msg <- paste(msg, ty)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
+        msg <- paste(msg, sapply(stim$levels, cdTodb, maxStim=4000))
+        msg <- paste(msg, stim$speeds)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
+    }
 
- #    done <- FALSE
- #    while (!done) {
-	# done <- TRUE
- #    	tryCatch(ret <- .jcall(.Octopus900Env$octopusObject, "Lopi/OpiPresentReturn;", "opiPresent", stimObj), 
-	#              java.util.ConcurrentModificationException = function(e) { done = FALSE })
- #    }
-
- #    return(list(
-	#     err =.jcall(ret, "S", "getErr"), 
-	#     seen=ifelse(.jcall(ret, "I", "getSeen") == 0, 0, 1),
-	#     time=.jcall(ret, "I", "getTime")
-	# ))
-    return(NULL)
+print(msg)
+    writeLines(msg, .Octopus900Env$socket)
+    res <- readLines(.Octopus900Env$socket, n=1)
+    s <- strsplit(res, "|||", fixed=TRUE)[[1]]
+    return(list(
+        err =s[1], 
+        seen=s[2],
+        time=s[3],
+        x=s[4],     # TODO: check this is right
+        y=s[5]
+    ))
 }
 
 ###########################################################################
