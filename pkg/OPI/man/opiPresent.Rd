@@ -114,6 +114,15 @@ the response to a stimuli is always no, hence \code{\link{opiPresent}} always re
 \code{err=NULL}, \code{seen=FALSE}, and \code{time=0}.
 }
 
+\subsection{Octopus600}{
+
+\code{opiPresent(stim, nextStim=NULL)}
+
+If the chosen OPI implementation is \code{Octopus600}, then nextStim is ignored. If \code{eyeControl} is non-zero, 
+as set in \code{opiInitialize}, answer codes describing patient state may arise (see \code{answer} field in the Value section).
+}
+
+
 }
 \value{
 A list containing
@@ -140,6 +149,22 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
 \item{width}{Width of frame in \code{frames}.
 }
 \item{height}{Height of frame in \code{frames}.
+}
+\item{answer}{Only returned for \code{Octopus600}. Can be the following values:
+  \itemize{
+    \item 0 = stimulus not seen;
+    \item 1 = stimulus seen;
+    \item 132 = Response button was pressed before stimulus presentation (Patient needs a break - hold on examination);
+    \item 36 = Eye is closed before stimulus presentation;
+    \item 68 = Fixation lost before stimulus presentation (pupil center is out of green window in video image);
+    \item 260 = Forehead rest lost before stimulus presentation;
+    \item 516 = Fast Eye movements before stimulus presentation;
+    \item 258 = Forehead rest lost during stimulus presentation;
+    \item 66 = Fixation lost during stimulus presentation (pupil center is out of green window in video image);
+    \item 34 = Eye was closed during stimulus presentation;
+    \item 18 = Patient answer was too early (<=100ms after stimulus presentation) - lucky punch;
+    \item 514 = Fast Eye movements during stimulus presentation
+  }
 }
 }
 \references{

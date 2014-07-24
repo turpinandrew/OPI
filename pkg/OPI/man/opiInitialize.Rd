@@ -70,13 +70,10 @@ opiInitialise(...)
     \code{display} and \code{maxStim} is as for SimHenson.
 }
 \subsection{Octopus900}{
-    \code{opiInitialize(eyeSuiteJarLocation, eyeSuiteSettingsLocation, eye, gazeFeed=0)}
+    \code{opiInitialize(eyeSuiteSettingsLocation, eye, gazeFeed=0)}
 
     If the chosen OPI implementation is \code{Octopus900}, then you must 
-    specify two directory/folder names and the eye to be tested.
-
-    \code{eyeSuiteJarLocation} is the folder name containing the EyeSuite jar files,
-    and should include the trailing slash.
+    specify a directory and the eye to be tested.
 
     \code{eyeSuiteSettingsLocation} is the folder name containing the EyeSuite setting files,
     and should include the trailing slash.
@@ -94,28 +91,27 @@ opiInitialise(...)
     a Java driven window appears containing the live feed from the Octopus 900 gaze camera.
 }
 \subsection{Octopus600}{
-    \code{opiInitialize(ipAddress=NA, eye=NA, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
+    \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
 
     If the chosen OPI implementation is \code{Octopus600}, then you must 
-    specify two directory/folder names and the eye to be tested.
+    specify the IP address of the Octopus 600 and the eye to test.
 
-    \code{eyeSuiteJarLocation} is the folder name containing the EyeSuite jar files,
-    and should include the trailing slash.
-
-    \code{eyeSuiteSettingsLocation} is the folder name containing the EyeSuite setting files,
-    and should include the trailing slash.
+    \code{ipAddress} is the IP address of the Octopus 600 as a string.
 
     \code{eye} must be either "left" or "right".
+    
+    \code{pupilTracking} is TRUE to turn on IR illumination and set pupil black level (which happens
+    at the first stimulus presentation).
+    
+    \code{pulsar} is TRUE for pulsar stimulus, FALSE for size III white-on-white.
 
-    \code{gazeFeed} is 0 for no gaze tracking infromation. 
-    If \code{gazeFeed} is 1, then 
-    a single frame is returned as part of the value from \code{\link{opiPresent}}
-    which is the most recent frame captured. 
-    If \code{gazeFeed} is 2, then 
-    a all frames containing the asterix are returned as part of the value from \code{\link{opiPresent}},
-    which are the frames captured while a static stimulus is displayed. 
-    If \code{gazeFeed} is greater than zero, 
-    a Java driven window appears containing the live feed from the Octopus 900 gaze camera.
+    \code{eyeControl}
+    \itemize{ 
+      \item 0 is off
+      \item 1 is eye blink
+      \item 2 is eye blink, forehead rest, fixation control
+      \item 3 is eye blink, forehead rest, fixation control, fast eye movements
+    }
 }
 }
 
@@ -129,6 +125,12 @@ Returns NULL if successful, 1 if Octopus900 is already initialised by a previous
 
 The default background and stimulus setup is to white-on-white perimetry. Use \code{opiSetBackground}
 to change the background and stimulus colors.
+}
+
+\subsection{Octopus600}{
+Returns NULL if successful, or an Octopus 600 error code
+
+The default background and stimulus setup is to white-on-white perimetry.
 }
 
 }

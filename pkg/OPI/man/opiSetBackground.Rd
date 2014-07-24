@@ -59,6 +59,9 @@ opiSetBackground(...)
     only be displayed if \code{opiInitialize} is called with a valid
     display argument.
 }
+\subsection{Octopus600}{ 
+This function has now effect.
+}
 }
 
 \value{

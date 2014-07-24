@@ -7,7 +7,7 @@ Open Perimetry Interface
 }
 \description{
 
-This package contains the current version of the Open Perimetry Interface (OPI), for controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters). It specifies basic functions that allow many visual field tests to be constructed. As of October 2012 it is fully implemented on the Octopus 900 and partially on the Heidelberg Edge Perimeter. Note to use these two machines you will need either the Rhep or OPIOctopus900 packages which require permission from the respective companies to obtain: see the OPI www site. It also has a cousin: the R package visualFields, which has tools for analysing and manipulating visual field data.
+This package contains the current version of the Open Perimetry Interface (OPI), for controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters). It specifies basic functions that allow many visual field tests to be constructed. As of July 2014 it is fully implemented on the Octopus 900 and Octopus 600, and partially on the Heidelberg Edge Perimeter. For the HEP, you will need the Rhep package and permission from Heidelberg Engineering. For the Octopus 900, you will need the O900Server.jar program and for both Octopus machines you will need permission from Haag-Streit. See the OPI www site for details. There is also a cousin: the R package visualFields, which has tools for analysing and manipulating visual field data.
 
 }
 \details{

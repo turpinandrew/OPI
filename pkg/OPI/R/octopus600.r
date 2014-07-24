@@ -25,7 +25,9 @@
 if (!exists(".Octopus600Env"))
     .Octopus600Env <- new.env()
 
-## Networking helper functions
+#######################################################################
+# Networking helper functions
+#######################################################################
 
 send <- function(packet, socket) { 
   writeBin(packet, socket, size = 4, endian = "big")
@@ -58,14 +60,6 @@ sendCommand <- function(socket, id, ...) {
   }
   
   return(list(response, response[3]))
-}
-
-cd2ddb = function(cd) {
-  round(-10 * log10(cd*pi/4000) * 10, 0)
-}
-
-db2cd = function(db) {
-  4000/pi*10^(-db/10)
 }
 
 #######################################################################
@@ -175,7 +169,7 @@ octo600.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     .Octopus600Env$pulsar*5, #method [0 = White-On-White, 5 = pulsar]
     0, #color [don't care]
     3, #stimulusSize [don't care] (has to be 3 for W-on-W, don't care for pulsar)
-    cd2ddb(stim$level), #dLog (intensity) [in 1/10 dB]
+    cdTodb(stim$level, 4000/pi)*10, #dLog (intensity) [in 1/10 dB]
     stim$duration, #duration [stimulus presentation duration in ms, for W/W 100ms, for pulsar 500ms]
     leftEye, #selectedEye [0 = OD, 1 = OS]
     stim$responseWindow, #maxAllowedReactionTime (maximal allowed reaction time in ms, >=500ms and <4s)
@@ -260,6 +254,19 @@ octo600.opiClose <- function() {
 # Call opiPresent with a NULL stimulus
 ###########################################################################
 octo600.opiQueryDevice <- function() {
-    ret <- octo600.opiPresent.opiStaticStimulus(NULL, NULL)
-    return(ret$err)
+  res <- sendCommand(.Octopus600Env$socket, 3004)
+  
+  ret <- list(
+    answerButton        = res[[1]][8],
+    headSensor          = res[[1]][9],
+    eyeLidClosureLeft   = res[[1]][10],
+    eyeLidClosureRight  = res[[1]][11],
+    fixationLostLeft    = res[[1]][12],
+    fixationLostRight   = res[[1]][13],
+    pupilPositionXLeft  = res[[1]][14],
+    pupilPositionYLeft  = res[[1]][15],
+    pupilPositionXRight = res[[1]][16],
+    pupilPositionYRight = res[[1]][17]
+  )
+  return(ret)
 }
