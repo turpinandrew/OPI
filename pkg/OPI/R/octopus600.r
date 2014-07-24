@@ -81,12 +81,12 @@ db2cd = function(db) {
 # @return ...
 #
 #######################################################################
-octo600.opiInitialize <- function(ipAddress=NA, eye=NA, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0) {
+octo600.opiInitialize <- function(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0) {
   
-  if (is.na(ipAddress))
+  if (missing(ipAddress))
     stop("You must specify an IP address in opiInitialize()")
   
-  if (eye != "left" && eye != "right")
+  if (missing(eye) || (eye != "left" && eye != "right"))
     stop("You must set eye=left or eye=right in opiInitialize()")
   
   if (!is.element(eyeControl, 0:3))

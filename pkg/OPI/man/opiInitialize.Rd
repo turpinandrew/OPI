@@ -93,6 +93,30 @@ opiInitialise(...)
     If \code{gazeFeed} is greater than zero, 
     a Java driven window appears containing the live feed from the Octopus 900 gaze camera.
 }
+\subsection{Octopus600}{
+    \code{opiInitialize(ipAddress=NA, eye=NA, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
+
+    If the chosen OPI implementation is \code{Octopus600}, then you must 
+    specify two directory/folder names and the eye to be tested.
+
+    \code{eyeSuiteJarLocation} is the folder name containing the EyeSuite jar files,
+    and should include the trailing slash.
+
+    \code{eyeSuiteSettingsLocation} is the folder name containing the EyeSuite setting files,
+    and should include the trailing slash.
+
+    \code{eye} must be either "left" or "right".
+
+    \code{gazeFeed} is 0 for no gaze tracking infromation. 
+    If \code{gazeFeed} is 1, then 
+    a single frame is returned as part of the value from \code{\link{opiPresent}}
+    which is the most recent frame captured. 
+    If \code{gazeFeed} is 2, then 
+    a all frames containing the asterix are returned as part of the value from \code{\link{opiPresent}},
+    which are the frames captured while a static stimulus is displayed. 
+    If \code{gazeFeed} is greater than zero, 
+    a Java driven window appears containing the live feed from the Octopus 900 gaze camera.
+}
 }
 
 \value{

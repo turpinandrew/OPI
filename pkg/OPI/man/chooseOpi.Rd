@@ -28,6 +28,7 @@ chooseOpi(opiImplementation)
                 psychometric function with 
                 standard deviation supplied in opiInitialize(). 
     \item\code{"Octopus900"} for interfacing with the Octopus 900. 
+    \item\code{"Octopus600"} for interfacing with the Octopus 600. 
     \item\code{"HEP"}        for interfacing with the Heidelberg Edge Perimeter.
     \item\code{NULL}         print a list of available OPI implementations.
     }

@@ -33,12 +33,11 @@ OPI_MAN		=	FT.Rd \
 						opiTemporalStimulus.Rd
 
 OPI_ROOT	=	DESCRIPTION \
-						NAMESPACE 
+						NAMESPACE
 
 OPI_FILES	=	$(addprefix OPI/,$(OPI_ROOT)) \
 						$(addprefix OPI/man/,$(OPI_MAN)) \
 						$(addprefix OPI/R/,$(OPI_R))
-
 
 
 all: check build install

@@ -102,9 +102,6 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
         stop("You must specify which eye ('left' or 'right') in your call to opiInitialize")
     if (eye != "left" && eye != "right")
         stop("The eye argument of opiInitialize must be 'left' or 'right'")
-    if (gazeFeed != 0)
-        stop("Gaze tracking not yet supported with client/server model")
-
 
     setupBackgroundConstants()
 
