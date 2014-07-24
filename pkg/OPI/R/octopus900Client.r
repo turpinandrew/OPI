@@ -154,10 +154,15 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
+    if (s[1] == "null") {
+      err <- NULL
+    } else {
+      err <- s[1]
+    }
     return(list(
-	    err =s[1], 
-	    seen=s[2],
-	    time=s[3],
+	    err=err, 
+	    seen=strtoi(s[2]),
+	    time=strtoi(s[3]),
 	    frames=NA,
         numFrames=NA,
         width=NA,
@@ -185,7 +190,7 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     if (is.null(stim)) {
         msg <- paste(msg, "NULL")
     } else {
-        msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, stim$rate)
+        msg <- paste(c(msg, stim$x * 10.0, stim$y * 10.0, stim$rate), collapse=" ")
         msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
         msg <- paste(msg, stim$duration)
         msg <- paste(msg, stim$responseWindow)
