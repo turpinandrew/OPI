@@ -226,15 +226,19 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     } else {
         xs <- xy.coords(stim$path)$x
         ys <- xy.coords(stim$path)$y
-        msg <- paste(msg, length(xs))
-        tx <- paste(xs)
-        ty <- paste(ys)
-        msg <- paste(msg, tx)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
-        msg <- paste(msg, ty)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
-        msg <- paste(msg, sapply(stim$levels, cdTodb, maxStim=4000))
-        msg <- paste(msg, stim$speeds)  # TODO: check this is msg x1 x2 not msg x1 msg x2 etc
+        msg <- paste(c(msg, length(xs), xs, ys), collapse=" ")
+        msg <- paste(c(msg, sapply(stim$levels, cdTodb, maxStim=4000/pi)), collapse=" ")
+        msg <- paste(c(msg, stim$sizes), collapse=" ")
+        
+          # convert seconds/degree into total time for path segment in seconds
+        pathLengths <- NULL
+        for(i in 2:length(xs)) {
+          d <- sqrt((xs[i]-xs[i-1])^2 + (ys[i]-ys[i-1]^2))
+          stim$speeds[i-1] <- d/stim$speeds[i-1]
+        }
+        msg <- paste(c(msg, stim$speeds), collapse=" ")  
     }
-
+    
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
