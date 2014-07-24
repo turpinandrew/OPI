@@ -85,8 +85,6 @@ GOLDMANN <- c(6.5, 13, 26, 52, 104) / 60
 #
 #######################################################################
 octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, eye=NA, gazeFeed=0) {
-    if (is.na(eyeSuiteJarLocation))
-        stop("You must specify the EyeSuite jar file folder in your call to opiInitialize")
     if (is.na(eyeSuiteSettingsLocation))
         stop("You must specify the EyeSuite settings folder in your call to opiInitialize")
     if (is.na(eye))
@@ -100,8 +98,8 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
     setupBackgroundConstants()
 
     socket <- tryCatch(
-        socketConnection(host = "127.0.0.1", serverPort, open = "w+b", blocking = TRUE, timeout = 120), 
-        error <- function(e) stop(paste("Cannot connect to Octopus 900 on port", serverPort))
+        socketConnection(host = "127.0.0.1", serverPort, open = "w+b", blocking = TRUE, timeout = 1000), 
+        error=function(e) stop(paste("Cannot connect to Octopus 900 on port", serverPort))
     )
 
     assign("socket", socket, envir = .Octopus900Env)
