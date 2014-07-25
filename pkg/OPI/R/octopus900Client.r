@@ -51,52 +51,10 @@ if (!exists(".Octopus900Env"))
 # INPUT: None.
 # OUTPUT: None.
 # SIDE EFFECTS: sets .Octopus900Env$* if possible.
-#               store the names and values in .Octopus900Env$constList 
 ###########################################################################
 setupBackgroundConstants <- function() {
-
-    constList <- NULL
-
-    getC <- function(cName) {
-        writeLines(paste("OPI_GET_CONSTANT", cName), .Octopus900Env$socket)
-        res <- readLines(.Octopus900Env$socket, n=1)
-        if (res == "OZ900Fail") {
-            warning(paste("Cannot set",cName,"constant for the O900."))
-        } else {
-            assign(cName, as.double(res), envir = .Octopus900Env) 
-            constList<- c(constList, list(list(cName, as.double(res))))
-        }
-    }
-
-    getC("FIX_CENTRE")
-    getC("FIX_CROSS")
-    getC("FIX_RING")
-    getC("BG_OFF")
-    getC("BG_1")        # 1.27 cd/m2 == 127 passed to MsgInitializePerimUnit
-    getC("BG_10")       # 10 cd/m2 == 1000
-    getC("BG_100")      # 100 cd/m2 == 10000
-
-    assign("FIX_CENTER", .Octopus900Env$FIX_CENTRE, envir = .Octopus900Env) # help Americans
-
-        # get the color fields from OCTO900
-    getC("STIM_WHITE")
-    getC("STIM_BLUE")
-    getC("STIM_RED")
-    getC("BG_WHITE")
-    getC("BG_YELLOW")
-    getC("MET_COL_WW")
-    getC("MET_COL_BY")
-    getC("MET_COL_RW")
-    getC("MET_COL_BLUE_WHITE")
-    getC("MET_COL_RED_YELLOW")
-    getC("MET_COL_WHITE_YELLOW")
-    getC("MET_COL_USER")
-
-    assign("MET_COL_BW", .Octopus900Env$MET_COL_BLUE_WHITE,   envir = .Octopus900Env)
-    assign("MET_COL_RY", .Octopus900Env$MET_COL_RED_YELLOW,   envir = .Octopus900Env)
-    assign("MET_COL_WY", .Octopus900Env$MET_COL_WHITE_YELLOW, envir = .Octopus900Env)
-
-    assign("constList", constList, envir = .Octopus900Env)
+    # TODO add a server command to return these
+    warning("setupBackgroundConstants not yet written in octopus900Client.r")
 }
 
 
@@ -244,17 +202,10 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
-
-    if (s[1] == "null") {
-      err <- NULL
-    } else {
-      err <- s[1]
-    }
-
     return(list(
-        err =err, 
-        seen=strtoi(s[2]),
-        time=strtoi(s[3]),
+        err =s[1], 
+        seen=s[2],
+        time=s[3],
         frames=NA,
         numFrames=NA,
         width=NA,
@@ -296,19 +247,12 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
-
-    if (s[1] == "null") {
-      err <- NULL
-    } else {
-      err <- s[1]
-    }
-
     return(list(
-        err =err, 
-        seen=strtoi(s[2]),
-        time=strtoi(s[3]),
-        x=strtoi(s[4]),     # TODO: check this is right
-        y=strtoi(s[5])
+        err =s[1], 
+        seen=s[2],
+        time=s[3],
+        x=s[4],     # TODO: check this is right
+        y=s[5]
     ))
 }
 
@@ -351,10 +295,7 @@ octo900.opiClose <- function() {
 # Call opiPresent with a NULL stimulus
 ###########################################################################
 octo900.opiQueryDevice <- function() {
-    cat("Defined constants\n")
-    cat("-----------------\n")
-    for (cc in .Octopus900Env$constList)
-        cat(cc, "\n")
-
-    return(NULL)
+  # use reflection to grab colour and background constants
+  ret <- octo900.opiPresent.opiStaticStimulus(NULL, NULL)
+    return(ret$err)
 }
