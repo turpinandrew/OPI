@@ -64,7 +64,7 @@ setupBackgroundConstants <- function() {
             warning(paste("Cannot set",cName,"constant for the O900."))
         } else {
             assign(cName, as.double(res), envir = .Octopus900Env) 
-            constList<- c(constList, list(list(cName, as.double(res))))
+            assign("constList", c(.Octopus900Env$constList, list(list(cName, as.double(res)))), envir = .Octopus900Env)
         }
     }
 
@@ -95,8 +95,6 @@ setupBackgroundConstants <- function() {
     assign("MET_COL_BW", .Octopus900Env$MET_COL_BLUE_WHITE,   envir = .Octopus900Env)
     assign("MET_COL_RY", .Octopus900Env$MET_COL_RED_YELLOW,   envir = .Octopus900Env)
     assign("MET_COL_WY", .Octopus900Env$MET_COL_WHITE_YELLOW, envir = .Octopus900Env)
-
-    assign("constList", constList, envir = .Octopus900Env)
 }
 
 
@@ -145,8 +143,6 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
     if (eye != "left" && eye != "right")
         stop("The eye argument of opiInitialize must be 'left' or 'right'")
 
-    setupBackgroundConstants()
-
     socket <- tryCatch(
         socketConnection(host="localhost", serverPort, open = "w+b", blocking = TRUE, timeout = 1000), 
         error=function(e) stop(paste("Cannot connect to Octopus 900 on port", serverPort))
@@ -156,6 +152,8 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
     msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\ ",eye, " ", gazeFeed)
     writeLines(msg, socket)
     res <- readLines(socket, n=1)
+    
+    setupBackgroundConstants()
 
 	if (res == "0")
 		return(NULL)
@@ -348,13 +346,15 @@ octo900.opiClose <- function() {
 }
 
 ###########################################################################
-# Call opiPresent with a NULL stimulus
+# Lists defined constants
 ###########################################################################
 octo900.opiQueryDevice <- function() {
     cat("Defined constants\n")
     cat("-----------------\n")
-    for (cc in .Octopus900Env$constList)
-        cat(cc, "\n")
+    lapply(.Octopus900Env$constList, function(x) {
+      lapply(x, cat, " ")
+      cat("\n")
+    })
 
     return(NULL)
 }
