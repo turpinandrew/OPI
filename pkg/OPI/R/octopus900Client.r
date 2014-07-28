@@ -261,7 +261,9 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
 }#opiPresent.opiTemporalStimulus()
 
-########################################## TO DO
+########################################## 
+# Present kinetic stim, return values 
+########################################## 
 octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
         # convert sizes to GOLDMANN
      stim$sizes <- sapply(stim$sizes, function(s) {
@@ -304,9 +306,9 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     return(list(
         err =err, 
         seen=strtoi(s[2]),
-        time=strtoi(s[3]),
-        x=strtoi(s[4]),     # TODO: check this is right
-        y=strtoi(s[5])
+        time=NA,             # TODO. BUG. XXX. need to fix this!!!
+        x=strtoi(s[3]),     
+        y=strtoi(s[4])
     ))
 }
 
