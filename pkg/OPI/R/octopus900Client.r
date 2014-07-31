@@ -126,15 +126,18 @@ GOLDMANN <- c(6.5, 13, 26, 52, 104) / 60
 #######################################################################
 octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, eye=NA, gazeFeed=0) {
 
-    suppressWarnings(tryCatch(
-        v <- socketConnection(host = "localhost", serverPort, server = FALSE,
-                      blocking = FALSE, open = "r",
+    cat("Looking for server... ")
+    suppressWarnings(tryCatch(    
+        v <- socketConnection(host = "localhost", serverPort,
+                      blocking = TRUE, open = "w+b",
                       timeout = 10)
         , error=function(e) { 
-            stop(paste("Cannot find a server on port",serverPort))
+            stop(paste(" cannot find a server on port",serverPort))
         }
     ))
     close(v)
+    
+    print("found server :)")
 
     if (is.na(eyeSuiteSettingsLocation))
         stop("You must specify the EyeSuite settings folder in your call to opiInitialize")
@@ -306,9 +309,9 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     return(list(
         err =err, 
         seen=strtoi(s[2]),
-        time=NA,             # TODO. BUG. XXX. need to fix this!!!
-        x=strtoi(s[3]),     
-        y=strtoi(s[4])
+        time=strtoi(s[3]),
+        x=strtoi(s[4]),     
+        y=strtoi(s[5])
     ))
 }
 
