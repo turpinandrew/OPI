@@ -160,7 +160,7 @@ octo600.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
   }
   
   # display_stimulus()
-  res = sendCommand(
+  res <- sendCommand(
     .Octopus600Env$socket, 2000,
     0, #checkBGIllumi [Do always set to 0]
     0, #BGIntensity [If checkBGIllumi is set to 0, don't care]
@@ -185,7 +185,7 @@ octo600.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
   pupilSize = res[[1]][21]
   reactionTimePAK = res[[1]][22]
   answer = res[[1]][23]
-  
+
   return(list(
     err = 0, 
     seen = answer == 1,
