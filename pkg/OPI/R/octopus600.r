@@ -45,16 +45,19 @@ sendCommand <- function(socket, id, ...) {
   packet = pad(packet)
   packet = as.integer(packet)
   
-  print("Sending:")
-  print(packet)
+  #print("Sending:")
+  #print(packet)
   
   send(packet, socket)
   
   response = readBin(socket, integer(), n = 128, size = 4, signed = TRUE, endian = "big")
   
-  print("Received:")
-  print(response)
+  #print("Received:")
+  #print(response)
   
+  if (length(response) == 0)
+    stop("Octopus 600 not responding")
+
   if (response[3] != 0) {
     warning(paste("Octopus 600 returned error ID", response[3]))
   }
