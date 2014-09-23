@@ -151,14 +151,14 @@ octo900.opiInitialize <- function(eyeSuiteJarLocation=NA, eyeSuiteSettingsLocati
 
     #options("java.parameters"="-Xmx1024m -Xss64m –verbose:class")
     
-    hsJars <- c(paste(eyeSuiteJarLocation, "opi-6.0.2.0.jar", sep=""),
+    hsJars <- c(
+                #paste("C:/opencv-249/build/java/", "opencv-249.jar", sep=""),
+                paste(eyeSuiteJarLocation, "opencv-249.jar", sep=""),
+                paste(eyeSuiteJarLocation, "opi-6.0.2.0.jar", sep=""),
                 paste(eyeSuiteJarLocation, "HSEyeSuiteBasic.jar", sep=""),
                 paste(eyeSuiteJarLocation, "HSEyeSuiteExtPerimetry.jar", sep=""),
                 paste(eyeSuiteJarLocation, "HSEyeSuiteExtPerimetryViewer.jar", sep=""),
-                paste(eyeSuiteJarLocation, "javacv.jar", sep=""),
-                paste(eyeSuiteJarLocation, "javacv-windows-x86.jar", sep=""),
-                paste(eyeSuiteJarLocation, "javacpp.jar", sep=""),
-                paste(eyeSuiteJarLocation, "opencv-2.4.5-windows-x86.jar", sep=""),
+                paste(eyeSuiteJarLocation, "lax.jar", sep=""),
                 paste(eyeSuiteJarLocation, "i18n/HSEyeSuiteBasic_i18n-3.1.1.jar", sep=""),
                 paste(eyeSuiteJarLocation, "i18n/HSEyeSuitePerimetryExtension_i18n-3.2.1.jar", sep=""),
                 paste(eyeSuiteJarLocation, "i18n/HSEyeSuitePerimetryViewer_i18n-3.2.1.jar", sep=""),
@@ -167,7 +167,8 @@ octo900.opiInitialize <- function(eyeSuiteJarLocation=NA, eyeSuiteSettingsLocati
                 paste(eyeSuiteJarLocation, "jre/lib/ext/gettext-commons-0.9.6.jar", sep=""),
                 paste(eyeSuiteJarLocation, "jre/lib/ext/jcbios.jar", sep=""),
                 paste(eyeSuiteJarLocation, "jre/lib/ext/jh.jar", sep=""),
-                paste(eyeSuiteJarLocation, "jre/lib/ext/mysql-connector-java-5.1.17-bin.jar", sep=""))
+                paste(eyeSuiteJarLocation, "jre/lib/ext/mysql-connector-java-5.1.17-bin.jar", sep="")
+    )#hsJahrs
     
     .jinit(classpath=hsJars, 
         params=getOption("java.parameters"),
