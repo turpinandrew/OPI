@@ -125,6 +125,7 @@ GOLDMANN <- c(6.5, 13, 26, 52, 104) / 60
 #
 #######################################################################
 octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, eye=NA, gazeFeed=0) {
+    assign("gazeFeed", gazeFeed, envir=.OpiEnv)
 
     cat("Looking for server... ")
     suppressWarnings(tryCatch(    
@@ -188,7 +189,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
         msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
         msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
         msg <- paste(msg, stim$duration)
-	    msg <- paste(msg, stim$responseWindow)
+	      msg <- paste(msg, stim$responseWindow)
         if (!is.null(nextStim)) {
             msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
         }
@@ -202,15 +203,60 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     } else {
       err <- s[1]
     }
-    return(list(
-	    err=err, 
-	    seen=strtoi(s[2]),
-	    time=strtoi(s[3]),
-	    frames=NA,
+
+
+
+    if (.OpiEnv$gazeFeed==0) {
+      return(list(
+        err=err,
+        seen=strtoi(s[2]),
+        time=strtoi(s[3]),
+        frames=NA,
         numFrames=NA,
         width=NA,
         height=NA
-	))
+      ))
+    }#gazeFeed=0
+
+
+
+    if (.OpiEnv$gazeFeed==1) {
+      return(list(
+        err=err,
+        seen=strtoi(s[2]),
+        time=strtoi(s[3]),
+        frames=NA,
+        numFrames=NA,
+        width=NA,
+        height=NA
+      ))
+    }#gazeFeed=1
+
+
+
+    if (.OpiEnv$gazeFeed==2) {
+      #frames <- strsplit(s[14], "###", fixed=TRUE)[[1]]
+      #for (i in 1:length(frames)) {
+      #  frames[i] <- strtoi(strsplit(frames[i],",",fixed=T)[[1]])
+      #}
+      return(list(
+	               err=err, 
+	              seen=strtoi(s[2]),
+	              time=strtoi(s[3]),
+	         numFrames=strtoi(s[4]),
+	             times=strtoi(strsplit(s[5],",",fixed=T)[[1]]),
+	               ids=strtoi(strsplit(s[6],",",fixed=T)[[1]]),
+  	           stars=strtoi(strsplit(s[7],",",fixed=T)[[1]]),
+	             rings=strtoi(strsplit(s[8],",",fixed=T)[[1]]),
+	          diamters=strtoi(strsplit(s[9],",",fixed=T)[[1]]),
+   	          pupilX=strtoi(strsplit(s[10],",",fixed=T)[[1]]),
+	            pupilY=strtoi(strsplit(s[11],",",fixed=T)[[1]]),
+	    pupilMajorAxis=strtoi(strsplit(s[12],",",fixed=T)[[1]]),
+	    pupilMinorAxis=strtoi(strsplit(s[13],",",fixed=T)[[1]]),
+          firstFrame=strtoi(strsplit(s[14],",",fixed=T)[[1]])
+	            #frames=frames
+      ))
+    }#gazeFeed=2
 }
 
  
