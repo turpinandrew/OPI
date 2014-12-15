@@ -376,7 +376,7 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 ###########################################################################
 octo900.opiSetBackground <- function(lum="NA", color="NA", fixation="NA", fixIntensity=50) {
 
-    msg <- paste("OPI_SET_BACKGROUND", lum, color, fixation, fixIntensity)
+    msg <- paste("OPI_SET_BACKGROUND", color, lum, fixation, fixIntensity)
     writeLines(msg, .Octopus900Env$socket)
     ret <- strtoi(readLines(.Octopus900Env$socket, n=1))
 
