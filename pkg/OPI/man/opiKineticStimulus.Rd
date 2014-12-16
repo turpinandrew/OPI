@@ -45,6 +45,19 @@ The list should contain the following elements.
 
     \code{sizes} are in degrees, but are round to the nearest Goldmann Size I..V for display.
 }
+
+\subsection{Kowa AP 7000}{
+    \code{x} and \code{y} are in degrees (precision?).
+
+    \code{image} is not possible on an Kowa AP 7000.
+
+    \code{levels} are in cd/\eqn{\mbox{m}^2}{m^2}, and are rounded to the 
+                nearest one tenth of a dB for display.
+
+    \code{colors} are ignored. Use \code{opiInitialise()} to alter stimulus color.
+
+    \code{sizes} are in degrees, but are round to the nearest Goldmann Size I..V for display.
+}
 }
 
 \references{

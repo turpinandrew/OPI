@@ -41,7 +41,7 @@ for the next stimuli. (For example retargeting the projector or moving
 aperture and/or filter wheels.) 
 There is no guarantee that the next call to
 \code{\link{opiPresent}} will have \code{nextStim} as the first argument; this 
-should be checked by the machine specific implementations.
+could be checked by the machine specific implementations (but currently is not, I think).
 
 Also note that to allow for different parameters depending on the 
 implementation chosen with \code{chooseOpi}, every parameter MUST
@@ -146,9 +146,9 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
 }
 \item{numFrames}{Only returned for Octopus 900. The number of frames in \code{frames}.
 }
-\item{width}{Width of frame in \code{frames}.
+\item{width}{Only returned for Octopus 900. Width of frame in \code{frames}.
 }
-\item{height}{Height of frame in \code{frames}.
+\item{height}{Only returned for Octopus 900. Height of frame in \code{frames}.
 }
 \item{answer}{Only returned for \code{Octopus600}. Can be the following values:
   \itemize{
@@ -166,6 +166,15 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
     \item 514 = Fast Eye movements during stimulus presentation
   }
 }
+\item{xs}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+          List of x coordinates of pupil during presentation.}
+\item{ys}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+          List of y coordinates of pupil during presentation.}
+\item{x}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 
+          x coordinate of stimuli when button is pressed.}
+\item{y}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 
+          y coordinate of stimuli when button is pressed.}
+
 }
 \references{
 Please cite:
@@ -195,7 +204,7 @@ Andrew Tuprin <aturpin@unimelb.edu.au>
 \examples{
     # Stimulus is Size III white-on-white as in the HFA
 makeStim <- function(db, n) { 
-    s <- list(x=9, y=9, level=dbTocd(db), size=0.43, color="white",
+    s <- list(x=9, y=9, level=dbTocd(db, 10000/pi), size=0.43, color="white",
              duration=200, responseWindow=1500)
     class(s) <- "opiStaticStimulus"
 

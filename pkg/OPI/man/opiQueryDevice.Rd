@@ -16,7 +16,8 @@ opiQueryDevice(...)
 }
 \details{
 \subsection{Octopus600}{
-If the chosen OPI is \code{Octopus600}, then this function returns information about the patient. See the Value section for details.
+If the chosen OPI is \code{Octopus600}, then this function returns 
+information about the patient. See the Value section for details.
 }
 }
 \value{

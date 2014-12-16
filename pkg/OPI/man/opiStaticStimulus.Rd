@@ -49,6 +49,17 @@ The list must contain the following elements.
 
     \code{color} is ignored. Use \code{opiSetBackground()} to alter stimulus color.
 }
+
+\subsection{Kowa AP 7000}{
+    \code{x} and \code{y} are in degrees. (precision?)
+
+    \code{image} is not possible on an Kowa AP 7000.
+
+    \code{level} is in cd/\eqn{\mbox{m}^2}{m^2}, and is rounded to the 
+                nearest one tenth of a dB for display.
+
+    \code{color} is ignored. Use \code{opiInitialise()} to alter stimulus color.
+}
 }
 
 \references{

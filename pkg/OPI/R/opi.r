@@ -13,6 +13,8 @@
 #
 # Author: Andrew Turpin    (aturpin@unimelb.edu.au)
 # Date: June 2012
+# Modified:    Sep 2014 - added Octopus 600
+#           16 Dec 2014 - added Kowa AP 7000
 #
 # Copyright 2012 Andrew Turpin and Jonathan Denniss
 # This program is part of the OPI (http://perimetry.org/OPI).
@@ -37,6 +39,14 @@
 # the opi* functions to index using .OpiEnv$chooser.
 ################################################################################
 opi.implementations <- list(
+    list(
+        name="KowaAP7000",
+        opiInitialize    = "kowaAP7000.opiInitialize",
+        opiClose         = "kowaAP7000.opiClose",
+        opiSetBackground = "kowaAP7000.opiSetBackground",
+        opiQueryDevice   = "kowaAP7000.opiQueryDevice",
+        opiPresent       = "kowaAP7000.opiPresent"
+    ),
     list(
         name="Octopus900",
         opiInitialize    = "octo900.opiInitialize",

@@ -113,6 +113,19 @@ opiInitialise(...)
       \item 3 is eye blink, forehead rest, fixation control, fast eye movements
     }
 }
+\subsection{KowaAP7000}{
+    \code{opiInitialize(ip, port, mode)}
+
+    If the chosen OPI implementation is \code{KowaAP7000}, then you must 
+    specify the IP address and port of the AP 7000, and the mode.
+
+    \code{ipAddress} is the IP address of the AP 7000 as a string.
+
+    \code{port} is the TCP/IP port of the AP 7000 as a number.
+
+    \code{mode} must be either \code{.KowaAP7000Env$MODE_WoW} for white-on-white 
+        perimetry, or \code{.KowaAP7000Env$MODE_BoY} for blue-on-yellow perimetry.
+}
 }
 
 \value{
@@ -193,6 +206,13 @@ if (!is.null(opiInitialize(
         eyeSuiteJarLocation="C:/Program Files (x86)/Haag-Streit/EyeSuite/", 
         eyeSuiteSettingsLocation="C:/ProgramData/Haag-Streit/EyeSuite/",
         eye="left")))
+    stop("opiInitialize failed")
+}
+
+\dontrun{
+    # Set up the Kowa AP 7000
+chooseOpi("KowaAP7000")
+if (!is.null(opiInitialize(ip="192.168.1.7", port=44965, mode=.KowaAP7000Env$MODE_WoW)))
     stop("opiInitialize failed")
 }
 }

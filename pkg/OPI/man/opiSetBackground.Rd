@@ -60,7 +60,21 @@ opiSetBackground(...)
     display argument.
 }
 \subsection{Octopus600}{ 
-This function has now effect.
+This function has no effect.
+}
+\subsection{KowaAP7000}{ 
+    \code{opiSetBackground(lum, color, fixation,)} 
+
+    \code{lum} and \code{color} are ignored by the Kowa AP 7000 (set them using
+    \code{opiInitialize}.
+
+    \code{fixation} is one of
+    \itemize{
+        \item \code{.KowaAP7000Env$FIX_CENTER}, fixation marker in the centre.
+        \item \code{.KowaAP7000Env$FIX_CENTRE}, fixation marker in the centre.
+        \item \code{.KowaAP7000Env$FIX_SQUARE}, fixation marker is central square.
+        \item \code{.KowaAP7000Env$FIX_DIAMOND}, fixation marker is lower diamond.
+    }
 }
 }
 
