@@ -174,6 +174,8 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
 #	err  = string message
 #	seen = 1 if seen, 0 otherwise
 #	time = reaction time
+# 
+# If stim is null, always return 0 status.
 ###########################################################################
 octo900.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresent") }
 setGeneric("octo900.opiPresent")
@@ -184,7 +186,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
     msg <- "OPI_PRESENT_STATIC "
     if (is.null(stim)) {
-        msg <- paste(msg, "NULL")
+        return(list(err=0))
     } else {
         msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
         msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
@@ -269,6 +271,8 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 #	err  = string message
 #	seen = 1 if seen, 0 otherwise
 #	time = reaction time
+#
+# If stim is null, always return 0 status.
 ###########################################################################
 octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
@@ -277,7 +281,7 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
     msg <- "OPI_PRESENT_TEMPORAL "
     if (is.null(stim)) {
-        msg <- paste(msg, "NULL")
+        return(list(err=0))
     } else {
         msg <- paste(c(msg, stim$x * 10.0, stim$y * 10.0, stim$rate), collapse=" ")
         msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
@@ -312,6 +316,8 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
 ########################################## 
 # Present kinetic stim, return values 
+#
+# If stim is null, always return 0 status.
 ########################################## 
 octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
         # convert sizes to GOLDMANN
@@ -325,7 +331,7 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 
     msg <- "OPI_PRESENT_KINETIC "
     if (is.null(stim)) {
-        msg <- paste(msg, "NULL")
+        return(list(err=0))
     } else {
         xs <- xy.coords(stim$path)$x
         ys <- xy.coords(stim$path)$y

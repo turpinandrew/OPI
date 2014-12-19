@@ -10,7 +10,8 @@
 Full Threshold 
 }
 \description{
-FT begins with a 4-2dB staircase at level \code{est}. If the final estimate 
+FT begins with a 4-2dB staircase beginning 
+at level \code{est}. If the final estimate 
 (last seen) is more than 4dB away from \code{est}, a second 4-2 staircase is
 completed beginning at the estimate returned from the first.
 }

@@ -68,3 +68,12 @@ OPI 1.7
    Hence changed chooseOpi and opitInialise
  - added maxStim param to dbTocd and cdTodb
  - added type="X" to simH and simH_RT
+
+OPI 2.0
+ - moved to a client-server model for Octopus 900
+
+OPI 2.1
+ - included Kowa AP 7000 perimeter
+ - small bug fix in O900 client
+ - moved to a client-server model for Octopus 900 if stim=NULL for opiPresent
+ - added fourTwo procedure

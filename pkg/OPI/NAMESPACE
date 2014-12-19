@@ -15,6 +15,11 @@ export(FT.stop)
 export(FT.final)
 #export(FT.final.details)
 
+export(fourTwo.start)
+export(fourTwo.step)
+export(fourTwo.stop)
+export(fourTwo.final)
+
 export(chooseOpi)
 export(dbTocd, cdTodb)
 
