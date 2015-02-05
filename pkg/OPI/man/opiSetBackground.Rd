@@ -65,15 +65,23 @@ This function has no effect.
 \subsection{KowaAP7000}{ 
     \code{opiSetBackground(lum, color, fixation,)} 
 
-    \code{lum} and \code{color} are ignored by the Kowa AP 7000 (set them using
-    \code{opiInitialize}.
-
+    \code{lum} and \code{color} are dependant for the Kowa AP-7000. 
+    A white background must be 10 cd/\eqn{\mbox{m}^2}{m^2}, and a yellow background must be.
+    100 cd/\eqn{\mbox{m}^2}{m^2}.
+    If \code{lum} is 10 and \code{color} is not set, then \code{.KowaAP7000Env$BACKGROUND_WHITE}
+    is assumed.
+    If \code{lum} is 100 and \code{color} is not set, then \code{.KowaAP7000Env$BACKGROUND_YELLOW}
+    is assumed.
+    If both \code{lum} and \code{color} is set, then \code{lum} is ignored (a warning will be generated
+    if \code{lum} is incompatible with \code{color}).
+    
     \code{fixation} is one of
     \itemize{
         \item \code{.KowaAP7000Env$FIX_CENTER}, fixation marker in the centre.
         \item \code{.KowaAP7000Env$FIX_CENTRE}, fixation marker in the centre.
-        \item \code{.KowaAP7000Env$FIX_SQUARE}, fixation marker is central square.
-        \item \code{.KowaAP7000Env$FIX_DIAMOND}, fixation marker is lower diamond.
+        \item \code{.KowaAP7000Env$FIX_AUX},    fixation marker is ???.
+        \item \code{.KowaAP7000Env$FIX_MACULA}, fixation marker is a circle(?).
+        \item \code{.KowaAP7000Env$FIX_AUX_LEFT}, fixation marker is as for AUX but only lower left.
     }
 }
 }

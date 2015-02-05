@@ -29,7 +29,8 @@ chooseOpi(opiImplementation)
                 standard deviation supplied in opiInitialize(). 
     \item\code{"Octopus900"} for interfacing with the Octopus 900. 
     \item\code{"Octopus600"} for interfacing with the Octopus 600. 
-    \item\code{"HEP"}        for interfacing with the Heidelberg Edge Perimeter.
+    \item\code{"HEP"}        not working so well in new HEPs.
+    \item\code{"KowaAP7000"} for interfacing with Kowa AP-7000.
     \item\code{NULL}         print a list of available OPI implementations.
     }
 }

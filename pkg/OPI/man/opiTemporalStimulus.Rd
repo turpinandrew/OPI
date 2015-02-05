@@ -46,6 +46,11 @@ Stimulus parameter list.
 
     \code{color} is ignored. Use \code{opiSetBackground()} to alter stimulus color.
 }
+
+\subsection{Kowa AP-7000}{
+Not supported.
+}
+
 }
 
 \references{

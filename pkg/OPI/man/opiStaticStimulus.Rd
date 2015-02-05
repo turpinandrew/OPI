@@ -55,10 +55,16 @@ The list must contain the following elements.
 
     \code{image} is not possible on an Kowa AP 7000.
 
-    \code{level} is in cd/\eqn{\mbox{m}^2}{m^2}, and is rounded to the 
+    \code{level} are in cd/\eqn{\mbox{m}^2}{m^2} in the range 0.03 to 3183,
                 nearest one tenth of a dB for display.
 
-    \code{color} is ignored. Use \code{opiInitialise()} to alter stimulus color.
+    \code{size} is in degrees, but is rounded to the nearest Goldmann Size I..V for display.
+
+    \code{color} one of 
+        \code{.KowaAP7000Env$COLOR_WHITE},
+        \code{.KowaAP7000Env$COLOR_GREEN},
+        \code{.KowaAP7000Env$COLOR_BLUE}, and 
+        \code{.KowaAP7000Env$COLOR_RED}.
 }
 }
 

@@ -17,7 +17,7 @@ makeStim <- function(db, n) {
 require(OPI)
 choose("KowaAP7000")
 
-opiInitialise(ip="192.168.1.7", port=44965, mode=.KowaAP7000Env$MODE_WoW)
+opiInitialise(ip="192.168.1.7", port=44965)
 
 print(opiPresent(stim=makeStim(10,0), nextStim=NULL))
 

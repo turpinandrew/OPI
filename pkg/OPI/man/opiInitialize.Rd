@@ -114,17 +114,14 @@ opiInitialise(...)
     }
 }
 \subsection{KowaAP7000}{
-    \code{opiInitialize(ip, port, mode)}
+    \code{opiInitialize(ip, port)}
 
     If the chosen OPI implementation is \code{KowaAP7000}, then you must 
-    specify the IP address and port of the AP 7000, and the mode.
+    specify the IP address and port of the AP-7000 server.
 
-    \code{ipAddress} is the IP address of the AP 7000 as a string.
+    \code{ipAddress} is the IP address of the AP-7000 server as a string.
 
-    \code{port} is the TCP/IP port of the AP 7000 as a number.
-
-    \code{mode} must be either \code{.KowaAP7000Env$MODE_WoW} for white-on-white 
-        perimetry, or \code{.KowaAP7000Env$MODE_BoY} for blue-on-yellow perimetry.
+    \code{port} is the TCP/IP port of the AP-7000 server as a number.
 }
 }
 
@@ -144,6 +141,10 @@ to change the background and stimulus colors.
 Returns NULL if successful, or an Octopus 600 error code
 
 The default background and stimulus setup is to white-on-white perimetry.
+}
+
+\subsection{Kowa AP-7000}{
+Always returns NULL. 
 }
 
 }
@@ -210,9 +211,9 @@ if (!is.null(opiInitialize(
 }
 
 \dontrun{
-    # Set up the Kowa AP 7000
+    # Set up the Kowa AP-7000
 chooseOpi("KowaAP7000")
-if (!is.null(opiInitialize(ip="192.168.1.7", port=44965, mode=.KowaAP7000Env$MODE_WoW)))
+if (!is.null(opiInitialize(ip="192.168.1.7", port=44965)))
     stop("opiInitialize failed")
 }
 }

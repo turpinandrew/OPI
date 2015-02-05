@@ -77,3 +77,7 @@ OPI 2.1
  - small bug fix in O900 client
  - moved to a client-server model for Octopus 900 if stim=NULL for opiPresent
  - added fourTwo procedure
+
+OPI 2.2
+ - added more Kowa functionality
+ - fixed stim==NULL bug on O900 client

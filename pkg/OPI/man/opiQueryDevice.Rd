@@ -19,6 +19,11 @@ opiQueryDevice(...)
 If the chosen OPI is \code{Octopus600}, then this function returns 
 information about the patient. See the Value section for details.
 }
+\subsection{KowaAP7000}{
+If the chosen OPI is \code{KowaAP7000}, then this function returns 
+the current location of the pupil.
+See the Value section for details.
+}
 }
 \value{
 Returns implementation dependant data.
@@ -37,6 +42,16 @@ Returns a list of 10 items:
 \item pupilPositionYRight [in px]
 }
 }
+
+\subsection{KowaAP7000}{
+Returns a list of 2 items:
+\itemize{
+\item \code{pupilX}, the x-coordinate of the pupil position in pixels.
+\item \code{pupily}, the y-coordinate of the pupil position in pixels.
+}
+It also prints a list of constants that OPI knows about for the AP-7000.
+}
+
 }
 \references{
 Please cite:

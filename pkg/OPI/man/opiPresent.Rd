@@ -122,6 +122,12 @@ If the chosen OPI implementation is \code{Octopus600}, then nextStim is ignored.
 as set in \code{opiInitialize}, answer codes describing patient state may arise (see \code{answer} field in the Value section).
 }
 
+\subsection{KowaAP7000}{
+
+\code{opiPresent(stim, nextStim=NULL)}
+If the chosen OPI implementation is \code{KowaAP7000}, then nextStim is ignored. 
+}
+
 
 }
 \value{
@@ -166,10 +172,10 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
     \item 514 = Fast Eye movements during stimulus presentation
   }
 }
-\item{xs}{Only returned for KowaAP7000 and an opiStaticStimulus. 
-          List of x coordinates of pupil during presentation.}
-\item{ys}{Only returned for KowaAP7000 and an opiStaticStimulus. 
-          List of y coordinates of pupil during presentation.}
+\item{pupilX}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+          x-coordinate of pupil in pixels during presentation.}
+\item{pupilY}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+          y-coordinate of pupil in pixels during presentation.}
 \item{x}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 
           x coordinate of stimuli when button is pressed.}
 \item{y}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 

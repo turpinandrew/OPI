@@ -181,20 +181,19 @@ octo900.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPres
 setGeneric("octo900.opiPresent")
 
 octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
+    if (is.null(stim)) 
+        return(list(err=0))
+
     if(min(abs(GOLDMANN - stim$size)) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
     msg <- "OPI_PRESENT_STATIC "
-    if (is.null(stim)) {
-        return(list(err=0))
-    } else {
-        msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
-        msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
-        msg <- paste(msg, stim$duration)
-	      msg <- paste(msg, stim$responseWindow)
-        if (!is.null(nextStim)) {
-            msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
-        }
+    msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
+    msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
+    msg <- paste(msg, stim$duration)
+	  msg <- paste(msg, stim$responseWindow)
+    if (!is.null(nextStim)) {
+        msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
     }
 
     writeLines(msg, .Octopus900Env$socket)
@@ -275,21 +274,19 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 # If stim is null, always return 0 status.
 ###########################################################################
 octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
+    if (is.null(stim)) 
+        return(list(err=0))
 
     if(min(abs(GOLDMANN - stim$size)) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
     msg <- "OPI_PRESENT_TEMPORAL "
-    if (is.null(stim)) {
-        return(list(err=0))
-    } else {
-        msg <- paste(c(msg, stim$x * 10.0, stim$y * 10.0, stim$rate), collapse=" ")
-        msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
-        msg <- paste(msg, stim$duration)
-        msg <- paste(msg, stim$responseWindow)
-        if (!is.null(nextStim)) {
-            msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
-        }
+    msg <- paste(c(msg, stim$x * 10.0, stim$y * 10.0, stim$rate), collapse=" ")
+    msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
+    msg <- paste(msg, stim$duration)
+    msg <- paste(msg, stim$responseWindow)
+    if (!is.null(nextStim)) {
+        msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
     }
 
     writeLines(msg, .Octopus900Env$socket)
@@ -320,6 +317,9 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 # If stim is null, always return 0 status.
 ########################################## 
 octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
+    if (is.null(stim)) 
+        return(list(err=0))
+
         # convert sizes to GOLDMANN
      stim$sizes <- sapply(stim$sizes, function(s) {
          i <- which.min(abs(GOLDMANN - s))
@@ -330,23 +330,19 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
      })
 
     msg <- "OPI_PRESENT_KINETIC "
-    if (is.null(stim)) {
-        return(list(err=0))
-    } else {
-        xs <- xy.coords(stim$path)$x
-        ys <- xy.coords(stim$path)$y
-        msg <- paste(c(msg, length(xs), xs, ys), collapse=" ")
-        msg <- paste(c(msg, sapply(stim$levels, cdTodb, maxStim=4000/pi)), collapse=" ")
-        msg <- paste(c(msg, stim$sizes), collapse=" ")
-        
-          # convert seconds/degree into total time for path segment in seconds
-        pathLengths <- NULL
-        for(i in 2:length(xs)) {
-          d <- sqrt((xs[i]-xs[i-1])^2 + (ys[i]-ys[i-1]^2))
-          stim$speeds[i-1] <- d/stim$speeds[i-1]
-        }
-        msg <- paste(c(msg, stim$speeds), collapse=" ")  
+    xs <- xy.coords(stim$path)$x
+    ys <- xy.coords(stim$path)$y
+    msg <- paste(c(msg, length(xs), xs, ys), collapse=" ")
+    msg <- paste(c(msg, sapply(stim$levels, cdTodb, maxStim=4000/pi)), collapse=" ")
+    msg <- paste(c(msg, stim$sizes), collapse=" ")
+    
+      # convert seconds/degree into total time for path segment in seconds
+    pathLengths <- NULL
+    for(i in 2:length(xs)) {
+      d <- sqrt((xs[i]-xs[i-1])^2 + (ys[i]-ys[i-1]^2))
+      stim$speeds[i-1] <- d/stim$speeds[i-1]
     }
+    msg <- paste(c(msg, stim$speeds), collapse=" ")  
     
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
