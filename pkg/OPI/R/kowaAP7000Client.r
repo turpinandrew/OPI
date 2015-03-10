@@ -99,7 +99,7 @@ kowaAP7000.opiInitialize <- function(ip="127.0.0.1", port=50001) {
 #
 # Return a list of 
 #	err  = string message
-#	seen = 1 if seen, 0 otherwise
+#	seen = TRUE if seen, FALSE otherwise
 #	time = reaction time
 #   xs = list of x-coordinates of pupil position during presentation
 #   ys = list of y-coordinates of pupil position during presentation

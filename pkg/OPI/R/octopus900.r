@@ -196,7 +196,7 @@ octo900.opiInitialize <- function(eyeSuiteJarLocation=NA, eyeSuiteSettingsLocati
 #
 # Return a list of 
 #	err  = string message
-#	seen = 1 if seen, 0 otherwise
+#	seen = TRUE if seen, FALSE otherwise
 #	time = reaction time
 ###########################################################################
 octo900.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresent") }
@@ -233,7 +233,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
     return(list(
 	    err =.jcall(ret, "S", "getErr"), 
-	    seen=ifelse(.jcall(ret, "I", "getSeen") == 0, 0, 1),
+	    seen=ifelse(.jcall(ret, "I", "getSeen") == 0, FALSE, TRUE),
 	    time=.jcall(ret, "I", "getTime"),
 	    frames=NA,#.jcall(ret, "[I", "getFrameInt"),
         numFrames=.jcall(ret, "I", "getNumFrames"),
@@ -250,7 +250,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 #
 # Return a list of 
 #	err  = string message
-#	seen = 1 if seen, 0 otherwise
+#	seen = TRUE if seen, FALSE otherwise
 #	time = reaction time
 ###########################################################################
 octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
@@ -281,13 +281,14 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
     return(list(
 	    err =.jcall(ret, "S", "getErr"), 
-	    seen=ifelse(.jcall(ret, "I", "getSeen") == 0, 0, 1),
+	    seen=ifelse(.jcall(ret, "I", "getSeen") == 0, FALSE, TRUE),
 	    time=.jcall(ret, "I", "getTime")
 	))
 
 }#opiPresent.opiTemporalStimulus()
 
 ########################################## TO DO
+#	seen = TRUE if seen, FALSE otherwise
 octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     if (is.null(stim)) {
         stimObj <- .jnull("opi/OpiTemporalStimulus")
@@ -327,7 +328,7 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 
     return(list(
 	    err =.jcall(ret, "S", "getErr"), 
-	    seen=ifelse(.jcall(ret, "I", "getSeen") == 0, 0, 1),
+	    seen=ifelse(.jcall(ret, "I", "getSeen") == 0, FALSE, TRUE),
 	    time=.jcall(ret, "I", "getTime")
 	))
 
