@@ -117,7 +117,7 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
                                   eye=NA, gazeFeed=0, bigWheel=FALSE) {
     assign("gazeFeed", gazeFeed, envir=.Octopus900Env)
 
-    if (bigWheel) {
+    if (!bigWheel) {
         assign("GOLDMANN", c(6.5, 13, 26, 52, 104) / 60, envir=.Octopus900Env)
     } else {
         mm <- c(0.125,0.25,0.5,1,1.41,2,2.83,4,5.66,8,11.3,16,22.6,32,64,128,256)
