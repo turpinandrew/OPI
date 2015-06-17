@@ -64,7 +64,8 @@ setupBackgroundConstants <- function() {
             warning(paste("Cannot set",cName,"constant for the O900."))
         } else {
             assign(cName, as.double(res), envir = .Octopus900Env) 
-            assign("constList", c(.Octopus900Env$constList, list(list(cName, as.double(res)))), envir = .Octopus900Env)
+            assign("constList", c(.Octopus900Env$constList, list(list(cName, as.double(res)))), 
+                    envir = .Octopus900Env)
         }
     }
 
@@ -97,25 +98,13 @@ setupBackgroundConstants <- function() {
     assign("MET_COL_WY", .Octopus900Env$MET_COL_WHITE_YELLOW, envir = .Octopus900Env)
 }
 
-
-###################################################################
-# Goldmann target sizes in degrees
-###################################################################
-GOLDMANN <- c(6.5, 13, 26, 52, 104) / 60
-
-
-    # uncomment for Tony's big wheel
-#mm <- c(0.125,0.25,0.5,1,1.41,2,2.83,4,5.66,8,11.3,16,22.6,32,64,128,256)
-#ind <- c(32,28,31,26,30,29,27,24,25,23,21,22,39,38,20,37,36)
-#GOLDMANN <- rep(NA,39)
-#GOLDMANN[ind] <- (sqrt(mm/pi)*180/pi/149.1954)
-
 #######################################################################
 # INPUT: 
 #   serverPort               = port number on which server is listening
 #   eyeSuiteSettingsLocation = dir name containing EyeSuite settings
 #   eye                      = "right" or "left"
 #   gazeFeed                 = 0 (none), 1 (single frame), 2 (all frames with *)
+#   bigWheel                 = FALSE (standard machine), TRUE for modified apeture wheel
 #
 #   Both input dirs should INCLUDE THE TRAILING SLASH.
 #
@@ -124,8 +113,19 @@ GOLDMANN <- c(6.5, 13, 26, 52, 104) / 60
 # @return 2 if failed to make ready
 #
 #######################################################################
-octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, eye=NA, gazeFeed=0) {
-    assign("gazeFeed", gazeFeed, envir=.OpiEnv)
+octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
+                                  eye=NA, gazeFeed=0, bigWheel=FALSE) {
+    assign("gazeFeed", gazeFeed, envir=.Octopus900Env)
+
+    if (bigWheel) {
+        assign("GOLDMANN", c(6.5, 13, 26, 52, 104) / 60, envir=.Octopus900Env)
+    } else {
+        mm <- c(0.125,0.25,0.5,1,1.41,2,2.83,4,5.66,8,11.3,16,22.6,32,64,128,256)
+        ind <- c(32,28,31,26,30,29,27,24,25,23,21,22,39,38,20,37,36)
+        GOLDMANN <- rep(NA,39)
+        GOLDMANN[ind] <- (sqrt(mm/pi)*180/pi/149.1954)
+        assign("GOLDMANN", GOLDMANN, envir=.Octopus900Env)
+    }
 
     cat("Looking for server... ")
     suppressWarnings(tryCatch(    
@@ -184,12 +184,12 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (is.null(stim)) 
         return(list(err=0))
 
-    if(min(abs(GOLDMANN - stim$size)) != 0)
+    if(min(abs(.Octopus900Env$GOLDMANN - stim$size)) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
     msg <- "OPI_PRESENT_STATIC "
     msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
-    msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
+    msg <- paste(msg, (which.min(abs(.Octopus900Env$GOLDMANN - stim$size))))
     msg <- paste(msg, stim$duration)
 	  msg <- paste(msg, stim$responseWindow)
     if (!is.null(nextStim)) {
@@ -207,7 +207,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
 
 
-    if (.OpiEnv$gazeFeed==0) {
+    if (.Octopus900Env$gazeFeed==0) {
       return(list(
         err=err,
         seen=strtoi(s[2]),
@@ -221,7 +221,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
 
 
-    if (.OpiEnv$gazeFeed==1) {
+    if (.Octopus900Env$gazeFeed==1) {
       return(list(
         err=err,
         seen=strtoi(s[2]),
@@ -235,7 +235,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
 
 
-    if (.OpiEnv$gazeFeed==2) {
+    if (.Octopus900Env$gazeFeed==2) {
       #frames <- strsplit(s[14], "###", fixed=TRUE)[[1]]
       #for (i in 1:length(frames)) {
       #  frames[i] <- strtoi(strsplit(frames[i],",",fixed=T)[[1]])
@@ -277,12 +277,12 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     if (is.null(stim)) 
         return(list(err=0))
 
-    if(min(abs(GOLDMANN - stim$size)) != 0)
+    if(min(abs(.Octopus900Env$GOLDMANN - stim$size)) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
     msg <- "OPI_PRESENT_TEMPORAL "
     msg <- paste(c(msg, stim$x * 10.0, stim$y * 10.0, stim$rate), collapse=" ")
-    msg <- paste(msg, (which.min(abs(GOLDMANN - stim$size))))
+    msg <- paste(msg, (which.min(abs(.Octopus900Env$GOLDMANN - stim$size))))
     msg <- paste(msg, stim$duration)
     msg <- paste(msg, stim$responseWindow)
     if (!is.null(nextStim)) {
@@ -322,8 +322,8 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 
         # convert sizes to GOLDMANN
      stim$sizes <- sapply(stim$sizes, function(s) {
-         i <- which.min(abs(GOLDMANN - s))
-         if(abs(GOLDMANN[i] - s) > 0.000001) {
+         i <- which.min(abs(.Octopus900Env$GOLDMANN - s))
+         if(abs(.Octopus900Env$GOLDMANN[i] - s) > 0.000001) {
              warning(paste("opiPresent: Rounding stimulus size",s,"to nearest Goldmann size"))
          } 
          return(i)

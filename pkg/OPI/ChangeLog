@@ -81,3 +81,4 @@ OPI 2.1
 OPI 2.2
  - added more Kowa functionality
  - fixed stim==NULL bug on O900 client
+ - added bigWheel=TRUE in opiInitialise for octo900
