@@ -18,7 +18,7 @@ opiClose(...)
 %}
 
 \value{
-Returns NULL if initialization succeeded, 
+Returns NULL if close succeeded, 
 otherwise an implementation dependant error.
 }
 \references{
