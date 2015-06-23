@@ -184,7 +184,7 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (is.null(stim)) 
         return(list(err=0))
 
-    if(min(abs(.Octopus900Env$GOLDMANN - stim$size)) != 0)
+    if(min(abs(.Octopus900Env$GOLDMANN - stim$size), na.rm=TRUE) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
     msg <- "OPI_PRESENT_STATIC "
