@@ -169,6 +169,10 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
 # INPUT: 
 #   As per OPI spec
 #   stim$color must be same as that initialised by opiSetBackground or opiInitialize
+#   If F310 is FALSE, response is taken from internal button 
+#        (sends OPI_PRESENT_STATIC to server)
+#   If F310 is TRUE , response is taken from external controller
+#        (sends OPI_PRESENT_STATIC_F310 to server)
 #
 # Return a list of 
 #	err  = string message
@@ -177,17 +181,17 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
 # 
 # If stim is null, always return 0 status.
 ###########################################################################
-octo900.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresent") }
-setGeneric("octo900.opiPresent")
-
-octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
+octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     if (is.null(stim)) 
         return(list(err=0))
 
     if(min(abs(.Octopus900Env$GOLDMANN - stim$size), na.rm=TRUE) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
-    msg <- "OPI_PRESENT_STATIC "
+    if (F310)
+        msg <- "OPI_PRESENT_STATIC_F310 "
+    else
+        msg <- "OPI_PRESENT_STATIC "
     msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
     msg <- paste(msg, (which.min(abs(.Octopus900Env$GOLDMANN - stim$size))))
     msg <- paste(msg, stim$duration)
@@ -258,6 +262,23 @@ octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 	            #frames=frames
       ))
     }#gazeFeed=2
+}
+
+###########################################################################
+# Set up generic calls based on type of stim
+###########################################################################
+octo900.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresent") }
+setGeneric("octo900.opiPresent")
+
+octo900.opiPresentF310 <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresentF310") }
+setGeneric("octo900.opiPresentF310")
+
+octo900.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
+    return(octo900.presentStatic(stim, nextStim, FALSE))
+}
+
+octo900.opiPresentF310.opiStaticStimulus <- function(stim, nextStim) {
+    return(octo900.presentStatic(stim, nextStim, TRUE))
 }
 
  

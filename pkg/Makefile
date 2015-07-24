@@ -55,5 +55,5 @@ install:
 	R CMD INSTALL OPI_$(OPI_VERSION).tar.gz
 
 OPI.Rcheck: $(OPI_FILES)
-	R CMD check OPI
+	R CMD check --as-cran OPI
 

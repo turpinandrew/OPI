@@ -82,3 +82,6 @@ OPI 2.2
  - added more Kowa functionality, fixed underscore problem
  - fixed stim==NULL bug on O900 client
  - added bigWheel=TRUE in opiInitialise for octo900
+
+OPI 2.3
+ - added support for F310 Logitech Controller for responses to static stimuli
