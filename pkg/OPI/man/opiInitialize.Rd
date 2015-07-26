@@ -70,7 +70,7 @@ opiInitialise(...)
     \code{display} and \code{maxStim} is as for SimHenson.
 }
 \subsection{Octopus900}{
-    \code{opiInitialize(eyeSuiteSettingsLocation, eye, gazeFeed=0)}
+    \code{opiInitialize(eyeSuiteSettingsLocation, eye, gazeFeed=0, bigWheel=FALSE)}
 
     If the chosen OPI implementation is \code{Octopus900}, then you must 
     specify a directory and the eye to be tested.
@@ -89,6 +89,12 @@ opiInitialise(...)
     which are the frames captured while a static stimulus is displayed. 
     If \code{gazeFeed} is greater than zero, 
     a Java driven window appears containing the live feed from the Octopus 900 gaze camera.
+
+    \code{bigWheel} is \code{FALSE} for a standard Octopus 900 machine. Some research machines
+    are fitted with an alternate aperture wheel that has 24 sizes, which are accessed
+    with \code{bigWheel} is \code{TRUE}. 
+    The mapping from size to 'hole on wheel' is hard coded; see code for
+    details.
 }
 \subsection{Octopus600}{
     \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}

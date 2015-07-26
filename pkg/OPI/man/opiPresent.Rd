@@ -173,9 +173,13 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
   }
 }
 \item{pupilX}{Only returned for KowaAP7000 and an opiStaticStimulus. 
-          x-coordinate of pupil in pixels during presentation.}
+          x-coordinate of centre of pupil in pixels during presentation.}
 \item{pupilY}{Only returned for KowaAP7000 and an opiStaticStimulus. 
-          y-coordinate of pupil in pixels during presentation.}
+          y-coordinate of centre of pupil in pixels during presentation.}
+\item{purkinjeX}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+          x-coordinate of centre of Purkinje Image in pixels during presentation.}
+\item{purkinjeY}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+          y-coordinate of centre of Purkinje Image in pixels during presentation.}
 \item{x}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 
           x coordinate of stimuli when button is pressed.}
 \item{y}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 

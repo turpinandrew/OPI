@@ -149,7 +149,7 @@ octo900.opiInitialize <- function(eyeSuiteJarLocation=NA, eyeSuiteSettingsLocati
     if (eye != "left" && eye != "right")
         stop("The eye argument of opiInitialize must be 'left' or 'right'")
 
-    #options("java.parameters"="-Xmx1024m -Xss64m –verbose:class")
+    #options("java.parameters"="-Xmx1024m -Xss64m -verbose:class")
     
     hsJars <- c(
                 #paste("C:/opencv-249/build/java/", "opencv-249.jar", sep=""),
