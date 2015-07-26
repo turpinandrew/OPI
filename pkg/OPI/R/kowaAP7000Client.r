@@ -67,7 +67,7 @@ if (!exists(".KowaAP7000Env")) {
 # @return NULL if succeed
 # @return 1    server not found/ready at the ip+port provided
 #######################################################################
-kowaAP7000.opiInitialize <- function(ip="127.0.0.1", port=50001) {
+kowaAP7000.opiInitialize <- function(ip= "192.168.1.2", port=44965) {
     cat("Looking for server... ")
     suppressWarnings(tryCatch(    
         v <- socketConnection(host = ip, port,
@@ -87,9 +87,13 @@ kowaAP7000.opiInitialize <- function(ip="127.0.0.1", port=50001) {
     )
 
     assign("socket", socket, envir = .KowaAP7000Env)
-    msg <- paste0("OPI_SET_MODE")
+    msg <- paste0("OPI-SET-MODE\r")
     writeLines(msg, socket)
     
+    res <- readLines(socket, n=1)
+    if (res != "OK")
+      stop('Trouble initialising Ap-7000 (perhaps already initialised?)')
+                                
 	return(NULL)
 }
 
@@ -136,15 +140,18 @@ kowaAP7000.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (!is.null(nextStim)) 
         warning("opiPresent: nextStim ignored")
 
-    msg <- "OPI_PRESENT_STATIC "
+    msg <- "OPI-PRESENT-STATIC"
     msg <- paste(msg, stim$x, stim$y, cdTodb(stim$level, 10000/pi))
     msg <- paste(msg, (which.min(abs(.KowaAP7000Env$SIZES_DEGREES - stim$size))))
     msg <- paste(msg, stim$color)
     msg <- paste(msg, stim$duration)
-	msg <- paste(msg, stim$responseWindow)
+	  msg <- paste(msg, stim$responseWindow)
+    msg <- paste0(msg, "\r")
+    print(msg)
 
     writeLines(msg, .KowaAP7000Env$socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
+    print(res)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
 
     return(list(
@@ -234,7 +241,7 @@ kowaAP7000.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) 
 #                 .KowaAP7000Env$BACKGROUND_YELLOW
 ###########################################################################
 kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
-    if (is.na(fixation)) {
+    if (!is.na(fixation)) {
         .KowaAP7000Env$minCheck(fixation, 0, "Fixation")
         .KowaAP7000Env$maxCheck(fixation, 3, "Fixation")
 
@@ -264,7 +271,7 @@ kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     if (!is.na(color)) {
         .KowaAP7000Env$minCheck(color, 0, "Background color")
         .KowaAP7000Env$maxCheck(color, 1, "Background color")
-        msg <- paste("OPI_SET_BACKGROUND", color)
+        msg <- paste0("OPI-SET-BACKGROUND ", color,"\r")
         writeLines(msg, .KowaAP7000Env$socket)
     }
         
