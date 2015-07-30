@@ -73,11 +73,7 @@ if (!exists(".KowaAP7000Env")) {
 # @return NULL if succeed
 # @return 1    server not found/ready at the ip+port provided
 #######################################################################
-<<<<<<< HEAD
 kowaAP7000.opiInitialize <- function(ip= "192.168.1.2", port=44965) {
-=======
-kowaAP7000.opiInitialize <- function(ip="192.168.1.2", port=44965) {
->>>>>>> 5e7f564e320c63bf7fd9c409ae58fb3373600886
     cat("Looking for server... ")
     suppressWarnings(tryCatch(    
         v <- socketConnection(host = ip, port,
@@ -97,11 +93,7 @@ kowaAP7000.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     )
 
     assign("socket", socket, envir = .KowaAP7000Env)
-<<<<<<< HEAD
     msg <- paste0("OPI-SET-MODE\r")
-=======
-    msg <- "OPI-SET-MODE\r"
->>>>>>> 5e7f564e320c63bf7fd9c409ae58fb3373600886
     writeLines(msg, socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
 cat("ap7000 sends back>>>")
@@ -166,24 +158,14 @@ kowaAP7000.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     msg <- paste(msg, (which.min(abs(.KowaAP7000Env$SIZES_DEGREES - stim$size))))
     msg <- paste(msg, stim$color)
     msg <- paste(msg, stim$duration)
-<<<<<<< HEAD
-	  msg <- paste(msg, stim$responseWindow)
-    msg <- paste0(msg, "\r")
-    print(msg)
-
-    writeLines(msg, .KowaAP7000Env$socket)
-    res <- readLines(.KowaAP7000Env$socket, n=1)
-    print(res)
-=======
-	msg <- paste(msg, stim$responseWindow)
-	msg <- paste(msg, "\r", sep="")
+    msg <- paste(msg, stim$responseWindow)
+    msg <- paste(msg, "\r", sep="")
 
     writeLines(msg, .KowaAP7000Env$socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
 cat("ap7000 sends back>>>")
 cat(res)
 cat("<<<")
->>>>>>> 5e7f564e320c63bf7fd9c409ae58fb3373600886
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
 
     return(list(
@@ -307,11 +289,7 @@ kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     if (!is.na(color)) {
         .KowaAP7000Env$minCheck(color, 0, "Background color")
         .KowaAP7000Env$maxCheck(color, 1, "Background color")
-<<<<<<< HEAD
         msg <- paste0("OPI-SET-BACKGROUND ", color,"\r")
-=======
-        msg <- paste("OPI-SET-BACKGROUND ", color, "\r", sep="")
->>>>>>> 5e7f564e320c63bf7fd9c409ae58fb3373600886
         writeLines(msg, .KowaAP7000Env$socket)
         .KowaAP7000Env$checkOK("opiSetBackground color")
     }
