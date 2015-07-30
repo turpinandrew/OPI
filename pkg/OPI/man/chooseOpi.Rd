@@ -28,7 +28,7 @@ chooseOpi(opiImplementation)
                 psychometric function with 
                 standard deviation supplied in opiInitialize(). 
     \item\code{"Octopus900"} for interfacing with the Octopus 900. 
-    \item\code{"Octopus900F310"} for interfacing with the Octopus 900 using Logitech F310 controller.
+    \item\code{"Octopus900F310"} for interfacing with the Octopus 900 using Logitech F310 controller. 
     \item\code{"Octopus600"} for interfacing with the Octopus 600. 
     \item\code{"HEP"}        not working so well in new HEPs.
     \item\code{"KowaAP7000"} for interfacing with Kowa AP-7000.
@@ -36,7 +36,7 @@ chooseOpi(opiImplementation)
     }
 }
 }
-\value{ Returns TRUE if successful, FALSE otherwise.}
+\value{Returns TRUE if successful, FALSE otherwise.}
 
 \references{
 David B. Henson, Shaila Chaudry, Paul H. Artes, E. Brian Faragher, and

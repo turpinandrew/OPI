@@ -50,6 +50,13 @@ The list must contain the following elements.
     \code{color} is ignored. Use \code{opiSetBackground()} to alter stimulus color.
 }
 
+\subsection{Octopus 900 F310 Controller}{
+    As for the Octopus 900, but a \code{responseWindow} of -1
+    means that the Octopus 900 server will wait until 
+    either the L and R button is pressed in the controller until
+    returning.
+}
+
 \subsection{Kowa AP 7000}{
     \code{x} and \code{y} are in degrees. (precision?)
 
