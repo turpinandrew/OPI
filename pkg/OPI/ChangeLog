@@ -85,3 +85,4 @@ OPI 2.2
 
 OPI 2.3
  - added support for F310 Logitech Controller for responses to static stimuli
+ - added buzzer support for O900

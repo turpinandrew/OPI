@@ -105,6 +105,7 @@ setupBackgroundConstants <- function() {
 #   eye                      = "right" or "left"
 #   gazeFeed                 = 0 (none), 1 (single frame), 2 (all frames with *)
 #   bigWheel                 = FALSE (standard machine), TRUE for modified apeture wheel
+#   buzzer                   = 0 (no buzzer),1,2, 3 (max volume)
 #
 #   Both input dirs should INCLUDE THE TRAILING SLASH.
 #
@@ -114,7 +115,7 @@ setupBackgroundConstants <- function() {
 #
 #######################################################################
 octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
-                                  eye=NA, gazeFeed=0, bigWheel=FALSE) {
+                                  eye=NA, gazeFeed=0, bigWheel=FALSE, buzzer=0) {
     assign("gazeFeed", gazeFeed, envir=.Octopus900Env)
 
     if (!bigWheel) {
@@ -126,6 +127,9 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
         GOLDMANN[ind] <- (sqrt(mm/pi)*180/pi/149.1954)
         assign("GOLDMANN", GOLDMANN, envir=.Octopus900Env)
     }
+
+    if (buzzer < 0) buzzer <- 0
+    if (buzzer > 3) buzzer <- 3
 
     cat("Looking for server... ")
     suppressWarnings(tryCatch(    
@@ -153,7 +157,7 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
     )
 
     assign("socket", socket, envir = .Octopus900Env)
-    msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", gazeFeed)
+    msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", gazeFeed, " ", buzzer)
     writeLines(msg, socket)
     res <- readLines(socket, n=1)
     
