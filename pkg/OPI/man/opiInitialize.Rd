@@ -70,7 +70,7 @@ opiInitialise(...)
     \code{display} and \code{maxStim} is as for SimHenson.
 }
 \subsection{Octopus900}{
-    \code{opiInitialize(eyeSuiteSettingsLocation, eye, gazeFeed=0, bigWheel=FALSE)}
+    \code{opiInitialize(eyeSuiteSettingsLocation, eye, gazeFeed=0, bigWheel=FALSE),buzzer=0}
 
     If the chosen OPI implementation is \code{Octopus900}, then you must 
     specify a directory and the eye to be tested.
@@ -95,6 +95,9 @@ opiInitialise(...)
     with \code{bigWheel} is \code{TRUE}. 
     The mapping from size to 'hole on wheel' is hard coded; see code for
     details.
+
+    \code{buzzer} is the buzzer volume which can be one 
+     of 0 (no buzzer), 1, 2, or 3 (max volume).
 }
 \subsection{Octopus600}{
     \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
