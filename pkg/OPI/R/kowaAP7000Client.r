@@ -48,16 +48,20 @@ if (!exists(".KowaAP7000Env")) {
 
     # Utility functions for validating inputs
     .KowaAP7000Env$minCheck <- function(x, limit, txt) {
-        if (x < limit)
+        if (x < limit) {
+	    opiClose()
             stop(paste("opiPresent: ", txt, "is too small (minimum ", limit, ")"))
+	}
     }
     .KowaAP7000Env$maxCheck <- function(x, limit, txt) {
-        if (x > limit)
-        stop(paste("opiPresent: ", txt, "is too big (maximum ", limit, ")"))
+        if (x > limit) {
+	    opiClose()
+            stop(paste("opiPresent: ", txt, "is too big (maximum ", limit, ")"))
+	}
     }
     .KowaAP7000Env$checkOK <- function(txt) {
         res <- readLines(.KowaAP7000Env$socket, n=1)
-        cat("ap7000 sends back>>>", res, "<<<\n")
+        #cat("ap7000 sends back>>>", res, "<<<\n")
         if (res != "OK")
             warning(paste(txt, "did not return OK from AP-7000"))
     }
@@ -96,18 +100,11 @@ kowaAP7000.opiInitialize <- function(ip= "192.168.1.2", port=44965) {
     msg <- paste0("OPI-SET-MODE\r")
     writeLines(msg, socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
-cat("ap7000 sends back>>>")
-cat(res)
-cat("<<<")
 
     if (res != "OK")
         stop(paste("Trouble initialising AP-7000. OPI-SET-MODE returns ",res))
     
-    res <- readLines(socket, n=1)
-    if (res != "OK")
-      stop('Trouble initialising Ap-7000 (perhaps already initialised?)')
-                                
-	return(NULL)
+    return(NULL)
 }
 
 ###########################################################################
@@ -136,8 +133,10 @@ kowaAP7000.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (!is.element(stim$color, c(.KowaAP7000Env$COLOR_WHITE,
                                   .KowaAP7000Env$COLOR_GREEN,
                                   .KowaAP7000Env$COLOR_BLUE ,
-                                  .KowaAP7000Env$COLOR_RED  )))
+                                  .KowaAP7000Env$COLOR_RED  ))) {
+        opiClose()
         stop("opiPresent: stimulus color is not supported.")
+    }
 
     .KowaAP7000Env$minCheck(stim$x, -80, "Stimulus x")
     .KowaAP7000Env$maxCheck(stim$x,  80, "Stimulus x")
@@ -163,19 +162,20 @@ kowaAP7000.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
     writeLines(msg, .KowaAP7000Env$socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
-cat("ap7000 sends back>>>")
-cat(res)
-cat("<<<")
-    s <- strsplit(res, "|||", fixed=TRUE)[[1]]
+    s <- strsplit(res, " ", fixed=TRUE)[[1]]
+#cat("# got >>>",res,"from ap7000\n")
+
+    if (s[1] != "OK")
+        warning("opiPresent failed")
 
     return(list(
       err=NULL,
-      seen=ifelse(s[1] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
-      time=as.numeric(s[2]), 
-      pupilX=as.numeric(s[3]),
-      pupilY=as.numeric(s[4]),
-      purkinjeX=as.numeric(s[5]),
-      purkinjeY=as.numeric(s[6])
+      seen=ifelse(s[2] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
+      time=as.numeric(s[3]), 
+      pupilX=as.numeric(s[4]),
+      pupilY=as.numeric(s[5]),
+      purkinjeX=as.numeric(s[6]),
+      purkinjeY=as.numeric(s[7])
     ))
 }
 
@@ -203,17 +203,19 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
     if (!is.element(stim$colors[1], c(.KowaAP7000Env$COLOR_WHITE,
                                   .KowaAP7000Env$COLOR_GREEN,
                                   .KowaAP7000Env$COLOR_BLUE ,
-                                  .KowaAP7000Env$COLOR_RED  )))
+                                  .KowaAP7000Env$COLOR_RED  ))) {
+        opiClose()
         stop("opiPresent: stimulus color is not supported.")
+     }
 
     .KowaAP7000Env$minCheck(xy.coords(stim$path)$x[1], -80, "Start x")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)[1], 80, "Start x")
+    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$x[1], 80, "Start x")
     .KowaAP7000Env$minCheck(xy.coords(stim$path)$x[2], -80, "End x")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)[2], 80, "End x")
+    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$x[2], 80, "End x")
     .KowaAP7000Env$minCheck(xy.coords(stim$path)$y[1], -70, "Start y")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)[1], 65, "Start y")
+    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$y[1], 65, "Start y")
     .KowaAP7000Env$minCheck(xy.coords(stim$path)$y[2], -70, "End y")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)[2], 65, "End y")
+    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$y[2], 65, "End y")
     .KowaAP7000Env$minCheck(stim$levels[1],  10000/pi/10^5, "Stimulus level")
     .KowaAP7000Env$maxCheck(stim$levels[1],  10000/pi     , "Stimulus level")
     .KowaAP7000Env$minCheck(stim$speeds[1],  3, "Stimulus speed")
@@ -231,17 +233,21 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
     msg <- paste(msg, stim$colors[1])
     msg <- paste(msg, stim$speeds[1])
 	msg <- paste(msg, "\r", sep="")
-    
+   
+cat(">>>",msg,"<<<\n") 
     writeLines(msg, .KowaAP7000Env$socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
-    s <- strsplit(res, "|||", fixed=TRUE)[[1]]
+    s <- strsplit(res, " ", fixed=TRUE)[[1]]
+
+    if (s[1] != "OK")
+        warning("opiPresent Kinetic failed")
 
     return(list(
         err =NULL, 
-        seen=ifelse(s[1] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
+        seen=ifelse(s[2] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
         time=NA,
-        x=strtoi(s[2]),     # in degrees
-        y=strtoi(s[3])       # in degrees
+        x=strtoi(s[3]),     # in degrees
+        y=strtoi(s[4])       # in degrees
     ))
 }
 
@@ -249,6 +255,7 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
 # Not supported on AP 7000
 ###########################################################################
 kowaAP7000.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
+    opiClose()
     stop("opiPresent: Kowa AP 7000 does not support temporal stimuli")
 }#opiPresent.opiTemporalStimulus()
 
@@ -282,6 +289,7 @@ kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
             color <- .KowaAP7000Env$BACKGROUND_YELLOW
             warning("Can only have a 100 cd/m^2 background that is yellow")
         } else {
+            opiClose()
             stop("opiSetBackground: Can only have 10 cd/m^2 (white) or 100 cd/m^2 (yellow)")
         }
     }
@@ -317,10 +325,13 @@ kowaAP7000.opiQueryDevice <- function() {
 
     writeLines("OPI-GET-PUPILPOS\r", .KowaAP7000Env$socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
-    s <- strsplit(res, "|||", fixed=TRUE)[[1]]
+    s <- strsplit(res, " ", fixed=TRUE)[[1]]
+
+    if (s[1] != "OK")
+        warning("opiQueryDevice failed")
 
     return(list(
-        pupilX=strtoi(s[1]), 
-        pupilY=strtoi(s[2])       # in pixels
+        pupilX=strtoi(s[2]), 
+        pupilY=strtoi(s[3])       # in pixels
     ))
 }

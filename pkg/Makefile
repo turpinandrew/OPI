@@ -56,4 +56,5 @@ install:
 
 OPI.Rcheck: $(OPI_FILES)
 	R CMD check --as-cran OPI
+	#R CMD check OPI
 
