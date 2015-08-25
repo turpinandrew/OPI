@@ -97,7 +97,7 @@ opiInitialise(...)
     details.
 
     \code{buzzer} is the buzzer volume which can be one 
-     of 0 (no buzzer), 1, 2, or 3 (max volume).
+     of 0 (no buzzer), 1, 2, or 3 (max volume). The buzzer sounds before each presentation.
 }
 \subsection{Octopus600}{
     \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
