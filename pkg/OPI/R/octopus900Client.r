@@ -128,7 +128,7 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
         assign("GOLDMANN", GOLDMANN, envir=.Octopus900Env)
     }
 
-    if (buzzer < 0) buzzer <- 0
+    if (is.na(buzzer) || buzzer < 0) buzzer <- 0
     if (buzzer > 3) buzzer <- 3
 
     cat("Looking for server... ")
