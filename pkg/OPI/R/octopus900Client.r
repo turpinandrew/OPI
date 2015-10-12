@@ -43,6 +43,23 @@
 if (!exists(".Octopus900Env"))
     .Octopus900Env <- new.env()
 
+###################################################################
+# Send msg to a socket on port. Socket is only alive within this fn.
+###################################################################
+writeReadSocket <- function(msg, port) {
+    socket <- tryCatch(
+        socketConnection(host="localhost", port, open = "w+b", blocking = TRUE, timeout = 1000), 
+        error=function(e) stop(paste("Cannot connect to Octopus 900 on port", port))
+    )
+    on.exit(close(socket))
+
+    writeLines(msg, socket)
+
+    res <- readLines(socket, n=1)
+
+    return(res)
+}
+
 ###########################################################################
 # Get values for fixation, color and bg intensity constants
 # from EyeSuite classes, and set globals
@@ -58,8 +75,7 @@ setupBackgroundConstants <- function() {
     constList <- NULL
 
     getC <- function(cName) {
-        writeLines(paste("OPI_GET_CONSTANT", cName), .Octopus900Env$socket)
-        res <- readLines(.Octopus900Env$socket, n=1)
+        res <- writeReadSocket(paste("OPI_GET_CONSTANT", cName), .Octopus900Env$port)
         if (res == "OZ900Fail") {
             warning(paste("Cannot set",cName,"constant for the O900."))
         } else {
@@ -141,8 +157,9 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
         }
     ))
     close(v)
-    
     print("found server :)")
+    
+    assign("port", serverPort, envir = .Octopus900Env)
 
     if (is.na(eyeSuiteSettingsLocation))
         stop("You must specify the EyeSuite settings folder in your call to opiInitialize")
@@ -151,22 +168,15 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
     if (eye != "left" && eye != "right")
         stop("The eye argument of opiInitialize must be 'left' or 'right'")
 
-    socket <- tryCatch(
-        socketConnection(host="localhost", serverPort, open = "w+b", blocking = TRUE, timeout = 1000), 
-        error=function(e) stop(paste("Cannot connect to Octopus 900 on port", serverPort))
-    )
-
-    assign("socket", socket, envir = .Octopus900Env)
     msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", gazeFeed, " ", buzzer)
-    writeLines(msg, socket)
-    res <- readLines(socket, n=1)
+    res <- writeReadSocket(msg, serverPort)
     
     setupBackgroundConstants()
 
-	if (res == "0")
-		return(NULL)
-	else
-		return(res)
+    if (res == "0")
+        return(NULL)
+    else
+        return(res)
 }
 
 ###########################################################################
@@ -204,8 +214,8 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
         msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
     }
 
-    writeLines(msg, .Octopus900Env$socket)
-    res <- readLines(.Octopus900Env$socket, n=1)
+    res <- writeReadSocket(msg, .Octopus900Env$port)
+
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
     if (s[1] == "null") {
       err <- NULL
@@ -314,8 +324,7 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
         msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
     }
 
-    writeLines(msg, .Octopus900Env$socket)
-    res <- readLines(.Octopus900Env$socket, n=1)
+    res <- writeReadSocket(msg, .Octopus900Env$port)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
 
     if (s[1] == "null") {
@@ -369,8 +378,7 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     }
     msg <- paste(c(msg, stim$speeds), collapse=" ")  
     
-    writeLines(msg, .Octopus900Env$socket)
-    res <- readLines(.Octopus900Env$socket, n=1)
+    res <- writeReadSocket(msg, .Octopus900Env$port)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
 
     if (s[1] == "null") {
@@ -404,8 +412,8 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 octo900.opiSetBackground <- function(lum="NA", color="NA", fixation="NA", fixIntensity=50) {
 
     msg <- paste("OPI_SET_BACKGROUND", color, lum, fixation, fixIntensity)
-    writeLines(msg, .Octopus900Env$socket)
-    ret <- strtoi(readLines(.Octopus900Env$socket, n=1))
+    res <- writeReadSocket(msg, .Octopus900Env$port)
+    ret <- strtoi(res)
 
     if (ret == 0) {
         return(NULL)
@@ -418,8 +426,8 @@ octo900.opiSetBackground <- function(lum="NA", color="NA", fixation="NA", fixInt
 # return NULL on success (in fact, always!)
 ###########################################################################
 octo900.opiClose <- function() {
-    writeLines("OPI_CLOSE", .Octopus900Env$socket)
-    close(.Octopus900Env$socket)
+    res <- writeReadSocket("OPI_CLOSE", .Octopus900Env$port)
+
     return(NULL)
 }
 
