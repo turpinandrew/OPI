@@ -163,10 +163,10 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
     
     setupBackgroundConstants()
 
-	if (res == "0")
-		return(NULL)
-	else
-		return(res)
+    if (res == "0")
+        return(NULL)
+    else
+        return(res)
 }
 
 ###########################################################################
@@ -179,9 +179,9 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
 #        (sends OPI_PRESENT_STATIC_F310 to server)
 #
 # Return a list of 
-#	err  = string message
-#	seen = 1 if seen, 0 otherwise
-#	time = reaction time
+#    err  = string message
+#    seen = 1 if seen, 0 otherwise
+#    time = reaction time
 # 
 # If stim is null, always return 0 status.
 ###########################################################################
@@ -199,12 +199,13 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, 4000/pi) * 10.0)
     msg <- paste(msg, (which.min(abs(.Octopus900Env$GOLDMANN - stim$size))))
     msg <- paste(msg, stim$duration)
-	  msg <- paste(msg, stim$responseWindow)
+      msg <- paste(msg, stim$responseWindow)
     if (!is.null(nextStim)) {
         msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
     }
 
     writeLines(msg, .Octopus900Env$socket)
+    #Sys.sleep(1)
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
     if (s[1] == "null") {
@@ -249,21 +250,21 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
       #  frames[i] <- strtoi(strsplit(frames[i],",",fixed=T)[[1]])
       #}
       return(list(
-	               err=err, 
-	              seen=strtoi(s[2]),
-	              time=strtoi(s[3]),
-	         numFrames=strtoi(s[4]),
-	             times=strtoi(strsplit(s[5],",",fixed=T)[[1]]),
-	               ids=strtoi(strsplit(s[6],",",fixed=T)[[1]]),
-  	           stars=strtoi(strsplit(s[7],",",fixed=T)[[1]]),
-	             rings=strtoi(strsplit(s[8],",",fixed=T)[[1]]),
-	          diamters=strtoi(strsplit(s[9],",",fixed=T)[[1]]),
-   	          pupilX=strtoi(strsplit(s[10],",",fixed=T)[[1]]),
-	            pupilY=strtoi(strsplit(s[11],",",fixed=T)[[1]]),
-	    pupilMajorAxis=strtoi(strsplit(s[12],",",fixed=T)[[1]]),
-	    pupilMinorAxis=strtoi(strsplit(s[13],",",fixed=T)[[1]]),
+                   err=err, 
+                  seen=strtoi(s[2]),
+                  time=strtoi(s[3]),
+             numFrames=strtoi(s[4]),
+                 times=strtoi(strsplit(s[5],",",fixed=T)[[1]]),
+                   ids=strtoi(strsplit(s[6],",",fixed=T)[[1]]),
+                 stars=strtoi(strsplit(s[7],",",fixed=T)[[1]]),
+                 rings=strtoi(strsplit(s[8],",",fixed=T)[[1]]),
+              diamters=strtoi(strsplit(s[9],",",fixed=T)[[1]]),
+                 pupilX=strtoi(strsplit(s[10],",",fixed=T)[[1]]),
+                pupilY=strtoi(strsplit(s[11],",",fixed=T)[[1]]),
+        pupilMajorAxis=strtoi(strsplit(s[12],",",fixed=T)[[1]]),
+        pupilMinorAxis=strtoi(strsplit(s[13],",",fixed=T)[[1]]),
           firstFrame=strtoi(strsplit(s[14],",",fixed=T)[[1]])
-	            #frames=frames
+                #frames=frames
       ))
     }#gazeFeed=2
 }
@@ -292,9 +293,9 @@ octo900.opiPresentF310.opiStaticStimulus <- function(stim, nextStim) {
 #   stim$color must be same as that initialised by opiSetBackground or opiInitialize
 #
 # Return a list of 
-#	err  = string message
-#	seen = 1 if seen, 0 otherwise
-#	time = reaction time
+#    err  = string message
+#    seen = 1 if seen, 0 otherwise
+#    time = reaction time
 #
 # If stim is null, always return 0 status.
 ###########################################################################
