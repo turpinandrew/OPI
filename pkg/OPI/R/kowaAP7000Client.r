@@ -163,7 +163,6 @@ kowaAP7000.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     writeLines(msg, .KowaAP7000Env$socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
-#cat("# got >>>",res,"from ap7000\n")
 
     if (s[1] != "OK")
         warning("opiPresent failed")
@@ -234,7 +233,6 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
     msg <- paste(msg, stim$speeds[1])
 	msg <- paste(msg, "\r", sep="")
    
-cat(">>>",msg,"<<<\n") 
     writeLines(msg, .KowaAP7000Env$socket)
     res <- readLines(.KowaAP7000Env$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
@@ -246,8 +244,8 @@ cat(">>>",msg,"<<<\n")
         err =NULL, 
         seen=ifelse(s[2] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
         time=NA,
-        x=strtoi(s[3]),     # in degrees
-        y=strtoi(s[4])       # in degrees
+        x=as.numeric(s[3]),     # in degrees
+        y=as.numeric(s[4])       # in degrees
     ))
 }
 
