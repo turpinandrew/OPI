@@ -52,3 +52,9 @@ S3method(kowaAP7000.opiPresent, opiStaticStimulus)
 S3method(kowaAP7000.opiPresent, opiKineticStimulus)
 S3method(kowaAP7000.opiPresent, opiTemporalStimulus)
 export(.KowaAP7000Env)
+
+
+importFrom("grDevices", "dev.cur", "grey", "xy.coords")
+importFrom("graphics", "grid", "par", "plot", "points", "rect")
+importFrom("stats", "pnorm", "runif")
+importFrom("utils", "head", "tail")

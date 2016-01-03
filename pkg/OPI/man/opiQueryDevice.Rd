@@ -44,10 +44,12 @@ Returns a list of 10 items:
 }
 
 \subsection{KowaAP7000}{
-Returns a list of 2 items:
+Returns a list of 4 items:
 \itemize{
 \item \code{pupilX}, the x-coordinate of the pupil position in pixels.
-\item \code{pupily}, the y-coordinate of the pupil position in pixels.
+\item \code{pupilY}, the y-coordinate of the pupil position in pixels.
+\item \code{purkinjeX}, the x-coordinate of the purkinje position in pixels.
+\item \code{purkinjeY}, the y-coordinate of the purkinje position in pixels.
 }
 It also prints a list of constants that OPI knows about for the AP-7000.
 }

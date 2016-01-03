@@ -330,6 +330,8 @@ kowaAP7000.opiQueryDevice <- function() {
 
     return(list(
         pupilX=strtoi(s[2]), 
-        pupilY=strtoi(s[3])       # in pixels
+        pupilY=strtoi(s[3]),       # in pixels
+        purkinjeX=strtoi(s[4]), 
+        purkinjeY=strtoi(s[5])       # in pixels
     ))
 }
