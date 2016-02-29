@@ -132,6 +132,16 @@ opiInitialise(...)
 
     \code{port} is the TCP/IP port of the AP-7000 server as a number.
 }
+\subsection{imo}{
+    \code{opiInitialize(ip, port)}
+
+    If the chosen OPI implementation is \code{imo}, then you must 
+    specify the IP address and port of the imo server.
+
+    \code{ipAddress} is the IP address of the imo server as a string.
+
+    \code{port} is the TCP/IP port of the imo server as a number.
+}
 }
 
 \value{
@@ -154,6 +164,10 @@ The default background and stimulus setup is to white-on-white perimetry.
 
 \subsection{Kowa AP-7000}{
 Always returns NULL. 
+}
+
+\subsection{imo}{
+Always returns NULL. Will \code{stop} if there is an error.
 }
 
 }
@@ -222,8 +236,13 @@ if (!is.null(opiInitialize(
 \dontrun{
     # Set up the Kowa AP-7000
 chooseOpi("KowaAP7000")
-if (!is.null(opiInitialize(ip="192.168.1.7", port=44965)))
-    stop("opiInitialize failed")
+opiInitialize(ip="192.168.1.7", port=44965)
+}
+
+\dontrun{
+    # Set up the imo
+chooseOpi("imo")
+opiInitialize(ip="192.168.1.7", port=44965)
 }
 }
 

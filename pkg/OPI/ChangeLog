@@ -90,3 +90,6 @@ OPI 2.3
 
 OPI 2.4
  - added purkinje coordinates to return of opiQueryDevice for Kowa AP7000
+
+OPI 2.5
+ - added imo

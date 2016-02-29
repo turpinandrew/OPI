@@ -3,41 +3,26 @@
 OPI_VERSION := $(shell cat OPI/DESCRIPTION | grep Version | sed 's/Version: //')
 
 # R files for OPI package
-OPI_R			=	dbTocd.r \
-						full_threshold.r \
-						full_threshold_state.r \
-						mocs.r \
-						multiLocation.r \
-						#octopus900.r \
-            octopus900Client.r \
-						octopus600.r \
-						opi.r \
-						simG.r \
-						simH.r \
-						zest.r \
-						simDisplay.r
+OPI_R =	\
+    dbTocd.r \
+    fourTwo.r full_threshold.r full_threshold_state.r zest.r mocs.r \
+    imoClient.r k_test.r kowaAP7000Client.r octopus600.r octopus900Client.r \
+    opi.r \
+    simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r
 
 # Rd files for OPI package
-OPI_MAN		=	FT.Rd \
-						OPI-package.Rd \
-						ZEST.Rd \
-						cdTodb.Rd \
-						dbTocd.Rd \
-						opiClose.Rd \
-						opiInitialize.Rd \
-						opiKineticStimulus.Rd \
-						opiPresent.Rd \
-						opiQueryDevice.Rd \
-						opiSetBackground.Rd \
-						opiStaticStimulus.Rd \
-						opiTemporalStimulus.Rd
+OPI_MAN	= \
+    FT.Rd OPI-package.Rd RtDbUnits.Rd RtSigmaUnits.Rd ZEST.Rd cdTodb.Rd\
+    chooseOpi.Rd dbTocd.Rd fourTwo.Rd opiClose.Rd opiInitialize.Rd opiKineticStimulus.Rd\
+    opiPresent.Rd opiQueryDevice.Rd opiSetBackground.Rd opiStaticStimulus.Rd\
+    opiTemporalStimulus.Rd
 
 OPI_ROOT	=	DESCRIPTION \
-						NAMESPACE
+				NAMESPACE
 
 OPI_FILES	=	$(addprefix OPI/,$(OPI_ROOT)) \
-						$(addprefix OPI/man/,$(OPI_MAN)) \
-						$(addprefix OPI/R/,$(OPI_R))
+				$(addprefix OPI/man/,$(OPI_MAN)) \
+				$(addprefix OPI/R/,$(OPI_R))
 
 
 all: check build install

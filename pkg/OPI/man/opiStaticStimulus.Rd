@@ -73,6 +73,23 @@ The list must contain the following elements.
         \code{.KowaAP7000Env$COLOR_BLUE}, and 
         \code{.KowaAP7000Env$COLOR_RED}.
 }
+
+\subsection{imo}{
+
+    \code{x}, \code{y}, \code{level}, \code{size}, and \code{color} are not used.
+
+    \code{image} is a list of two matrices: the first for the right
+    eye, the second for the left.
+    Each image is a 1080x1080 matrix with each element in the range 0
+    to 80, which maps onto 0dB to 40dB in steps of 0.5dB.
+    Thus 0 is 0dB, 3283.048 cd/\eqn{\mbox{m}^2}{m^2}; 1 is 0.5dB; and
+    80 is 40dB, 10 cd/\eqn{\mbox{m}^2}{m^2}.
+
+    \code{tracking} is \code{TRUE} if auto image placement to keep
+    pupil centred is used, or \code{FALSE} to turn off imo auto-image
+    placement to keep centred on pupil.
+
+}
 }
 
 \references{
