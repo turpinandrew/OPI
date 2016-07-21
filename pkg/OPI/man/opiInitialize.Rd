@@ -70,10 +70,12 @@ opiInitialise(...)
     \code{display} and \code{maxStim} is as for SimHenson.
 }
 \subsection{Octopus900}{
-    \code{opiInitialize(eyeSuiteSettingsLocation, eye, gazeFeed=0, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
+    \code{opiInitialize(serverPort=50001,eyeSuiteSettingsLocation, eye, gazeFeed=0, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
 
     If the chosen OPI implementation is \code{Octopus900}, then you must 
     specify a directory and the eye to be tested.
+
+    \code{serverPort} is the TCP/IP port on which the server is listening (on localhost).
 
     \code{eyeSuiteSettingsLocation} is the folder name containing the EyeSuite setting files,
     and should include the trailing slash.
