@@ -136,7 +136,15 @@ as set in \code{opiInitialize}, answer codes describing patient state may arise 
 \subsection{KowaAP7000}{
 
 \code{opiPresent(stim, nextStim=NULL)}
-If the chosen OPI implementation is \code{KowaAP7000}, then nextStim is ignored. 
+
+If the chosen OPI implementation is \code{KowaAP7000}, then \code{nextStim} is ignored. 
+}
+
+\subsection{Compass}{
+
+\code{opiPresent(stim, nextStim=NULL)}
+
+If the chosen OPI implementation is \code{Compass}, then \code{nextStim} is ignored. 
 }
 
 
@@ -195,6 +203,8 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
           x coordinate of stimuli when button is pressed.}
 \item{y}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 
           y coordinate of stimuli when button is pressed.}
+\item{pupildX}{Only returned for Compass, and it is the offset from the detected PRL in x (degrees).}
+\item{pupildY}{Only returned for Compass, and it is the offset from the detected PRL in y (degrees).}
 
 }
 \references{

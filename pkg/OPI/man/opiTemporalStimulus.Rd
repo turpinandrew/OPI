@@ -51,6 +51,7 @@ Stimulus parameter list.
 Not supported.
 }
 
+\subsection{Kowa AP-7000}{ Not implemented.  }
 }
 
 \references{

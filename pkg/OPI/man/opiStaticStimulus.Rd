@@ -90,6 +90,18 @@ The list must contain the following elements.
     placement to keep centred on pupil.
 
 }
+
+\subsection{Compass}{
+    \code{x} and \code{y} are in degrees (floating point) (range [-30,30]).
+
+    \code{level} is in cd/\eqn{\mbox{m}^2}{m^2}, and is rounded to the 
+                nearest whole dB for display (range 0 to 50).
+
+    \code{responseWindow} is in millliseconds (range 200 to 2000).
+
+    Parameter \code{duration} is assumed to be 200ms, \code{size} is assumed to be Goldmann III
+    (0.43),  and \code{color} is assumed to be white.
+}
 }
 
 \references{

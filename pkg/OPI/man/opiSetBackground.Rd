@@ -84,6 +84,8 @@ This function has no effect.
         \item \code{.KowaAP7000Env$FIX_AUX_LEFT}, fixation marker is as for AUX but only lower left.
     }
 }
+\subsection{Compass}{ Not implemented.}
+
 }
 
 \value{

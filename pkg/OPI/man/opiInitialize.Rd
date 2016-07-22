@@ -145,9 +145,19 @@ opiInitialise(...)
     If the chosen OPI implementation is \code{imo}, then you must 
     specify the IP address and port of the imo server.
 
-    \code{ipAddress} is the IP address of the imo server as a string.
+    \code{ip} is the IP address of the imo server as a string.
 
     \code{port} is the TCP/IP port of the imo server as a number.
+}
+\subsection{Compass}{
+    \code{opiInitialize(ip, port)}
+
+    If the chosen OPI implementation is \code{Compass}, then you must 
+    specify the IP address and port of the Compass server.
+
+    \code{ip} is the IP address of the Compass server as a string.
+
+    \code{port} is the TCP/IP port of the Compass server as a number.
 }
 }
 
@@ -177,6 +187,9 @@ Always returns NULL.
 Always returns NULL. Will \code{stop} if there is an error.
 }
 
+\subsection{Compass}{
+Always returns NULL. Will \code{stop} if there is an error.
+}
 }
 \references{
 Please cite:

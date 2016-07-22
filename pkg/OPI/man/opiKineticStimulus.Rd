@@ -67,6 +67,9 @@ The list should contain the following elements.
 
     \code{speeds} are in degrees per second in the range 3 to 5.
 }
+
+\subsection{Compass}{Not implemented.}
+
 }
 
 \references{
