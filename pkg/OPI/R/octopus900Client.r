@@ -371,10 +371,10 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     msg <- paste(c(msg, sapply(stim$levels, cdTodb, maxStim=.Octopus900Env$zero_db_in_asb/pi)), collapse=" ")
     msg <- paste(c(msg, stim$sizes), collapse=" ")
     
-      # convert seconds/degree into total time for path segment in seconds
+      # convert degrees/second into total time for path segment in seconds
     pathLengths <- NULL
     for(i in 2:length(xs)) {
-      d <- sqrt((xs[i]-xs[i-1])^2 + (ys[i]-ys[i-1]^2))
+      d <- sqrt((xs[i]-xs[i-1])^2 + (ys[i]-ys[i-1])^2)
       stim$speeds[i-1] <- d/stim$speeds[i-1]
     }
     msg <- paste(c(msg, stim$speeds), collapse=" ")  
