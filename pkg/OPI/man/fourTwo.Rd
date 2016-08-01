@@ -3,6 +3,7 @@
 \alias{fourTwo.step}
 \alias{fourTwo.stop}
 \alias{fourTwo.final}
+\alias{fourTwo}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 4-2 Staircase

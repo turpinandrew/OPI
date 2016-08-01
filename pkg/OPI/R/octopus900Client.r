@@ -217,7 +217,7 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     #Sys.sleep(1)
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
-    if (s[1] == "null") {
+    if (s[1] == "0") {
       err <- NULL
     } else {
       err <- s[1]
@@ -328,7 +328,7 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
 
-    if (s[1] == "null") {
+    if (s[1] == "0") {
       err <- NULL
     } else {
       err <- s[1]
@@ -383,7 +383,7 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     res <- readLines(.Octopus900Env$socket, n=1)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
 
-    if (s[1] == "null") {
+    if (s[1] == "0") {
       err <- NULL
     } else {
       err <- s[1]
@@ -410,14 +410,25 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 # @return -1 if opiInitialize has not been successfully called
 # @return -2 trouble setting backgound color
 # @return -3 trouble setting fixation
+# @return -4 all input parameters NA
 ###########################################################################
-octo900.opiSetBackground <- function(lum="NA", color="NA", fixation="NA", fixIntensity=50) {
+octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity=NA) {
+
+    if (all(is.na(c(lum, color, fixation, fixIntensity)))) {
+	warning("At least one parameter must be not NA in opiSetBackground")
+        return(-4)
+    }
+
+    if (is.na(lum)) lum <- -1 
+    if (is.na(color)) color <- -1 
+    if (is.na(fixation)) fixation <- -1 
+    if (is.na(fixIntensity)) fixIntensity <- -1 
 
     msg <- paste("OPI_SET_BACKGROUND", color, lum, fixation, fixIntensity)
     writeLines(msg, .Octopus900Env$socket)
     ret <- strtoi(readLines(.Octopus900Env$socket, n=1))
 
-    if (ret == 0) {
+    if (ret == "0") {
         return(NULL)
     } else {
         return(ret)

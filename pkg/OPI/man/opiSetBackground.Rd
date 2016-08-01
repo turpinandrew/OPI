@@ -16,12 +16,12 @@ opiSetBackground(...)
 }
 \details{
 \subsection{Octopus900}{ 
-    \code{opiSetBackground(lum, color="white", background=NA, fixation=NA, fixIntensity=50)} 
+    \code{opiSetBackground(lum=NA, color=NA, fixation=NA, fixIntensity=NA)} 
 
     Allowable \code{lum} and \code{color} are defined in the .Octopus900Env environment.
 
     \itemize{
-    \item\code{lum} is intensity of the background and must be one of
+    \item\code{lum} is intensity of the background and can be one of
       \itemize{
         \item \code{.Octopus900Env$BG_OFF}, which turns background off.
         \item \code{.Octopus900Env$BG_1}, background of 1.27 cd/\eqn{\mbox{m}^2}{m^2}.
@@ -98,6 +98,8 @@ otherwise an implementation dependant error as follows.
     -2 indicates could not set the background color.
 
     -3 indicates could not set the fixation marker.
+
+    -4 indicates that all input parameters were NA.
 }
 }
 \references{
