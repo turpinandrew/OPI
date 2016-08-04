@@ -208,9 +208,11 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, .Octopus900Env$zero_db_in_asb/pi) * 10.0)
     msg <- paste(msg, (which.min(abs(.Octopus900Env$GOLDMANN - stim$size))))
     msg <- paste(msg, stim$duration)
-      msg <- paste(msg, stim$responseWindow)
+    msg <- paste(msg, stim$responseWindow)
     if (!is.null(nextStim)) {
         msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
+    } else {
+        msg <- paste(msg, stim$x * 10.0, stim$y * 10.0)
     }
 
     writeLines(msg, .Octopus900Env$socket)
