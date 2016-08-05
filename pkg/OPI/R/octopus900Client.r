@@ -230,8 +230,8 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     if (.Octopus900Env$gazeFeed==0) {
       return(list(
         err=err,
-        seen=strtoi(s[2]),
-        time=strtoi(s[3]),
+        seen=as.numeric(s[2]),
+        time=as.numeric(s[3]),
         frames=NA,
         numFrames=NA,
         width=NA,
@@ -244,8 +244,8 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     if (.Octopus900Env$gazeFeed==1) {
       return(list(
         err=err,
-        seen=strtoi(s[2]),
-        time=strtoi(s[3]),
+        seen=as.numeric(s[2]),
+        time=as.numeric(s[3]),
         frames=NA,
         numFrames=NA,
         width=NA,
@@ -258,23 +258,23 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     if (.Octopus900Env$gazeFeed==2) {
       #frames <- strsplit(s[14], "###", fixed=TRUE)[[1]]
       #for (i in 1:length(frames)) {
-      #  frames[i] <- strtoi(strsplit(frames[i],",",fixed=T)[[1]])
+      #  frames[i] <- as.numeric(strsplit(frames[i],",",fixed=T)[[1]])
       #}
       return(list(
                    err=err, 
-                  seen=strtoi(s[2]),
-                  time=strtoi(s[3]),
-             numFrames=strtoi(s[4]),
-                 times=strtoi(strsplit(s[5],",",fixed=T)[[1]]),
-                   ids=strtoi(strsplit(s[6],",",fixed=T)[[1]]),
-                 stars=strtoi(strsplit(s[7],",",fixed=T)[[1]]),
-                 rings=strtoi(strsplit(s[8],",",fixed=T)[[1]]),
-              diamters=strtoi(strsplit(s[9],",",fixed=T)[[1]]),
-                 pupilX=strtoi(strsplit(s[10],",",fixed=T)[[1]]),
-                pupilY=strtoi(strsplit(s[11],",",fixed=T)[[1]]),
-        pupilMajorAxis=strtoi(strsplit(s[12],",",fixed=T)[[1]]),
-        pupilMinorAxis=strtoi(strsplit(s[13],",",fixed=T)[[1]]),
-          firstFrame=strtoi(strsplit(s[14],",",fixed=T)[[1]])
+                  seen=as.numeric(s[2]),
+                  time=as.numeric(s[3]),
+             numFrames=as.numeric(s[4]),
+                 times=as.numeric(strsplit(s[5],",",fixed=T)[[1]]),
+                   ids=as.numeric(strsplit(s[6],",",fixed=T)[[1]]),
+                 stars=as.numeric(strsplit(s[7],",",fixed=T)[[1]]),
+                 rings=as.numeric(strsplit(s[8],",",fixed=T)[[1]]),
+              diamters=as.numeric(strsplit(s[9],",",fixed=T)[[1]]),
+                 pupilX=as.numeric(strsplit(s[10],",",fixed=T)[[1]]),
+                pupilY=as.numeric(strsplit(s[11],",",fixed=T)[[1]]),
+        pupilMajorAxis=as.numeric(strsplit(s[12],",",fixed=T)[[1]]),
+        pupilMinorAxis=as.numeric(strsplit(s[13],",",fixed=T)[[1]]),
+          firstFrame=as.numeric(strsplit(s[14],",",fixed=T)[[1]])
                 #frames=frames
       ))
     }#gazeFeed=2
@@ -338,8 +338,8 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
     return(list(
         err =err, 
-        seen=strtoi(s[2]),
-        time=strtoi(s[3]),
+        seen=as.numeric(s[2]),
+        time=as.numeric(s[3]),
         frames=NA,
         numFrames=NA,
         width=NA,
@@ -383,7 +383,9 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
+print(res)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
+print(s)
 
     if (s[1] == "0") {
       err <- NULL
@@ -393,10 +395,10 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 
     return(list(
         err =err, 
-        seen=strtoi(s[2]),
-        time=strtoi(s[3]),
-        x=strtoi(s[4]),     
-        y=strtoi(s[5])
+        seen=as.numeric(s[2]),
+        time=as.numeric(s[3]),
+        x=as.numeric(s[4])/1000,     
+        y=as.numeric(s[5])/1000
     ))
 }
 
@@ -428,7 +430,7 @@ octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity
 
     msg <- paste("OPI_SET_BACKGROUND", color, lum, fixation, fixIntensity)
     writeLines(msg, .Octopus900Env$socket)
-    ret <- strtoi(readLines(.Octopus900Env$socket, n=1))
+    ret <- as.numeric(readLines(.Octopus900Env$socket, n=1))
 
     if (ret == "0") {
         return(NULL)
