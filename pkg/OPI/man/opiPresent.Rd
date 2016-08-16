@@ -165,7 +165,7 @@ until the response from the subject if \code{seen} is \code{TRUE}.
 If \code{seen} is \code{FALSE}, this
 value is undefined.
 }
-\item{frames}{Only returned for Octopus 900. An array of integer 0..255 for gaze image. 
+\item{frames}{Only returned for Octopus 900 if \code{gazeFeed} is 2. An array of integer 0..255 for gaze image. 
 In version 1.5, only a single frame is returned.
 See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control what frames are returned.
 }
@@ -191,9 +191,9 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
     \item 514 = Fast Eye movements during stimulus presentation
   }
 }
-\item{pupilX}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+\item{pupilX}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic if gazeFeed==1. 
           x-coordinate of centre of pupil in pixels during presentation.}
-\item{pupilY}{Only returned for KowaAP7000 and an opiStaticStimulus. 
+\item{pupilY}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic if gazeFeed==1. 
           y-coordinate of centre of pupil in pixels during presentation.}
 \item{purkinjeX}{Only returned for KowaAP7000 and an opiStaticStimulus. 
           x-coordinate of centre of Purkinje Image in pixels during presentation.}

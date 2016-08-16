@@ -83,10 +83,8 @@ opiInitialise(...)
     \code{eye} must be either "left" or "right".
 
     \code{gazeFeed} is 0 for no gaze tracking infromation. 
-    If \code{gazeFeed} is 1, then 
-    a single frame is returned as part of the value from \code{\link{opiPresent}}
-    which is the most recent frame captured. 
-    If \code{gazeFeed} is 2, then 
+    If \code{gazeFeed} is 1, then the (x,y) coordinates of the pupil at the start of the stimulus presentation (or nearest frame to) is returned.
+    If \code{gazeFeed} is 2, then (supposedly)
     a all frames containing the asterix are returned as part of the value from \code{\link{opiPresent}},
     which are the frames captured while a static stimulus is displayed. 
     If \code{gazeFeed} is greater than zero, 

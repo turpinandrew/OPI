@@ -116,8 +116,9 @@ setupBackgroundConstants <- function() {
 #
 #######################################################################
 octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
-                                  eye=NA, gazeFeed=0, bigWheel=FALSE, pres_buzzer=0, resp_buzzer=0,
-				 zero_dB_is_10000_asb=TRUE) {
+                                  eye=NA, gazeFeed=0, bigWheel=FALSE, 
+                                  pres_buzzer=0, resp_buzzer=0,
+                                 zero_dB_is_10000_asb=TRUE) {
     assign("gazeFeed", gazeFeed, envir=.Octopus900Env)
 
     if (!bigWheel) {
@@ -131,9 +132,9 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
     }
 
     if (zero_dB_is_10000_asb)
-    	assign("zero_db_in_asb", 10000, envir=.Octopus900Env)
+            assign("zero_db_in_asb", 10000, envir=.Octopus900Env)
     else
-    	assign("zero_db_in_asb",  4000, envir=.Octopus900Env)
+            assign("zero_db_in_asb",  4000, envir=.Octopus900Env)
 
     if (is.na(pres_buzzer) || pres_buzzer < 0) pres_buzzer <- 0
     if (is.na(resp_buzzer) || resp_buzzer < 0) resp_buzzer <- 0
@@ -226,30 +227,22 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     }
 
 
-
-    if (.Octopus900Env$gazeFeed==0) {
+    if (.Octopus900Env$gazeFeed == 0) {
       return(list(
         err=err,
         seen=as.numeric(s[2]),
-        time=as.numeric(s[3]),
-        frames=NA,
-        numFrames=NA,
-        width=NA,
-        height=NA
+        time=as.numeric(s[3])
       ))
     }#gazeFeed=0
 
 
-
-    if (.Octopus900Env$gazeFeed==1) {
+    if (.Octopus900Env$gazeFeed == 1) {
       return(list(
         err=err,
         seen=as.numeric(s[2]),
         time=as.numeric(s[3]),
-        frames=NA,
-        numFrames=NA,
-        width=NA,
-        height=NA
+        pupilX=as.numeric(s[4]),
+        pupilY=as.numeric(s[5])
       ))
     }#gazeFeed=1
 
@@ -339,11 +332,7 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     return(list(
         err =err, 
         seen=as.numeric(s[2]),
-        time=as.numeric(s[3]),
-        frames=NA,
-        numFrames=NA,
-        width=NA,
-        height=NA
+        time=as.numeric(s[3])
     ))
 
 }#opiPresent.opiTemporalStimulus()
@@ -383,15 +372,25 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     
     writeLines(msg, .Octopus900Env$socket)
     res <- readLines(.Octopus900Env$socket, n=1)
-print(res)
     s <- strsplit(res, "|||", fixed=TRUE)[[1]]
-print(s)
 
     if (s[1] == "0") {
       err <- NULL
     } else {
       err <- s[1]
     }
+
+    if (.Octopus900Env$gazeFeed == 1) {
+      return(list(
+        err=err,
+        seen=as.numeric(s[2]),
+        time=as.numeric(s[3]),
+        x=as.numeric(s[4])/1000,
+        y=as.numeric(s[5])/1000,
+        pupilX=as.numeric(s[6]),
+        pupilY=as.numeric(s[7])
+      ))
+    }#gazeFeed=1
 
     return(list(
         err =err, 
@@ -419,7 +418,7 @@ print(s)
 octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity=NA) {
 
     if (all(is.na(c(lum, color, fixation, fixIntensity)))) {
-	warning("At least one parameter must be not NA in opiSetBackground")
+        warning("At least one parameter must be not NA in opiSetBackground")
         return(-4)
     }
 
