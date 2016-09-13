@@ -54,9 +54,14 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
         warning(msg)
         return(msg)
     }
+    
+    if (type == "N") {  A <- -0.066 ; B <- 2.81 } 
+    else if (type == "G") { A <- -0.098 ;  B <- 3.62    } 
+    else if (type == "C") { A <- -0.081 ;  B <- 3.27    }
 
     if (cap < 0)
         warning("cap is negative in call to opiInitialize (SimHensonRT)")
+    
     .SimHRTEnv$type <- type
     .SimHRTEnv$cap  <-  cap
     .SimHRTEnv$A    <-  A
@@ -65,7 +70,7 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
 
     if (type == "X" && (is.na(A) || is.na(B)))
         warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
-
+      
     if(simDisplay.setupDisplay(display))
         warning("opiInitialize (SimHensonRT): display parameter may not contain 4 numbers.")
 
@@ -125,7 +130,10 @@ setGeneric("simH_RT.opiPresent")
 # Note prob seeing <0 is always false positive rate (but false neg still poss)
 # Response time for false positive is uniform sample from .SimHRTEnv$rtFP
 #
-simH_RT.present <- function(db, cap=6, fpr=0.03, fnr=0.01, tt=30, dist, A, B) {
+# @param tt - true threshold (in dB). If NA always not seen (unless fp)
+# @param dist - distance from threshold in appropriate units
+#
+simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
 
     falsePosRt <- function() {
         if(length(.SimHRTEnv$rtFP) < 2) 
@@ -134,7 +142,7 @@ simH_RT.present <- function(db, cap=6, fpr=0.03, fnr=0.01, tt=30, dist, A, B) {
             return(sample(.SimHRTEnv$rtFP,1))
     }
 
-    if (tt < 0)         # force false pos if t < 0
+    if (!is.na(tt) && tt < 0)         # force false pos if t < 0
         fpr <- 1.00  
 
     if (runif(1) < 0.5) {
@@ -144,16 +152,19 @@ simH_RT.present <- function(db, cap=6, fpr=0.03, fnr=0.01, tt=30, dist, A, B) {
         }
     } else {
             # test fn 
-        if (runif(1) < fnr) {
+        if (runif(1) < 2*fnr) {
             return(list(err=NULL, seen=FALSE, time=0))                         # false N
         }
     }
 
+    if (is.na(tt))
+        return(list(err=NULL, seen=FALSE, time=0))
+
         # if get to here then need to check Gaussian
         # and if seen=TRUE need to get a time from .SimHRTEnv$rtData
         # assume pxVar is sigma for RT is in sigma units
-
-    pxVar <- min(cap, exp(A*tt + B)) # variability of patient, henson formula 
+    pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt + .SimHRTEnv$B)) # variability of patient, henson formula 
+#print(paste(db,tt,pxVar, .SimHRTEnv$cap, .SimHRTEnv$A*tt ,.SimHRTEnv$B))
     if ( runif(1) < 1 - pnorm(db, mean=tt, sd=pxVar)) {
 
         o <- head(order(abs(.SimHRTEnv$rtData$Dist - dist)), 100)
@@ -188,21 +199,7 @@ simH_RT.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, 
 
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 
-    if (.SimHRTEnv$type == "N") {
-        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.066, 2.81))
-    } else if (.SimHRTEnv$type == "G") {
-        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.098, 3.62))
-    } else if (.SimHRTEnv$type == "C") {
-        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, -0.081, 3.27))
-    } else if (.SimHRTEnv$type == "X") {
-        return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), .SimHRTEnv$cap, fpr, fnr, tt, dist, .SimHRTEnv$A, .SimHRTEnv$B))
-    } else {
-        return ( list(
-            err = "Unknown error in opiPresent() for SimHensonRT",
-            seen= NA,
-            time= NA 
-        ))
-    }
+    return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), fpr, fnr, tt, dist))
 }
 
 ########################################## TO DO !
@@ -210,7 +207,61 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     stop("ERROR: haven't written simH_RT temporal persenter yet")
 }
 
-simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, ...) {
-    stop("ERROR: haven't written simH_RT kinetic persenter yet")
+##################################################################
+# Assumes static thresholds/FoS curves and static reaction times.
+#
+# @param ... can contain 
+#              tt - list of sequences of true thresholds, one per path (a NA is never seen)
+#              fpr/fnr - false response rates in [0,1]
+##################################################################
+simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NA, dist=stim$level - tt) {
+    if (is.null(stim))
+        stop("stim is NULL in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+    if (!is.null(nextStim))
+        stop("nextStim should be NULL for kinetic in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+
+    num_paths <- length(stim$path$x) - 1
+
+    if (length(stim$path$y) != num_paths + 1)
+        stop(paste("y is length ",length(stim$path$y), "and should be", num_paths+1, "in SimHensonRT - kinetic"))
+    if (length(stim$sizes) != num_paths)
+        stop(paste("sizes is length ",length(stim$sizes), "and should be", num_paths, "in SimHensonRT - kinetic"))
+    if (length(stim$colors) != num_paths)
+        stop(paste("colors is length ",length(stim$colors), "and should be", num_paths, "in SimHensonRT - kinetic"))
+    if (length(stim$levels) != num_paths)
+        stop(paste("levels is length ",length(stim$levels), "and should be", num_paths, "in SimHensonRT - kinetic"))
+    if (length(stim$speeds) != num_paths)
+        stop(paste("speeds is length ",length(stim$speeds), "and should be", num_paths, "in SimHensonRT - kinetic"))
+
+    #if (!exists("tt"), where=2)
+    #    stop(paste("Need tt vector in SimHensonRT - kinetic"))
+
+    for (path_num in 1:num_paths) {
+    	num_tts <- length(tt[[path_num]])
+
+        xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=num_tts)
+        ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=num_tts)
+        time_between_checks <- sqrt((xs[2]-xs[1])^2 + (ys[2]-ys[1])^2) / stim$speeds[path_num] *1000
+
+        path_angle <- atan2(ys[2]-ys[1], xs[2]-xs[1])
+#print(path_angle*180/pi)        
+        for (i in 1:(num_tts-1)) {
+            #simDisplay.present(xs[i], ys[i], stim$color[path_num], NA, time_between_checks, ???) # TODO
+            lev <- cdTodb(stim$levels[path_num], .SimHRTEnv$maxStim)
+            res <- simH_RT.present(lev, fpr, fnr, tt[[path_num]][i], lev - tt[[path_num]][i])
+#print(paste(i,res$seen, res$time))
+            if (res$seen) {
+                dist_traveled <- res$time /1000 / stim$speeds[path_num]
+#print(paste(dist_traveled, time_between_checks))
+                return(list(err=NULL,
+                            seen=TRUE,
+                            time=res$time + time_between_checks*(i-1),
+                            x=xs[i] - dist_traveled * cos(path_angle),
+                            y=ys[i] - dist_traveled * sin(path_angle)
+                        ))
+            }
+        }
+        return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+	}
 }
 
