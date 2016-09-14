@@ -127,10 +127,12 @@ setGeneric("simH_RT.opiPresent")
 
 #
 # Helper function that allows different coefficients from Table 1 of Henson 2000.
-# Note prob seeing <0 is always false positive rate (but false neg still poss)
+# Note prob seeing <0 is 1 (but false neg still poss)
 # Response time for false positive is uniform sample from .SimHRTEnv$rtFP
 #
-# @param tt - true threshold (in dB). If NA always not seen (unless fp)
+# @param tt - true threshold (in dB)
+#                If <0 always seen (unless fn) 
+#                If NA always not seen (unless fp)
 # @param dist - distance from threshold in appropriate units
 #
 simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
@@ -209,6 +211,10 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
 ##################################################################
 # Assumes static thresholds/FoS curves and static reaction times.
+# Note that false positives and false negatives 
+# have to be treated separately from the static responses.
+# The location of a false positive is randomly drawn from any 
+# location where tt is NA, or prob seeing is < FP_TOLERANCE.
 #
 # @param ... can contain 
 #              tt - list of sequences of true thresholds, one per path (a NA is never seen)
@@ -233,11 +239,61 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     if (length(stim$speeds) != num_paths)
         stop(paste("speeds is length ",length(stim$speeds), "and should be", num_paths, "in SimHensonRT - kinetic"))
 
-    #if (!exists("tt"), where=2)
-    #    stop(paste("Need tt vector in SimHensonRT - kinetic"))
+        # check fnr
+    if (runif(1) < 0.5) {
+        if (runif(1) < 2 * fnr) 
+            return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+    }
 
+        # build list of (x,y,time, pr_seeing) for each tt in the path
+    xytp <- NULL
+    time <- 0
     for (path_num in 1:num_paths) {
-    	num_tts <- length(tt[[path_num]])
+        db <- cdTodb(stim$levels[path_num], .SimHRTEnv$maxStim)
+
+        num_tts <- length(tt[[path_num]])
+
+        xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=num_tts)
+        ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=num_tts)
+        time_between_checks <- sqrt((xs[2]-xs[1])^2 + (ys[2]-ys[1])^2) / stim$speeds[path_num] * 1000
+
+        for (i in 1:num_tts) {
+            tt.single <- tt[[path_num]][i]
+
+                # variability of patient, Henson formula 
+            pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt.single + .SimHRTEnv$B)) 
+            p <- ifelse(is.na(tt.single), 0, 1-pnorm(db, mean=tt.single, sd=pxVar))
+
+            xytp <- c(xytp, list(x=xs[i], y=ys[i], t=time, pr=p))
+
+            time <- time + time_between_checks
+        }
+    }
+
+        # check for fpr
+    FP_TOLERANCE <- 1.0e-10
+    if (runif(1) < 0.5 && runif(1) < 2 * fpr) {
+        ps <- lapply(xytp, "[", "pr")
+        ii <- which(ps < FP_TOLERANCE)
+        if (length(ii) > 1)
+            loc <- sample(ii)
+        else if (length(ii) == 1)
+            loc <- ii[1]
+        else {
+            loc <- sample(1:length(xytp))
+            warning("SimHensonRT kinetic: couldn't find a Pr==0 for a false positive location")
+        }
+        return(list(err=NULL,
+                    seen=TRUE,
+                    time=xytp[[loc]]$t,
+                    x=sytp[[loc]]$x,
+                    y=sytp[[loc]]$y
+               ))
+    }
+
+        # now just check for seen - TODO reuse xytp
+    for (path_num in 1:num_paths) {
+        num_tts <- length(tt[[path_num]])
 
         xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=num_tts)
         ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=num_tts)
@@ -248,7 +304,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         for (i in 1:(num_tts-1)) {
             #simDisplay.present(xs[i], ys[i], stim$color[path_num], NA, time_between_checks, ???) # TODO
             lev <- cdTodb(stim$levels[path_num], .SimHRTEnv$maxStim)
-            res <- simH_RT.present(lev, fpr, fnr, tt[[path_num]][i], lev - tt[[path_num]][i])
+            res <- simH_RT.present(lev, 0, 0, tt[[path_num]][i], lev - tt[[path_num]][i])
 #print(paste(i,res$seen, res$time))
             if (res$seen) {
                 dist_traveled <- res$time /1000 / stim$speeds[path_num]
@@ -262,6 +318,6 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
             }
         }
         return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
-	}
+    }
 }
 
