@@ -218,7 +218,7 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #
 # @param ... can contain 
 #              tt - list of sequences of true thresholds, one per path (a NA is never seen)
-#              fpr/fnr - false response rates in [0,1]
+#              fpr/fnr - false response rates in [0,1] (note for whole path, not each individual static pres)
 ##################################################################
 simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NA, dist=stim$level - tt) {
     if (is.null(stim))
@@ -239,14 +239,18 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     if (length(stim$speeds) != num_paths)
         stop(paste("speeds is length ",length(stim$speeds), "and should be", num_paths, "in SimHensonRT - kinetic"))
 
-        # check fnr
+    #############
+    # Check fnr
+    #############
     if (runif(1) < 0.5) {
         if (runif(1) < 2 * fnr) 
             return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
     }
 
-        # build list of (x,y,time, pr_seeing) for each tt in the path
-    xytp <- NULL
+    ############################################################################## 
+    # Build list of (x,y,time, speed, pr_seeing) for each tt in the whole path
+    ############################################################################## 
+    xytps <- NULL
     time <- 0
     for (path_num in 1:num_paths) {
         db <- cdTodb(stim$levels[path_num], .SimHRTEnv$maxStim)
@@ -264,60 +268,62 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
             pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt.single + .SimHRTEnv$B)) 
             p <- ifelse(is.na(tt.single), 0, 1-pnorm(db, mean=tt.single, sd=pxVar))
 
-            xytp <- c(xytp, list(x=xs[i], y=ys[i], t=time, pr=p))
+            xytps <- c(xytps, list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, pr=p))
 
             time <- time + time_between_checks
         }
     }
 
-        # check for fpr
+    ##################
+    # Check for fpr
+    ##################
     FP_TOLERANCE <- 1.0e-10
     if (runif(1) < 0.5 && runif(1) < 2 * fpr) {
-        ps <- lapply(xytp, "[", "pr")
+        ps <- lapply(xytps, "[", "pr")
         ii <- which(ps < FP_TOLERANCE)
         if (length(ii) > 1)
             loc <- sample(ii)
         else if (length(ii) == 1)
             loc <- ii[1]
         else {
-            loc <- sample(1:length(xytp))
-            warning("SimHensonRT kinetic: couldn't find a Pr==0 for a false positive location")
+            loc <- sample(1:length(xytps))
+            warning("SimHensonRT kinetic: couldn't find a Pr<FP_TOLERANCE for a false positive location")
         }
         return(list(err=NULL,
                     seen=TRUE,
-                    time=xytp[[loc]]$t,
+                    time=xytps[[loc]]$t,
                     x=sytp[[loc]]$x,
                     y=sytp[[loc]]$y
                ))
     }
 
-        # now just check for seen - TODO reuse xytp
-    for (path_num in 1:num_paths) {
-        num_tts <- length(tt[[path_num]])
+    ######################################################
+    # Now just check for seen at each element of xytps.
+    # If seen, add a little lag for reaction.
+    ######################################################
+    for (i in 1:length(xytps)) {
+        if (runif(1) < xytps[[i]]$pr) {
+            if (i > 1)
+                path_angle <- atan2(xytps[[i]]$y-xytps[[i-1]]$y, xytps[[i]]$x-xytps[[i-1]]$x)
+            else
+                path_angle <- atan2(xytps[[2]]$y-xytps[[1]]$y, xytps[[2]]$x-xytps[[1]]$x)
 
-        xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=num_tts)
-        ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=num_tts)
-        time_between_checks <- sqrt((xs[2]-xs[1])^2 + (ys[2]-ys[1])^2) / stim$speeds[path_num] *1000
+            times <- head(order(abs(.SimHRTEnv$rtData$Dist - dist)), 100)
+            time <- sample(.SimHRTEnv$rtData[times, "Rt"], 1)
 
-        path_angle <- atan2(ys[2]-ys[1], xs[2]-xs[1])
-#print(path_angle*180/pi)        
-        for (i in 1:(num_tts-1)) {
-            #simDisplay.present(xs[i], ys[i], stim$color[path_num], NA, time_between_checks, ???) # TODO
-            lev <- cdTodb(stim$levels[path_num], .SimHRTEnv$maxStim)
-            res <- simH_RT.present(lev, 0, 0, tt[[path_num]][i], lev - tt[[path_num]][i])
-#print(paste(i,res$seen, res$time))
-            if (res$seen) {
-                dist_traveled <- res$time /1000 / stim$speeds[path_num]
-#print(paste(dist_traveled, time_between_checks))
-                return(list(err=NULL,
-                            seen=TRUE,
-                            time=res$time + time_between_checks*(i-1),
-                            x=xs[i] - dist_traveled * cos(path_angle),
-                            y=ys[i] - dist_traveled * sin(path_angle)
-                        ))
-            }
+            dist_traveled <- time /1000 / xytps[[i]]$s
+
+            return(list(err=NULL,
+                        seen=TRUE,
+                        time=time + xytps[[i]]$t, 
+                        x=xs[i] - dist_traveled * cos(path_angle),
+                        y=ys[i] - dist_traveled * sin(path_angle)
+                  ))
         }
-        return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
     }
-}
 
+    ######################################################
+    # If we get to here, not seen
+    ######################################################
+    return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+}
