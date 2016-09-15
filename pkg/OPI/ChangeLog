@@ -99,3 +99,6 @@ OPI 2.5
 OPI 2.6
  - added Compass support
  - fixed sneaky kinetic speed bug
+
+OPI 2.7
+ - Added Kinetic Stimuli to SimHensonRT

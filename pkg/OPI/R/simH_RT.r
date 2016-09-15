@@ -24,6 +24,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# Modified September 2016: Added Kinetic
+#
 
 simH_RT.opiClose         <- function() { return(NULL) }
 simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT")) }
