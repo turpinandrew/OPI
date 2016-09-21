@@ -222,7 +222,7 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #              tt - list of sequences of true thresholds, one per path (a NA is never seen)
 #              fpr/fnr - false response rates in [0,1] (note for whole path, not each individual static pres)
 ##################################################################
-simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-t) {
+simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t)) {
     if (is.null(stim))
         stop("stim is NULL in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
     if (!is.null(nextStim))
@@ -316,13 +316,13 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
             times <- head(order(abs(.SimHRTEnv$rtData$Dist - xytps[[i]]$d)), 100)
             time <- sample(.SimHRTEnv$rtData[times, "Rt"], 1)
 
-            dist_traveled <- time /1000 / xytps[[i]]$s
+            dist_traveled <- time /1000 * xytps[[i]]$s
 
             return(list(err=NULL,
                         seen=TRUE,
                         time=time + xytps[[i]]$t, 
-                        x=xs[i] - dist_traveled * cos(path_angle),
-                        y=ys[i] - dist_traveled * sin(path_angle)
+                        x=xs[i] + dist_traveled * cos(path_angle),
+                        y=ys[i] + dist_traveled * sin(path_angle)
                   ))
         }
     }
