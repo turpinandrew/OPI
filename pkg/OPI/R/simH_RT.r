@@ -222,11 +222,14 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #              tt - list of sequences of true thresholds, one per path (a NA is never seen)
 #              fpr/fnr - false response rates in [0,1] (note for whole path, not each individual static pres)
 ##################################################################
-simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NA, dist=stim$level - tt) {
+simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-t) {
     if (is.null(stim))
         stop("stim is NULL in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
     if (!is.null(nextStim))
         stop("nextStim should be NULL for kinetic in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+
+    if (is.null(tt))
+        stop("tt must be a list of vectors in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
 
     num_paths <- length(stim$path$x) - 1
 
@@ -270,7 +273,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
             pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt.single + .SimHRTEnv$B)) 
             p <- ifelse(is.na(tt.single), 0, 1-pnorm(db, mean=tt.single, sd=pxVar))
 
-            xytps <- c(xytps, list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, pr=p))
+            xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, pr=p, d=dist(stim$levels[[path_num]], tt.single))))
 
             time <- time + time_between_checks
         }
@@ -281,10 +284,10 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     ##################
     FP_TOLERANCE <- 1.0e-10
     if (runif(1) < 0.5 && runif(1) < 2 * fpr) {
-        ps <- lapply(xytps, "[", "pr")
+        ps <- unlist(lapply(xytps, "[", "pr"))
         ii <- which(ps < FP_TOLERANCE)
         if (length(ii) > 1)
-            loc <- sample(ii)
+            loc <- sample(ii, size=1)
         else if (length(ii) == 1)
             loc <- ii[1]
         else {
@@ -294,8 +297,8 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         return(list(err=NULL,
                     seen=TRUE,
                     time=xytps[[loc]]$t,
-                    x=sytp[[loc]]$x,
-                    y=sytp[[loc]]$y
+                    x=xytps[[loc]]$x,
+                    y=xytps[[loc]]$y
                ))
     }
 
@@ -310,7 +313,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
             else
                 path_angle <- atan2(xytps[[2]]$y-xytps[[1]]$y, xytps[[2]]$x-xytps[[1]]$x)
 
-            times <- head(order(abs(.SimHRTEnv$rtData$Dist - dist)), 100)
+            times <- head(order(abs(.SimHRTEnv$rtData$Dist - xytps[[i]]$d)), 100)
             time <- sample(.SimHRTEnv$rtData[times, "Rt"], 1)
 
             dist_traveled <- time /1000 / xytps[[i]]$s

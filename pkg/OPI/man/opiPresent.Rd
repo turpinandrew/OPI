@@ -72,7 +72,7 @@ formula is not used. The probability of seeing is \code{fpr}.
 
 \code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt)}
 
-This presentation is the same as for \code{SimHenson}, but reaction
+For static stimuli, this function is the same as for \code{SimHenson}, but reaction
 times are determined by sampling from \code{rtData} as passed to
 \code{opiInitialize}.  The \code{dist} parameter is the distance
 of the stimulus level from the true threshold, and should be in the
@@ -81,6 +81,42 @@ is just the straight difference between the stimulus level and the
 true threshold, but you might want it scaled somehow to match
 \code{rtData}.
 
+
+\code{opiPresent(stim, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-t}
+
+Kinetic stimuli are treated as a sequence of static presentations with
+fpr and fnr set to 0 for the static presentation.
+The number of static presentations per path is determined by the length of the
+matching vector in the \code{tt} list.
+That is, \code{tt} should be a list of vectors, one per path, 
+of true static thresholds in dB along that path. 
+There can be as many elements in the vector as required, 
+although too many would be silly (ie you would be checking for seen in almost the
+same location over and over).
+An element of \code{NA} in \code{tt} is never seen.
+
+The location and time of a false positive response (for the total kinetic path) 
+is sampled from all ``static'' locations where the probability of seeing
+is below $10^{-10}$ (including locations with a \code{tt} element pf \code{NA}).
+
+Note that the false positive rate \code{fpr} and the false negative rate
+\code{fnr}
+are specified for the whole path, and not for the individual static responses 
+along the way.
+
+The actual location returned for a seen response 
+is the location of the static stimulus that is 
+seen plus some distance along the same trajectory 
+as determined by the speed and reaction time database 
+used in \code{opiInitialise}.
+Note that if the ``seen'' occurs at the end of 
+a path segment, the trajectory is currently calculated
+along that same trajectory, and not along the next
+adjacent path segment.
+The reaction time is determined as for the static case, 
+by computing the result of \code{dist(stim_level, true_threshold)}
+and sampling from the 100 nearest entries in \code{.SimHRTEnv$rtData}, 
+which is set using the \code{rtData} parameter in \code{opiInitialise}.
 }
 
 

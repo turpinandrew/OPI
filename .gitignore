@@ -9,3 +9,4 @@ pkg/OPI_*.tar.gz
 .Rhistory
 .Rproj.user
 *.Rcheck
+*.r~
