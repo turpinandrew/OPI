@@ -169,6 +169,7 @@ procedureWithGrowthPattern <- function(gp, ops, startFun, stepFun, stopFun, fina
 #   fpCatchTrialRate - every this many presentations, we do a FP 
 #                      catch trial
 #   fpDuration       - length of fp catch trial in ms
+#   fpResponse       - length of fp catch trial resposne window in ms
 #
 # RETURNS: a list with 4 elements:
 #           mt, a vector of measured locations for each location
@@ -180,7 +181,7 @@ procedureWithGeneralGrowthPattern <- function(starters, children,
     startFun, stepFun, stopFun, finalFun,
     waitForAllParents=FALSE, geometricAv=TRUE,
     minBetweenStimWait=0, maxBetweenStimWait=0,
-    fpCatchTrialRate=Inf, fpDuration=200
+    fpCatchTrialRate=Inf, fpDuration=200, fpResponse=1500
     ) {
 
     ######################################################
@@ -264,7 +265,7 @@ procedureWithGeneralGrowthPattern <- function(starters, children,
         if (n >= fpCatchTrialRate && sum(np) %% fpCatchTrialRate == 0) {
             fpShown <- fpShown + 1
             s <- list(x=1, y=1, level=dbTocd(50, 10000/pi), size=0.43, color="white",
-                  duration=fpDuration, responseWindow=1500)
+                  duration=fpDuration, responseWindow=fpResponse)
             class(s) <- "opiStaticStimulus"
 
             res <- opiPresent(stim=s)

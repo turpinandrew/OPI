@@ -181,7 +181,9 @@ ZestG20 <- function(eye="right", primaryStartValue=30,
     res1 <- procedureWithGeneralGrowthPattern(
                 starters, kids, 
                 startF, stepF, stopF, finalF, 
-                waitForAllParents=FALSE)
+                waitForAllParents=FALSE, 
+                minBetweenStimWait=0, maxBetweenStimWait=0,
+                fpCatchTrialRate=Inf, fpDuration=200, fpResponse=1500)
     z <- res1$mt < 0
     tz <- res1$mt
     tz[z] <- 0
