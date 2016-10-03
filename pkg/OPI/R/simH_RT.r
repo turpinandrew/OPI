@@ -149,16 +149,20 @@ simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
     if (!is.na(tt) && tt < 0)         # force false pos if t < 0
         fpr <- 1.00  
 
+    fn_ret <- fp_ret <- NULL
+
+    if (runif(1) < fpr) 
+        fp_ret <- list(err=NULL, seen=TRUE, time=falsePosRt())  # false P
+
+    if (runif(1) < fnr)
+        fn_ret <- list(err=NULL, seen=FALSE, time=0)            # false N
+
     if (runif(1) < 0.5) {
-            # test fp 
-        if (runif(1) < 2*fpr) {
-            return(list(err=NULL, seen=TRUE, time=falsePosRt()))  # false P
-        }
+        if (!is.null(fp_ret)) return(fp_ret)   # fp first, then fn
+        if (!is.null(fn_ret)) return(fn_ret)
     } else {
-            # test fn 
-        if (runif(1) < 2*fnr) {
-            return(list(err=NULL, seen=FALSE, time=0))                         # false N
-        }
+        if (!is.null(fn_ret)) return(fn_ret)   # fn first, then fp
+        if (!is.null(fp_ret)) return(fp_ret)
     }
 
     if (is.na(tt))
@@ -244,14 +248,6 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     if (length(stim$speeds) != num_paths)
         stop(paste("speeds is length ",length(stim$speeds), "and should be", num_paths, "in SimHensonRT - kinetic"))
 
-    #############
-    # Check fnr
-    #############
-    if (runif(1) < 0.5) {
-        if (runif(1) < 2 * fnr) 
-            return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
-    }
-
     ############################################################################## 
     # Build list of (x,y,time, speed, pr_seeing) for each tt in the whole path
     ############################################################################## 
@@ -279,11 +275,16 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         }
     }
 
-    ##################
-    # Check for fpr
-    ##################
+    #######################################################
+    # Check for false repsonses. Randomise order to check.
+    ######################################################
+    fn_ret <- fp_ret <- NULL
+
+    if (runif(1) < fnr) 
+        fn_ret <- list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA)
+
     FP_TOLERANCE <- 1.0e-10
-    if (runif(1) < 0.5 && runif(1) < 2 * fpr) {
+    if (runif(1) < fpr) {
         ps <- unlist(lapply(xytps, "[", "pr"))
         ii <- which(ps < FP_TOLERANCE)
         if (length(ii) > 1)
@@ -294,12 +295,20 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
             loc <- sample(1:length(xytps))
             warning("SimHensonRT kinetic: couldn't find a Pr<FP_TOLERANCE for a false positive location")
         }
-        return(list(err=NULL,
+        fp_ret <- list(err=NULL,
                     seen=TRUE,
                     time=xytps[[loc]]$t,
                     x=xytps[[loc]]$x,
                     y=xytps[[loc]]$y
-               ))
+               )
+    }
+
+    if (runif(1) < 0.5) {
+        if (!is.null(fp_ret)) return(fp_ret)   # fp first, then fn
+        if (!is.null(fn_ret)) return(fn_ret)
+    } else {
+        if (!is.null(fn_ret)) return(fn_ret)   # fn first, then fp
+        if (!is.null(fp_ret)) return(fp_ret)
     }
 
     ######################################################
