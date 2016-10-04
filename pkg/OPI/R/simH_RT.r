@@ -143,7 +143,7 @@ simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
         if(length(.SimHRTEnv$rtFP) < 2) 
             return(.SimHRTEnv$rtFP)
         else
-            return(sample(.SimHRTEnv$rtFP,1))
+            return(sample(.SimHRTEnv$rtFP,size=1))
     }
 
     if (!is.na(tt) && tt < 0)         # force false pos if t < 0
@@ -177,7 +177,7 @@ simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
 
         o <- head(order(abs(.SimHRTEnv$rtData$Dist - dist)), 100)
 
-        return(list(err=NULL, seen=TRUE, time=sample(.SimHRTEnv$rtData[o,"Rt"], 1)))
+        return(list(err=NULL, seen=TRUE, time=sample(.SimHRTEnv$rtData[o,"Rt"], size=1)))
     } else {
         return(list(err=NULL, seen=FALSE, time=0))
     }
@@ -292,7 +292,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         else if (length(ii) == 1)
             loc <- ii[1]
         else {
-            loc <- sample(1:length(xytps))
+            loc <- sample(1:length(xytps), size=1)
             warning("SimHensonRT kinetic: couldn't find a Pr<FP_TOLERANCE for a false positive location")
         }
         fp_ret <- list(err=NULL,
@@ -323,7 +323,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
                 path_angle <- atan2(xytps[[2]]$y-xytps[[1]]$y, xytps[[2]]$x-xytps[[1]]$x)
 
             times <- head(order(abs(.SimHRTEnv$rtData$Dist - xytps[[i]]$d)), 100)
-            time <- sample(.SimHRTEnv$rtData[times, "Rt"], 1)
+            time <- sample(.SimHRTEnv$rtData[times, "Rt"], size=1)
 
             dist_traveled <- time /1000 * xytps[[i]]$s
 
