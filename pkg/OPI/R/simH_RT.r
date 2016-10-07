@@ -235,6 +235,9 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     if (is.null(tt))
         stop("tt must be a list of vectors in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
 
+    if (is(tt)[1] != "list")
+        stop("tt must be a *list* of vectors in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+
     num_paths <- length(stim$path$x) - 1
 
     if (length(stim$path$y) != num_paths + 1)
