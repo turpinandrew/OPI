@@ -1,4 +1,4 @@
-require(RUnit)
+#require(RUnit)
 
 test.exampleVectors <- function()
 {
@@ -8,9 +8,10 @@ test.exampleVectors <- function()
   checkEquals(NULL, opiClose())
   
   #xs <- list([3,2], [-20,-20])
-  xs <- c(3, 2, -20, 0, 10,5, -5, -50, 3, 2, -20, 0, 10,5, -5, -50) #, 
+
+  xs <- c(3, 2, -20, 0, 10,5, -5, -50, -20, 0, 10,5, -5, -50) #, 3, 2,
   x_mat <- matrix(xs, 2)
-  ys <- c(0, -70, -20, 0, 14,2, -23, -30, 3, 2, -20, 0, 10,5, -5, -50) #0, -70,
+  ys <- c(0, -70, -20, 0, 14,2, -23, -30, -20, 0, 10,5, -5, -50) #3, 2,
   y_mat <- matrix(ys, 2)
   pointsTested = length(y_mat[1,])
   
@@ -45,7 +46,7 @@ test.exampleVectors <- function()
       checkTrue(result$y <= stim$path[2]$y[2])
     }
   }
-  
+
   #check for an unseen stimulus (below threshold)
   LEVEL = dbTocd(50,10000)
   for (i in 1:pointsTested) {

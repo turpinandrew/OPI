@@ -84,19 +84,23 @@ true threshold, but you might want it scaled somehow to match
 
 \code{opiPresent(stim, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-t}
 
-Kinetic stimuli are treated as a sequence of static presentations with
-fpr and fnr set to 0 for the static presentation.
-The number of static presentations per path is determined by the length of the
-matching vector in the \code{tt} list.
-That is, \code{tt} should be a list of vectors, one per path, 
-of true static thresholds in dB along that path. 
-There can be as many elements in the vector as required, 
-although too many would be silly (ie you would be checking for seen in almost the
-same location over and over).
+For determinng seen/not-seen for kinetic, each path of the stimulus is 
+divided into 100 discrete static presentations. The probability of one 
+of these is 
+determined from the probability of seeing it as W-on-W, size III targert
+multiplied by the same for not seeing all previous targets.
+Thus it is the conditional probability of seeing the current location 
+given that you have not seen all previous locations.
+The true threshold at each of the 100 locations is 
+determined by linear interpolation of the input \code{tt} list (in dB).
+It is assumed that the first element of each \code{tt} vector is 
+the true threshold for the beginning of the path, and the final
+element the true threshold for the end of the path.
 An element of \code{NA} in \code{tt} is never seen.
 
 The location and time of a false positive response (for the total kinetic path) 
-is sampled from all ``static'' locations where the probability of seeing
+is sampled from the 100 locations where the coonditional 
+probability of seeing
 is below $10^{-10}$ (including locations with a \code{tt} element pf \code{NA}).
 
 Note that the false positive rate \code{fpr} and the false negative rate
@@ -105,8 +109,8 @@ are specified for the whole path, and not for the individual static responses
 along the way.
 
 The actual location returned for a seen response 
-is the location of the static stimulus that is 
-seen plus some distance along the same trajectory 
+is the location of the 100  
+plus some distance along the same trajectory 
 as determined by the speed and reaction time database 
 used in \code{opiInitialise}.
 Note that if the ``seen'' occurs at the end of 

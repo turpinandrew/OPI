@@ -8,6 +8,8 @@
 #
 # Modified Tue  8 Jul 2014: added type="X" to opiInitialise and opiPresent
 # Modified 20 Jul 2014: added maxStim argument for cdTodB conversion
+# Modified September 2016: Added kinetic
+# Modified October 2016: Completely changed kinetic
 #
 # Copyright 2012 Andrew Turpin
 # This program is part of the OPI (http://perimetry.org/OPI).
@@ -24,7 +26,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Modified September 2016: Added Kinetic
 #
 
 simH_RT.opiClose         <- function() { return(NULL) }
@@ -222,9 +223,11 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 # The location of a false positive is randomly drawn from any 
 # location where tt is NA, or prob seeing is < FP_TOLERANCE.
 #
-# @param ... can contain 
-#              tt - list of sequences of true thresholds, one per path (a NA is never seen)
-#              fpr/fnr - false response rates in [0,1] (note for whole path, not each individual static pres)
+# @param tt - a list of vectors that give true threshold as a 
+#             evenly spaced along the path (including start and end,
+#             tt=NA is never seen)
+# @param fpr - false positive rate in [0,1] (note for whole path)
+# @param fnr - false negative rate in [0,1] (note for whole path)
 ##################################################################
 simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t)) {
     if (is.null(stim))
@@ -233,7 +236,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         stop("nextStim should be NULL for kinetic in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
 
     if (is.null(tt))
-        stop("tt must be a list of vectors in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+        stop("tt must be a list of functions in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
 
     if (is(tt)[1] != "list")
         stop("tt must be a *list* of vectors in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
@@ -252,27 +255,41 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         stop(paste("speeds is length ",length(stim$speeds), "and should be", num_paths, "in SimHensonRT - kinetic"))
 
     ############################################################################## 
-    # Build list of (x,y,time, speed, pr_seeing) for each tt in the whole path
+    # Build list of (x,y,time, speed, pr_seeing) for GRANULARITY steps wlong each segment
     ############################################################################## 
+    GRANULARITY <- 100
     xytps <- NULL
     time <- 0
+    eDist <- function(i,j) sqrt((xs[j]-xs[i])^2 + (ys[j]-ys[i])^2) 
     for (path_num in 1:num_paths) {
+        xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=GRANULARITY)
+        ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=GRANULARITY)
+
+        tt.dists <- seq(0, 1, length.out=length(tt[[path_num]])) * eDist(1, length(xs))
+        tt_noNAs <- tt[[path_num]]   # turn NAs into -1
+        z <- is.na(tt_noNAs)
+        tt_noNAs[z] <- -1
+
         db <- cdTodb(stim$levels[path_num], .SimHRTEnv$maxStim)
 
-        num_tts <- length(tt[[path_num]])
+        time_between_checks <- eDist(1, 2) / stim$speeds[path_num] * 1000
 
-        xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=num_tts)
-        ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=num_tts)
-        time_between_checks <- sqrt((xs[2]-xs[1])^2 + (ys[2]-ys[1])^2) / stim$speeds[path_num] * 1000
+        prNo <- 1
+        for (i in 1:GRANULARITY) {
+            tt.single <- approx(tt.dists, tt_noNAs, eDist(1,i))$y
 
-        for (i in 1:num_tts) {
-            tt.single <- tt[[path_num]][i]
+            p <- 0
+	    if (tt.single >= 0) {
+                    # variability of patient, Henson formula 
+                pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt.single + .SimHRTEnv$B)) 
+                p <- 1 - pnorm(db, mean=tt.single, sd=pxVar)
+	    }
 
-                # variability of patient, Henson formula 
-            pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt.single + .SimHRTEnv$B)) 
-            p <- ifelse(is.na(tt.single), 0, 1-pnorm(db, mean=tt.single, sd=pxVar))
-
-            xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, pr=p, d=dist(stim$levels[[path_num]], tt.single))))
+            xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, 
+                                        pr=prNo * p, 
+                                        d=dist(stim$levels[[path_num]], tt.single)
+			)))
+            prNo <- prNo * (1-p)
 
             time <- time + time_between_checks
         }
@@ -315,32 +332,37 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     }
 
     ######################################################
-    # Now just check for seen at each element of xytps.
+    # Now just choose a random point on the cumulative sum
+    # sum of xytps$pr. If it is NA, take next highest.
     # If seen, add a little lag for reaction.
     ######################################################
-    for (i in 1:length(xytps)) {
-        if (runif(1) < xytps[[i]]$pr) {
-            if (i > 1)
-                path_angle <- atan2(xytps[[i]]$y-xytps[[i-1]]$y, xytps[[i]]$x-xytps[[i-1]]$x)
-            else
-                path_angle <- atan2(xytps[[2]]$y-xytps[[1]]$y, xytps[[2]]$x-xytps[[1]]$x)
+    cumulative <- cumsum(unlist(lapply(xytps, "[", "pr")))
+#plot(unlist(lapply(xytps, "[", "pr")))
+#plot(cumsum(unlist(lapply(xytps, "[", "pr"))))
+#print(xytps)
+#print(max(cumulative))
+#    stopifnot(abs(max(cumulative) - 1) < 0.00001)
 
-            times <- head(order(abs(.SimHRTEnv$rtData$Dist - xytps[[i]]$d)), 100)
-            time <- sample(.SimHRTEnv$rtData[times, "Rt"], size=1)
+    r <- runif(1)
+    i <- head(which(cumulative >= r), 1)   
 
-            dist_traveled <- time /1000 * xytps[[i]]$s
+    if (length(i) == 0)   # not seen
+    	return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
 
-            return(list(err=NULL,
-                        seen=TRUE,
-                        time=time + xytps[[i]]$t, 
-                        x=xs[i] + dist_traveled * cos(path_angle),
-                        y=ys[i] + dist_traveled * sin(path_angle)
-                  ))
-        }
-    }
+    if (i > 1)
+        path_angle <- atan2(xytps[[i]]$y-xytps[[i-1]]$y, xytps[[i]]$x-xytps[[i-1]]$x)
+    else
+        path_angle <- atan2(xytps[[2]]$y-xytps[[1]]$y, xytps[[2]]$x-xytps[[1]]$x)
 
-    ######################################################
-    # If we get to here, not seen
-    ######################################################
-    return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+    times <- head(order(abs(.SimHRTEnv$rtData$Dist - xytps[[i]]$d)), 100)
+    time <- sample(.SimHRTEnv$rtData[times, "Rt"], size=1)
+
+    dist_traveled <- time /1000 * xytps[[i]]$s
+
+    return(list(err=NULL,
+                seen=TRUE,
+                time=time + xytps[[i]]$t, 
+                x=xs[i] + dist_traveled * cos(path_angle),
+                y=ys[i] + dist_traveled * sin(path_angle)
+    ))
 }
