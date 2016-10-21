@@ -265,6 +265,11 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=GRANULARITY)
         ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=GRANULARITY)
 
+        if (eDist(1, length(xs)) == 0) {
+            warning("Path of zero length in kinetic stim. Returning not-seen in SimHensonRT - kinetic") 
+    	    return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+        }
+        
         tt.dists <- seq(0, 1, length.out=length(tt[[path_num]])) * eDist(1, length(xs))
         tt_noNAs <- tt[[path_num]]   # turn NAs into -1
         z <- is.na(tt_noNAs)
@@ -287,7 +292,8 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
 
             xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, 
                                         pr=prNo * p, 
-                                        d=dist(stim$levels[[path_num]], tt.single)
+                                        d=dist(stim$levels[[path_num]], tt.single),
+                                        tt=tt.single
 			)))
             prNo <- prNo * (1-p)
 
@@ -337,8 +343,14 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     # If seen, add a little lag for reaction.
     ######################################################
     cumulative <- cumsum(unlist(lapply(xytps, "[", "pr")))
-#plot(unlist(lapply(xytps, "[", "pr")))
-#plot(cumsum(unlist(lapply(xytps, "[", "pr"))))
+#pdf('/Users/aturpin/doc/papers/kinetic_simulator/doc/eg1.pdf', width=8, height=16)
+#layout(matrix(1:2,2,1))
+#par(cex=1.5)
+#plot(unlist(lapply(xytps, "[", "tt")), type="b", xlab="Location", ylab="Static Threshold", las=1)
+#abline(h=0, lty=2)
+#plot(unlist(lapply(xytps, "[", "pr")), type="b", xlab="Location", ylab="Prob. seeing", las=1)
+#plot(cumsum(unlist(lapply(xytps, "[", "pr"))), type="b", xlab="Location", ylab="Cummulative Prob. seeing")
+dev.off()
 #print(xytps)
 #print(max(cumulative))
 #    stopifnot(abs(max(cumulative) - 1) < 0.00001)
