@@ -124,7 +124,7 @@ simH_RT.opiSetBackground <- function(col, gridCol) {
 ################################################################################
 #
 ################################################################################
-simH_RT.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30) { 
+simH_RT.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, notSeenToSeen=TRUE) { 
                             UseMethod("simH_RT.opiPresent") }
 setGeneric("simH_RT.opiPresent")
 
@@ -229,7 +229,7 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 # @param fpr - false positive rate in [0,1] (note for whole path)
 # @param fnr - false negative rate in [0,1] (note for whole path)
 ##################################################################
-simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t)) {
+simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t), notSeenToSeen=TRUE) {
     if (is.null(stim))
         stop("stim is NULL in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
     if (!is.null(nextStim))
@@ -279,24 +279,27 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
 
         time_between_checks <- eDist(1, 2) / stim$speeds[path_num] * 1000
 
-        prNo <- 1
+        pr_not_pressed <- 1
         for (i in 1:GRANULARITY) {
             tt.single <- approx(tt.dists, tt_noNAs, eDist(1,i))$y
 
-            p <- 0
+            pr_press <- 0
             if (tt.single >= 0) {
                     # variability of patient, Henson formula 
                 pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt.single + .SimHRTEnv$B)) 
-                p <- 1 - pnorm(db, mean=tt.single, sd=pxVar)
+                pr_press <- 1 - pnorm(db, mean=tt.single, sd=pxVar)
             }
 
+            if (!notSeenToSeen)
+                pr_press <- 1 - pr_press
+
             xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, 
-                                        pr=prNo * p, 
+                                        pr=pr_not_pressed * pr_press, 
                                         d=dist(stim$levels[[path_num]], tt.single),
                                         tt=tt.single
             )))
 
-            prNo <- prNo * (1-p)
+            pr_not_pressed <- pr_not_pressed * (1-pr_press)
 
             time <- time + time_between_checks
         }
@@ -332,6 +335,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     ######################################################
     cumulative <- cumsum(unlist(lapply(xytps, "[", "pr")))
 #pdf('/Users/aturpin/doc/papers/kinetic_simulator/doc/eg1.pdf', width=8, height=16)
+#pdf('Rplots.pdf', width=8, height=16)
 #layout(matrix(1:2,2,1))
 #par(cex=1.5)
 #plot(unlist(lapply(xytps, "[", "tt")), type="b", xlab="Location", ylab="Static Threshold", las=1)

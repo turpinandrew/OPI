@@ -82,12 +82,12 @@ true threshold, but you might want it scaled somehow to match
 \code{rtData}.
 
 
-\code{opiPresent(stim, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-t}
+\code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt, notSeenToSeen=TRUE)}
 
 For determinng seen/not-seen for kinetic, each path of the stimulus is 
 divided into 100 discrete static presentations. The probability of one 
 of these is 
-determined from the probability of seeing it as W-on-W, size III targert
+determined from the probability of seeing it as W-on-W, size III target
 multiplied by the same for not seeing all previous targets.
 Thus it is the conditional probability of seeing the current location 
 given that you have not seen all previous locations.
@@ -97,6 +97,12 @@ It is assumed that the first element of each \code{tt} vector is
 the true threshold for the beginning of the path, and the final
 element the true threshold for the end of the path.
 An element of \code{NA} in \code{tt} is never seen.
+The remainder of the elements of \code{tt} ar assumed to be evenly spaced between
+the beginning and end of the path.
+If \code{notSeenToSeen} is \code{TRUE}, then the probablity of pressing is the
+probability of seeing the stimuli after a period of not-seeing.
+If \code{notSeenToSeen} is \code{FALSE}, then the probablity of pressing is the
+probability of not seeing the stimuli after a period of seeing.
 
 The location and time of a false positive response (for the total kinetic path) 
 is sampled from the 100 locations where the coonditional 
