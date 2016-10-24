@@ -267,7 +267,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
 
         if (eDist(1, length(xs)) == 0) {
             warning("Path of zero length in kinetic stim. Returning not-seen in SimHensonRT - kinetic") 
-    	    return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+            return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
         }
         
         tt.dists <- seq(0, 1, length.out=length(tt[[path_num]])) * eDist(1, length(xs))
@@ -284,17 +284,18 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
             tt.single <- approx(tt.dists, tt_noNAs, eDist(1,i))$y
 
             p <- 0
-	    if (tt.single >= 0) {
+            if (tt.single >= 0) {
                     # variability of patient, Henson formula 
                 pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt.single + .SimHRTEnv$B)) 
                 p <- 1 - pnorm(db, mean=tt.single, sd=pxVar)
-	    }
+            }
 
             xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, 
                                         pr=prNo * p, 
                                         d=dist(stim$levels[[path_num]], tt.single),
                                         tt=tt.single
-			)))
+            )))
+
             prNo <- prNo * (1-p)
 
             time <- time + time_between_checks
@@ -304,37 +305,24 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     #######################################################
     # Check for false repsonses. Randomise order to check.
     ######################################################
-    fn_ret <- fp_ret <- NULL
+    fn_ret <- list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA)
 
-    if (runif(1) < fnr) 
-        fn_ret <- list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA)
-
-    FP_TOLERANCE <- 1.0e-10
-    if (runif(1) < fpr) {
-        ps <- unlist(lapply(xytps, "[", "pr"))
-        ii <- which(ps < FP_TOLERANCE)
-        if (length(ii) > 1)
-            loc <- sample(ii, size=1)
-        else if (length(ii) == 1)
-            loc <- ii[1]
-        else {
-            loc <- sample(1:length(xytps), size=1)
-            warning("SimHensonRT kinetic: couldn't find a Pr<FP_TOLERANCE for a false positive location")
-        }
-        fp_ret <- list(err=NULL,
-                    seen=TRUE,
-                    time=xytps[[loc]]$t,
-                    x=xytps[[loc]]$x,
-                    y=xytps[[loc]]$y
-               )
-    }
+    inverse_cumulative <- cumsum(1 - unlist(lapply(xytps, "[", "pr")))
+    r <- runif(1)
+    loc <- head(which(inverse_cumulative >= r), 1)   
+    fp_ret <- list(err=NULL,
+               seen=TRUE,
+               time=xytps[[loc]]$t,
+               x=xytps[[loc]]$x,
+               y=xytps[[loc]]$y
+           )
 
     if (runif(1) < 0.5) {
-        if (!is.null(fp_ret)) return(fp_ret)   # fp first, then fn
-        if (!is.null(fn_ret)) return(fn_ret)
+        if (runif(1) < fpr) return(fp_ret)   # fp first, then fn
+        if (runif(1) < fnr) return(fn_ret)
     } else {
-        if (!is.null(fn_ret)) return(fn_ret)   # fn first, then fp
-        if (!is.null(fp_ret)) return(fp_ret)
+        if (runif(1) < fnr) return(fn_ret)   # fn first, then fp
+        if (runif(1) < fpr) return(fp_ret)
     }
 
     ######################################################
@@ -350,7 +338,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
 #abline(h=0, lty=2)
 #plot(unlist(lapply(xytps, "[", "pr")), type="b", xlab="Location", ylab="Prob. seeing", las=1)
 #plot(cumsum(unlist(lapply(xytps, "[", "pr"))), type="b", xlab="Location", ylab="Cummulative Prob. seeing")
-dev.off()
+#dev.off()
 #print(xytps)
 #print(max(cumulative))
 #    stopifnot(abs(max(cumulative) - 1) < 0.00001)
@@ -359,7 +347,7 @@ dev.off()
     i <- head(which(cumulative >= r), 1)   
 
     if (length(i) == 0)   # not seen
-    	return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+        return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
 
     if (i > 1)
         path_angle <- atan2(xytps[[i]]$y-xytps[[i-1]]$y, xytps[[i]]$x-xytps[[i-1]]$x)
