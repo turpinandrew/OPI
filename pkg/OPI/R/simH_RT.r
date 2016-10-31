@@ -257,7 +257,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     ############################################################################## 
     # Build list of (x,y,time, speed, pr_seeing) for GRANULARITY steps wlong each segment
     ############################################################################## 
-    GRANULARITY <- 100
+    GRANULARITY <- 50
     xytps <- NULL
     time <- 0
     eDist <- function(i,j) sqrt((xs[j]-xs[i])^2 + (ys[j]-ys[i])^2) 
@@ -295,6 +295,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
 
             xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, 
                                         pr=pr_not_pressed * pr_press, 
+                                        spr= pr_press, 
                                         d=dist(stim$levels[[path_num]], tt.single),
                                         tt=tt.single
             )))
@@ -335,14 +336,15 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     ######################################################
     cumulative <- cumsum(unlist(lapply(xytps, "[", "pr")))
 #pdf('/Users/aturpin/doc/papers/kinetic_simulator/doc/eg1.pdf', width=8, height=16)
-#pdf('Rplots.pdf', width=8, height=16)
-#layout(matrix(1:2,2,1))
-#par(cex=1.5)
-#plot(unlist(lapply(xytps, "[", "tt")), type="b", xlab="Location", ylab="Static Threshold", las=1)
-#abline(h=0, lty=2)
-#plot(unlist(lapply(xytps, "[", "pr")), type="b", xlab="Location", ylab="Prob. seeing", las=1)
+pdf('probs2.pdf', width=8, height=16)
+layout(matrix(1:2,2,1))
+par(cex=1.5)
+plot(unlist(lapply(xytps, "[", "tt")), type="b", xlab="Location", ylab="Static Threshold", las=1)
+abline(h=0, lty=2)
+plot(unlist(lapply(xytps, "[", "pr")), type="b", xlab="Location", ylab="Prob. seeing", las=1, ylim=c(0,0.6))
+points(unlist(lapply(xytps, "[", "spr")), type="b", col="red")
 #plot(cumsum(unlist(lapply(xytps, "[", "pr"))), type="b", xlab="Location", ylab="Cummulative Prob. seeing")
-#dev.off()
+dev.off()
 #print(xytps)
 #print(max(cumulative))
 #    stopifnot(abs(max(cumulative) - 1) < 0.00001)
