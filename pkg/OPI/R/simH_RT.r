@@ -271,7 +271,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
 
         time_for_path <- path_len / stim$speeds[path_num] * 1000
 
-        granularity <- time_for_path / SAMPLING_SPEED
+        granularity <- floor(time_for_path / SAMPLING_SPEED)
 
         xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=granularity)
         ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=granularity)
