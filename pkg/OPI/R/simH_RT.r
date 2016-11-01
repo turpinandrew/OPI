@@ -257,7 +257,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     ############################################################################## 
     # Build list of (x,y,time, speed, pr_seeing) for GRANULARITY steps wlong each segment
     ############################################################################## 
-    GRANULARITY <- 50
+    GRANULARITY <- 100
     xytps <- NULL
     time <- 0
     eDist <- function(i,j) sqrt((xs[j]-xs[i])^2 + (ys[j]-ys[i])^2) 
@@ -279,7 +279,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
 
         time_between_checks <- eDist(1, 2) / stim$speeds[path_num] * 1000
 
-        pr_not_pressed <- 1
+        pr_prev_press <- 0
         for (i in 1:GRANULARITY) {
             tt.single <- approx(tt.dists, tt_noNAs, eDist(1,i))$y
 
@@ -294,13 +294,16 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
                 pr_press <- 1 - pr_press
 
             xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, 
-                                        pr=pr_not_pressed * pr_press, 
+                                        pr= (1 - pr_prev_press) * pr_press, 
                                         spr= pr_press, 
                                         d=dist(stim$levels[[path_num]], tt.single),
                                         tt=tt.single
             )))
 
-            pr_not_pressed <- pr_not_pressed * (1-pr_press)
+            if (i > 1) {
+                pr_prev_press <- pr_prev_press + (xytps[[i]]$spr + xytps[[i-1]]$spr)/2 * (eDist(i-1,i))
+                pr_prev_press <- min(pr_prev_press,1)
+            }
 
             time <- time + time_between_checks
         }
@@ -336,21 +339,23 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     ######################################################
     cumulative <- cumsum(unlist(lapply(xytps, "[", "pr")))
 #pdf('/Users/aturpin/doc/papers/kinetic_simulator/doc/eg1.pdf', width=8, height=16)
-pdf('probs2.pdf', width=8, height=16)
-layout(matrix(1:2,2,1))
+pdf('probs.pdf', width=8, height=16)
+#layout(matrix(1:2,2,1))
 par(cex=1.5)
 plot(unlist(lapply(xytps, "[", "tt")), type="b", xlab="Location", ylab="Static Threshold", las=1)
 abline(h=0, lty=2)
 plot(unlist(lapply(xytps, "[", "pr")), type="b", xlab="Location", ylab="Prob. seeing", las=1, ylim=c(0,0.6))
 points(unlist(lapply(xytps, "[", "spr")), type="b", col="red")
-#plot(cumsum(unlist(lapply(xytps, "[", "pr"))), type="b", xlab="Location", ylab="Cummulative Prob. seeing")
+plot(cumulative, type="b", xlab="Location", ylab="Cum Prob. seeing", las=1, ylim=c(0,2.6))
 dev.off()
-#print(xytps)
-#print(max(cumulative))
+#print(cumulative)
+#print(unlist(lapply(xytps, "[", "pr")))
+#print(unlist(lapply(xytps, "[", "s")))
 #    stopifnot(abs(max(cumulative) - 1) < 0.00001)
 
     r <- runif(1)
     i <- head(which(cumulative >= r), 1)   
+    print(i)
 
     if (length(i) == 0)   # not seen
         return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))

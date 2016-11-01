@@ -47,40 +47,4 @@ test.exampleVectors <- function()
     }
   }
 
-  #check for an unseen stimulus (below threshold)
-  LEVEL = dbTocd(50,10000)
-  for (i in 1:pointsTested) {
-    stim <- list(path=list(x=x_mat[,i], y=y_mat[,i]),sizes=(0.43), colors=("white"),  levels=(LEVEL), speeds=c(SPEED))
-    class(stim) <- "opiKineticStimulus"
-    
-    opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData=RtDbUnits, rtFP=1:1600)
-    result <- opiPresent(stim, tt= list(c(30,30,30,30,30)), #list(seq(0, 30, length=10)),
-                         fpr=0, fnr=0)
-    checkTrue(!result$seen)
-  }
-  
-  #check for fpr
-  result <- opiPresent(stim, tt= list(c(30,30,30,30,30)), #list(seq(0, 30, length=10)),
-                       fpr=1, fnr=0)
-  checkTrue(result$seen, "fpr set to 1 so stim should be seen")
-
-  # #check for fnr
-  LEVEL = dbTocd(0,10000)
-  stim <- list(path=list(x=c(20,10), y=c(-5,32)),sizes=(0.43), colors=("white"),  levels=(LEVEL), speeds=c(SPEED))
-  class(stim) <- "opiKineticStimulus"
-  result <- opiPresent(stim, tt= list(c(30,30,30,30,30)), #list(seq(0, 30, length=10)),
-                       fpr=0, fnr=1)
-  checkTrue(!result$seen, "fnr set to 1 so stim should not be seen")
 }
-#  checkEqualsNumeric(6, factorial(3))
-#  checkIdentical(6, factorial(3))
-#  checkTrue(2 + 2 == 4, 'Arithmetic works')
-  #checkEquals(6, factorial(3))
-  #checkException(log('a'), 'Unable to take the log() of a string')
-
-# 
-# test.deactivation <- function()
-# {
-#   DEACTIVATED('Deactivating this test function')
-# }
-# 
