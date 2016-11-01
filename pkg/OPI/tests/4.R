@@ -2,7 +2,7 @@
 
 #check for fn
 
-test.exampleVectors <- function()
+test.false_negative <- function()
 {
   require(OPI)
   data("RtDbUnits")

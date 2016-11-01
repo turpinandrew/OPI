@@ -1,6 +1,6 @@
 #require(RUnit)
 
-test.exampleVectors <- function()
+test.regularVectors <- function()
 {
   require(OPI)
   data("RtDbUnits")

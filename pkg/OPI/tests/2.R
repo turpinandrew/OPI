@@ -2,7 +2,7 @@
 
   #check for an unseen stimulus (below threshold)
 
-test.exampleVectors <- function()
+test.unseen_stims <- function()
 {
   require(OPI)
   data("RtDbUnits")

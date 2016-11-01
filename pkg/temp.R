@@ -13,9 +13,9 @@ opiInitialise(eyeSuiteSettingsLocation = "C:/ProgramData/Haag-Streit/EyeSuite/",
 )
 options(error=opiClose)
 
-#LEVELS <- 0:4 * 10
-LEVELS <- c(40)
-REPS <- 1 # 100
+LEVELS <- 0:4 * 10
+#LEVELS <- c(0)
+REPS <- 100 
 TT_REPS <- 10 # 1000
 
 res <- NULL
@@ -43,7 +43,7 @@ for (level in LEVELS) {
 }
 
 print(res)
-#boxplot(res)
+boxplot(res)
 
 
 #stim <- list(

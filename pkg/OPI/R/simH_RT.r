@@ -255,33 +255,43 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
         stop(paste("speeds is length ",length(stim$speeds), "and should be", num_paths, "in SimHensonRT - kinetic"))
 
     ############################################################################## 
-    # Build list of (x,y,time, speed, pr_seeing) for GRANULARITY steps wlong each segment
+    # Build list of (x,y,time, speed, pr_seeing) for granularity steps along each segment
+    # assuming a check every SAMPLING_SPEED milliseconds
     ############################################################################## 
-    GRANULARITY <- 100
+    eDistP <- function(x1,y1,x2,y2) sqrt((x1-x2)^2 + (y1-y2)^2) 
+    eDistI <- function(i,j) eDistP(xs[j], ys[j], xs[i], ys[i]) 
+
+    SAMPLING_SPEED <- 50
+
     xytps <- NULL
     time <- 0
-    eDist <- function(i,j) sqrt((xs[j]-xs[i])^2 + (ys[j]-ys[i])^2) 
     for (path_num in 1:num_paths) {
-        xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=GRANULARITY)
-        ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=GRANULARITY)
+        path_len <- eDistP(stim$path$x[path_num], stim$path$y[path_num],
+                           stim$path$x[path_num+1], stim$path$y[path_num+1])
 
-        if (eDist(1, length(xs)) == 0) {
+        time_for_path <- path_len / stim$speeds[path_num] * 1000
+
+        granularity <- time_for_path / SAMPLING_SPEED
+
+        xs <- seq(stim$path$x[path_num], stim$path$x[path_num+1], length.out=granularity)
+        ys <- seq(stim$path$y[path_num], stim$path$y[path_num+1], length.out=granularity)
+
+        if (eDistI(1, length(xs)) == 0) {
             warning("Path of zero length in kinetic stim. Returning not-seen in SimHensonRT - kinetic") 
             return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
         }
         
-        tt.dists <- seq(0, 1, length.out=length(tt[[path_num]])) * eDist(1, length(xs))
+        tt.dists <- seq(0, 1, length.out=length(tt[[path_num]])) * eDistI(1, length(xs))
         tt_noNAs <- tt[[path_num]]   # turn NAs into -1
         z <- is.na(tt_noNAs)
         tt_noNAs[z] <- -1
 
         db <- cdTodb(stim$levels[path_num], .SimHRTEnv$maxStim)
 
-        time_between_checks <- eDist(1, 2) / stim$speeds[path_num] * 1000
+        time_between_checks <- eDistI(1, 2) / stim$speeds[path_num] * 1000
 
-        pr_prev_press <- 0
-        for (i in 1:GRANULARITY) {
-            tt.single <- approx(tt.dists, tt_noNAs, eDist(1,i))$y
+        for (i in 1:granularity) {
+            tt.single <- approx(tt.dists, tt_noNAs, eDistI(1,i))$y
 
             pr_press <- 0
             if (tt.single >= 0) {
@@ -294,16 +304,10 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
                 pr_press <- 1 - pr_press
 
             xytps <- c(xytps, list(list(x=xs[i], y=ys[i], s=stim$speeds[[path_num]], t=time, 
-                                        pr= (1 - pr_prev_press) * pr_press, 
-                                        spr= pr_press, 
+                                        pr= pr_press, 
                                         d=dist(stim$levels[[path_num]], tt.single),
                                         tt=tt.single
             )))
-
-            if (i > 1) {
-                pr_prev_press <- pr_prev_press + (xytps[[i]]$spr + xytps[[i-1]]$spr)/2 * (eDist(i-1,i))
-                pr_prev_press <- min(pr_prev_press,1)
-            }
 
             time <- time + time_between_checks
         }
@@ -314,9 +318,16 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     ######################################################
     fn_ret <- list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA)
 
-    inverse_cumulative <- cumsum(1 - unlist(lapply(xytps, "[", "pr")))
-    r <- runif(1)
-    loc <- head(which(inverse_cumulative >= r), 1)   
+    pr_not_see <- 1 - unlist(lapply(xytps, "[", "pr"))
+    if (length(pr_not_see) == 1) {
+        loc <- 1
+    } else {
+        if (all(pr_not_see == 0))
+            loc <- sample(1:length(pr_not_see), 1)
+        else
+            loc <- sample(1:length(pr_not_see), 1, prob=pr_not_see)
+    }
+
     fp_ret <- list(err=NULL,
                seen=TRUE,
                time=xytps[[loc]]$t,
@@ -333,29 +344,11 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     }
 
     ######################################################
-    # Now just choose a random point on the cumulative sum
-    # sum of xytps$pr. If it is NA, take next highest.
+    # Now just walk along xytps flipping coin until seen or get to end.
     # If seen, add a little lag for reaction.
     ######################################################
-    cumulative <- cumsum(unlist(lapply(xytps, "[", "pr")))
-#pdf('/Users/aturpin/doc/papers/kinetic_simulator/doc/eg1.pdf', width=8, height=16)
-pdf('probs.pdf', width=8, height=16)
-#layout(matrix(1:2,2,1))
-par(cex=1.5)
-plot(unlist(lapply(xytps, "[", "tt")), type="b", xlab="Location", ylab="Static Threshold", las=1)
-abline(h=0, lty=2)
-plot(unlist(lapply(xytps, "[", "pr")), type="b", xlab="Location", ylab="Prob. seeing", las=1, ylim=c(0,0.6))
-points(unlist(lapply(xytps, "[", "spr")), type="b", col="red")
-plot(cumulative, type="b", xlab="Location", ylab="Cum Prob. seeing", las=1, ylim=c(0,2.6))
-dev.off()
-#print(cumulative)
-#print(unlist(lapply(xytps, "[", "pr")))
-#print(unlist(lapply(xytps, "[", "s")))
-#    stopifnot(abs(max(cumulative) - 1) < 0.00001)
-
-    r <- runif(1)
-    i <- head(which(cumulative >= r), 1)   
-    print(i)
+    rs <- runif(length(xytps))
+    i <- head(which(rs < unlist(lapply(xytps, "[", "pr"))), 1)
 
     if (length(i) == 0)   # not seen
         return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
