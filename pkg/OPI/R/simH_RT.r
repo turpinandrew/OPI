@@ -228,8 +228,12 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #             tt=NA is never seen)
 # @param fpr - false positive rate in [0,1] (note for whole path)
 # @param fnr - false negative rate in [0,1] (note for whole path)
+# @param tt - list of vectors of true thresholds for each path
+# @param dist - function for computing distance from threshold
+# @param notSeenToSeen - if TRUE, use prob seeing at each sample, else 1-prob seeing
+# @param SAMPLING_SPEED - temporary
 ##################################################################
-simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t), notSeenToSeen=TRUE) {
+simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t), notSeenToSeen=TRUE, SAMPLING_SPEED=50) {
     if (is.null(stim))
         stop("stim is NULL in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
     if (!is.null(nextStim))
@@ -261,7 +265,7 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     eDistP <- function(x1,y1,x2,y2) sqrt((x1-x2)^2 + (y1-y2)^2) 
     eDistI <- function(i,j) eDistP(xs[j], ys[j], xs[i], ys[i]) 
 
-    SAMPLING_SPEED <- 50
+    #SAMPLING_SPEED <- 50
 
     xytps <- NULL
     time <- 0
