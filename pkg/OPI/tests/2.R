@@ -7,7 +7,6 @@ test.unseen_stims <- function()
   require(OPI)
   data("RtDbUnits")
   checkTrue(chooseOpi("SimHensonRT"), 'RT Henson sim is chosen')
-  checkEquals(NULL, opiClose())
   
   xs <- c(3, 2, -20, 0, 10,5, -5, -50, -20, 0, 10,5, -5, -50) #, 3, 2,
   x_mat <- matrix(xs, 2)
@@ -22,12 +21,14 @@ test.unseen_stims <- function()
     stim <- list(path=list(x=x_mat[,i], y=y_mat[,i]),sizes=(0.43), colors=("white"),  levels=(LEVEL), speeds=c(SPEED))
     class(stim) <- "opiKineticStimulus"
     
-    opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData=RtDbUnits, rtFP=1:1600)
+    e <- opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData=RtDbUnits, rtFP=1:1600)
+    checkEquals(NULL, e)
 
     result <- opiPresent(stim, tt= list(c(0,0,0,0,0)), fpr=0, fnr=0)
 
     checkTrue(!result$seen)
+
+    checkEquals(NULL, opiClose())
   }
 
-  opiClose()
 }

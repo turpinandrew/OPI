@@ -1,22 +1,42 @@
 #require(RUnit)
 
-#check for fn
+##################################
+# Check that RT are consistent
+# A vector with rt==0 should have stop before rt=1000
+##################################
 
-test.false_negative <- function()
+require(OPI)
+
+get_mean_dist<- function(rtData)
 {
-  require(OPI)
-  data("RtDbUnits")
   checkTrue(chooseOpi("SimHensonRT"), 'RT Henson sim is chosen')
   checkEquals(NULL, opiClose())
   
   SPEED = 3;
+  LEVEL = dbTocd(20,10000)
 
-  LEVEL = dbTocd(0,10000)
+  e <- opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData=rtData, rtFP=1:1600)
+  checkEquals(NULL, e)
 
-  stim <- list(path=list(x=c(20,10), y=c(-5,32)),sizes=(0.43), colors=("white"),  levels=(LEVEL), speeds=c(SPEED))
+  stim <- list(path=list(x=c(20,0), y=c(20,0)),sizes=(0.43), colors=("white"),  levels=(LEVEL), speeds=c(SPEED))
   class(stim) <- "opiKineticStimulus"
 
-  result <- opiPresent(stim, tt= list(c(30,30,30,30,30)), fpr=0, fnr=1)
+  result <- opiPresent(stim, tt= list(c(0,40)), fpr=0, fnr=0)
 
-  checkTrue(!result$seen, "fnr set to 1 so stim should not be seen")
+  checkEquals(NULL, opiClose())
+
+  return(sqrt((result$x - 20)^2 + (result$y-20)^2))
+}
+
+
+test.rt <- function()
+{
+  
+  rtData1 <- as.data.frame(cbind(Rt=rep(   0, 100),Dist=rep(0, 100), Person=rep(0, 100)))
+  rtData2 <- as.data.frame(cbind(Rt=rep(1000, 100),Dist=rep(0, 100), Person=rep(0, 100)))
+
+  d1 <- median(replicate(100, get_mean_dist(rtData1)))
+  d2 <- median(replicate(100, get_mean_dist(rtData2)))
+
+  checkTrue(d1 < d2, "d1 (rt=0) should be less than d2 (rt=1000)")
 }
