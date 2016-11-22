@@ -233,7 +233,7 @@ simH_RT.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 # @param notSeenToSeen - if TRUE, use prob seeing at each sample, else 1-prob seeing
 # @param SAMPLING_SPEED - temporary
 ##################################################################
-simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t), notSeenToSeen=TRUE, SAMPLING_SPEED=50) {
+simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, dist=function(l,t) l-dbTocd(t), notSeenToSeen=TRUE, SAMPLING_SPEED=50, SEEING_CRITERIA=0, IN_A_ROW=1) {
     if (is.null(stim))
         stop("stim is NULL in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
     if (!is.null(nextStim))
@@ -351,10 +351,23 @@ simH_RT.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03,
     # Now just walk along xytps flipping coin until seen or get to end.
     # If seen, add a little lag for reaction.
     ######################################################
-    rs <- runif(length(xytps))
-    i <- head(which(rs < unlist(lapply(xytps, "[", "pr"))), 1)
+#print(unlist(lapply(xytps, "[", "pr")))
+#print(length(xytps))
 
-    if (length(i) == 0)   # not seen
+    rs <- runif(length(xytps))
+    i <- head(which(rs < unlist(lapply(xytps, "[", "pr")) & rs >= SEEING_CRITERIA ), 1)
+
+    in_a_row <- 0
+    for (seen in i) {
+        if (seen)
+            in_a_row <- in_a_row + 1
+        else
+            in_a_row <- 0
+        if (in_a_row == IN_A_ROW)
+            break
+    }
+
+    if (in_a_row != IN_A_ROW)   # not seen
         return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
 
     if (i > 1)
