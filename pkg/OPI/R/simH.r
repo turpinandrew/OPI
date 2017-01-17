@@ -25,7 +25,7 @@
 #
 
 simH.opiClose         <- function() { return(NULL) }
-simH.opiQueryDevice   <- function() { return (list(type="SimHenson")) }
+simH.opiQueryDevice   <- function() { return (list(type="SimHenson", isSim=TRUE)) }
 
 if (!exists(".SimHEnv"))
     .SimHEnv <- new.env(size=5)

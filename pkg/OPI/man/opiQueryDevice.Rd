@@ -26,7 +26,12 @@ See the Value section for details.
 }
 }
 \value{
-Returns implementation dependant data.
+Returns a list that contains \code{isSim} and implementation dependant data.
+\enumerate{
+    \item \code{isSim} is \code{TRUE} if the device is a simulation, or \code{FALSE} if 
+            the device is a physical machine.
+}
+
 \subsection{Octopus600}{
 Returns a list of 10 items:
 \enumerate{

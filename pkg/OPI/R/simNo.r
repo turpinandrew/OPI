@@ -21,7 +21,7 @@
 #
 
 simNo.opiClose         <- function() { return(NULL) }
-simNo.opiQueryDevice   <- function() { return (list(type="SimNo")) }
+simNo.opiQueryDevice   <- function() { return (list(type="SimNo", isSim=TRUE)) }
 
 ################################################################################
 # Input

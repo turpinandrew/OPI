@@ -24,7 +24,7 @@
 #
 
 simG.opiClose         <- function() { return(NULL) }
-simG.opiQueryDevice   <- function() { return (list(type="SimGaussian")) }
+simG.opiQueryDevice   <- function() { return (list(type="SimGaussian", isSim=TRUE)) }
 
 if (!exists(".SimGEnv"))
     .SimGEnv <- new.env(size=2)

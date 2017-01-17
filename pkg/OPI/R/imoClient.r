@@ -301,6 +301,7 @@ imo.opiQueryDevice <- function() {
         warning("opiQueryDevice failed")
 
     return(list(
+        isSim=FALSE,
         pupilX=strtoi(s[2]), 
         pupilY=strtoi(s[3]),       # in pixels
         purkinjeX=strtoi(s[4]), 

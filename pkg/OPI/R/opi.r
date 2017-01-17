@@ -84,12 +84,12 @@ opi.implementations <- list(
         opiPresent       = "octo900.opiPresentF310"
     ),
     list(
-      name="Octopus600",
-      opiInitialize    = "octo600.opiInitialize",
-      opiClose         = "octo600.opiClose",
-      opiSetBackground = "octo600.opiSetBackground",
-      opiQueryDevice   = "octo600.opiQueryDevice",
-      opiPresent       = "octo600.opiPresent"
+        name="Octopus600",
+        opiInitialize    = "octo600.opiInitialize",
+        opiClose         = "octo600.opiClose",
+        opiSetBackground = "octo600.opiSetBackground",
+        opiQueryDevice   = "octo600.opiQueryDevice",
+        opiPresent       = "octo600.opiPresent"
     ),
     list(
         name="SimNo",

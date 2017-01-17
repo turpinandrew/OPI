@@ -29,7 +29,7 @@
 #
 
 simH_RT.opiClose         <- function() { return(NULL) }
-simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT")) }
+simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT", isSim=TRUE)) }
 
 if (!exists(".SimHRTEnv"))
     .SimHRTEnv <- new.env(size=5)

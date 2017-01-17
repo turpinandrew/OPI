@@ -269,7 +269,8 @@ octo600.opiQueryDevice <- function() {
     pupilPositionXLeft  = res[[1]][14],
     pupilPositionYLeft  = res[[1]][15],
     pupilPositionXRight = res[[1]][16],
-    pupilPositionYRight = res[[1]][17]
+    pupilPositionYRight = res[[1]][17],
+    isSim=FALSE
   )
   return(ret)
 }

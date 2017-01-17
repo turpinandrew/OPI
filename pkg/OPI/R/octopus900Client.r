@@ -498,5 +498,5 @@ octo900.opiQueryDevice <- function() {
       cat("\n")
     })
 
-    return(NULL)
+    return(list(isSim=FALSE))
 }

@@ -201,5 +201,5 @@ compass.opiClose <- function() {
 # Lists defined constants
 ###########################################################################
 compass.opiQueryDevice <- function() {
-    return(list(default="Nothing to report"))
+    return(list(default="Nothing to report", isSim=FALSE))
 }
