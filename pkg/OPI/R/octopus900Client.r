@@ -199,6 +199,22 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     if (is.null(stim)) 
         return(list(err=0))
 
+    if (is.null(stim$x)) stop(paste("opiPresent: no x value given in static stim"))
+    if (is.null(stim$y)) stop(paste("opiPresent: no x value given in static stim"))
+    if (is.null(stim$level)) stop(paste("opiPresent: no level value given in static stim"))
+    if (is.null(stim$size)) {
+        warning("opiPresent: no stim size specified. Assuming Goldmann III = 26/60 degrees.")
+        stim$size <- 26/60
+    }
+    if (is.null(stim$duration)) {
+        warning("opiPresent: no stim duration specified. Assuming 200ms.")
+        stim$duration <- 200
+    }
+    if (is.null(stim$responseWindow)) {
+        warning("opiPresent: no stim responseWindow specified. Assuming 1500ms.")
+        stim$responseWindow <- 1500
+    }
+
     if(min(abs(.Octopus900Env$GOLDMANN - stim$size), na.rm=TRUE) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
@@ -206,6 +222,7 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
         msg <- "OPI_PRESENT_STATIC_F310 "
     else
         msg <- "OPI_PRESENT_STATIC "
+    
     msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, .Octopus900Env$zero_db_in_asb/pi) * 10.0)
     msg <- paste(msg, (which.min(abs(.Octopus900Env$GOLDMANN - stim$size))))
     msg <- paste(msg, stim$duration)
@@ -307,6 +324,22 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     if (is.null(stim)) 
         return(list(err=0))
 
+    if (is.null(stim$x)) stop(paste("opiPresent: no x value given in temporal stim"))
+    if (is.null(stim$y)) stop(paste("opiPresent: no x value given in temporal stim"))
+    if (is.null(stim$rate)) stop(paste("opiPresent: no rate value given in temporal stim"))
+    if (is.null(stim$size)) {
+        warning("opiPresent: no stim size specified. Assuming Goldmann III = 26/60 degrees.")
+        stim$size <- 26/60
+    }
+    if (is.null(stim$duration)) {
+        warning("opiPresent: no stim duration specified. Assuming 200ms.")
+        stim$duration <- 200
+    }
+    if (is.null(stim$responseWindow)) {
+        warning("opiPresent: no stim responseWindow specified. Assuming 1500ms.")
+        stim$responseWindow <- 1500
+    }
+
     if(min(abs(.Octopus900Env$GOLDMANN - stim$size)) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
@@ -317,6 +350,8 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     msg <- paste(msg, stim$responseWindow)
     if (!is.null(nextStim)) {
         msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
+    } else {
+        msg <- paste(msg, stim$x * 10.0, stim$y * 10.0)
     }
 
     writeLines(msg, .Octopus900Env$socket)
@@ -345,6 +380,11 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
     if (is.null(stim)) 
         return(list(err=0))
+
+    if (is.null(stim$path)) stop(paste("opiPresent: no path values given in kinetic stim"))
+    if (is.null(stim$sizes)) stop(paste("opiPresent: no sizes values given in kinetic stim"))
+    if (is.null(stim$levels)) stop(paste("opiPresent: no levels values given in kinetic stim"))
+    if (is.null(stim$speeds)) stop(paste("opiPresent: no speeds values given in kinetic stim"))
 
         # convert sizes to GOLDMANN
      stim$sizes <- sapply(stim$sizes, function(s) {
