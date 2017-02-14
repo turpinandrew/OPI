@@ -82,32 +82,30 @@ true threshold, but you might want it scaled somehow to match
 \code{rtData}.
 
 
-\code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt, notSeenToSeen=TRUE)}
+\code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, 
+                            criteria=0.95, rt_shape=5.3, rt_rate=1.4, rt_scale=0.1)}
 
-For determinng seen/not-seen for kinetic, each path of the stimulus is 
-divided into 100 discrete static presentations. The probability of one 
-of these is 
-determined from the probability of seeing it as W-on-W, size III target
-multiplied by the same for not seeing all previous targets.
-Thus it is the conditional probability of seeing the current location 
-given that you have not seen all previous locations.
-The true threshold at each of the 100 locations is 
-determined by linear interpolation of the input \code{tt} list (in dB).
-It is assumed that the first element of each \code{tt} vector is 
-the true threshold for the beginning of the path, and the final
-element the true threshold for the end of the path.
-An element of \code{NA} in \code{tt} is never seen.
-The remainder of the elements of \code{tt} ar assumed to be evenly spaced between
-the beginning and end of the path.
-If \code{notSeenToSeen} is \code{TRUE}, then the probablity of pressing is the
-probability of seeing the stimuli after a period of not-seeing.
-If \code{notSeenToSeen} is \code{FALSE}, then the probablity of pressing is the
-probability of not seeing the stimuli after a period of seeing.
+For determinng seen/not-seen for kinetic, the first location (to a fidelity of 
+0.01 degrees) on the path (it only works for single paths now) where the probability of seeing
+is equal to \code{criteria} is found.
+If no such location exists, then the stimuli is not seen.
+The probability of seeing at each location 
+is determined using a frequency-of-seeing curve defined 
+as a cumulative Gaussian with parameters controlled by \code{tt} and 
+\code{opiInitialize}.
+At each location along the path, the mean of the FoS is taken from the
+\code{tt} function, which takes a distance-along-path (in degrees) 
+as an argument, and returns a dB value which is the static threshold
+at that distance along the path.
+Function \code{tt} can return NA for not thresholds that are always not seen.
+At each location along the path, the standard deviation 
+of the FoS is sampled from a Gaussion with mean 
+taken from the formula of Henson et al (2000), 
+as parametrised by \code{opiInitialize}, and standard deviation 0.25.
 
-The location and time of a false positive response (for the total kinetic path) 
-is sampled from the 100 locations where the coonditional 
-probability of seeing
-is below $10^{-10}$ (including locations with a \code{tt} element pf \code{NA}).
+The location of a false positive response (for the total kinetic path) 
+is sampled uniformly from the start of the path to the 'seeing' location, 
+or the entire path if the stimuli is not seen.
 
 Note that the false positive rate \code{fpr} and the false negative rate
 \code{fnr}
@@ -115,18 +113,10 @@ are specified for the whole path, and not for the individual static responses
 along the way.
 
 The actual location returned for a seen response 
-is the location of the 100  
-plus some distance along the same trajectory 
-as determined by the speed and reaction time database 
-used in \code{opiInitialise}.
-Note that if the ``seen'' occurs at the end of 
-a path segment, the trajectory is currently calculated
-along that same trajectory, and not along the next
-adjacent path segment.
-The reaction time is determined as for the static case, 
-by computing the result of \code{dist(stim_level, true_threshold)}
-and sampling from the 100 nearest entries in \code{.SimHRTEnv$rtData}, 
-which is set using the \code{rtData} parameter in \code{opiInitialise}.
+is the location where the probability of seeing equals \code{criteria}, 
+plus a response time sampled from a Gamma distribution parameterised 
+by \code{rt_shape} and \code{rt_rate} and multiplied by \code{rt_scale}.
+That is: \code{rgamma(1, shape=rt_shape, rate=rt_rate) / rt_scale}.
 }
 
 
