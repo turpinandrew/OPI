@@ -7,6 +7,7 @@
 #
 # Modified  8 Jul 2014: added type="X" to opiInitialise and opiPresent
 # Modified 20 Jul 2014: added maxStim argument for cdTodB conversion
+# Modified Feburary 2017: Moved kinetic over from simH_RT.r
 #
 # Copyright 2012 Andrew Turpin
 # This program is part of the OPI (http://perimetry.org/OPI).
@@ -49,11 +50,24 @@ simH.opiInitialize <- function(type="C", A=NA, B=NA, cap=6, display=NULL, maxSti
 
     if (cap < 0)
         warning("cap is negative in call to opiInitialize (simHenson)")
-    .SimHEnv$type <- type
-    .SimHEnv$cap  <-  cap
-    .SimHEnv$A    <-  A
-    .SimHEnv$B    <-  B
-    .SimHEnv$maxStim <- maxStim
+
+    assign("type",    type, envir = .SimHEnv)
+    assign("cap",     cap, envir = .SimHEnv)
+    assign("maxStim", maxStim, envir = .SimHEnv)
+
+    if (.SimHEnv$type == "N") {
+        assign("A", -0.066, envir=.SimHEnv)
+        assign("B", 2.81, envir=.SimHEnv)
+    } else if (.SimHEnv$type == "G") {
+        assign("A", -0.098 , envir=.SimHEnv)
+        assign("B", 3.62, envir=.SimHEnv)
+    } else if (.SimHEnv$type == "C") {
+        assign("A", -0.081, envir=.SimHEnv)
+        assign("B", 3.27, envir=.SimHEnv)
+    } else if (.SimHEnv$type == "X") {
+        assign("A" ,  A, envir=.SimHEnv)
+        assign("B",  B, envir=.SimHEnv)
+    }
 
     if (type == "X" && (is.na(A) || is.na(B)))
         warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
@@ -77,7 +91,8 @@ simH.opiSetBackground <- function(col, gridCol) {
 ################################################################################
 #
 ################################################################################
-simH.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30) { 
+simH.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30,
+                            criteria=0.95, rt_shape=5.3, rt_rate=1.4, rt_scale=0.1) {
                             UseMethod("simH.opiPresent") }
 setGeneric("simH.opiPresent")
 
@@ -126,21 +141,7 @@ simH.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr
 
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 
-    if (.SimHEnv$type == "N") {
-        return(simH.present(cdTodb(stim$level, .SimHEnv$maxStim), .SimHEnv$cap, fpr, fnr, tt, -0.066, 2.81))
-    } else if (.SimHEnv$type == "G") {
-        return(simH.present(cdTodb(stim$level, .SimHEnv$maxStim), .SimHEnv$cap, fpr, fnr, tt, -0.098, 3.62))
-    } else if (.SimHEnv$type == "C") {
-        return(simH.present(cdTodb(stim$level, .SimHEnv$maxStim), .SimHEnv$cap, fpr, fnr, tt, -0.081, 3.27))
-    } else if (.SimHEnv$type == "X") {
-        return(simH.present(cdTodb(stim$level, .SimHEnv$maxStim), .SimHEnv$cap, fpr, fnr, tt, .SimHEnv$A, .SimHEnv$B))
-    } else {
-        return ( list(
-            err = "Unknown error in opiPresent() for SimHenson",
-            seen= NA,
-            time= NA 
-        ))
-    }
+    return(simH.present(cdTodb(stim$level, .SimHEnv$maxStim), .SimHEnv$cap, fpr, fnr, tt, .SimHEnv$A, .SimHEnv$B))
 }
 
 ########################################## TO DO !
@@ -148,7 +149,134 @@ simH.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     stop("ERROR: haven't written simH temporal persenter yet")
 }
 
-simH.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, ...) {
-    stop("ERROR: haven't written simH kinetic persenter yet")
+##################################################################
+# Assumes static thresholds/FoS curves and static reaction times.
+# Note that false positives and false negatives 
+# have to be treated separately from the static responses.
+# The location of a false positive is randomly drawn from any 
+# location prior to the "true positive" point.
+# Note FoS parameters and reaction times picked up 
+# from SimHEnv set in opiInitialize
+#
+# NOTE Only works for single path vectors!
+#
+# @param tt - a list of functions that give true static threshold in dB
+#             (relative to .SimHEnv$maxStim) as a function of distance along the path
+#             tt(x)==NA implies never seen
+# @param fpr - false positive rate in [0,1] (note for whole path)
+# @param fnr - false negative rate in [0,1] (note for whole path)
+# @param criteria - static probability of seeing where person presses
+# @param rt_shape - response time drawn from rgamma(1, rt_shape, rt_rate) * rt_scale
+# @param rt_rate  - response time drawn from rgamma(1, rt_shape, rt_rate) * rt_scale
+# @param rt_scale - response time drawn from rgamma(1, rt_shape, rt_rate) * rt_scale
+##################################################################
+simH.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, 
+                            criteria=0.95, rt_shape=5.3, rt_rate=1.4, rt_scale=0.1) {
+    if (is.null(stim))
+        stop("stim is NULL in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+    if (!is.null(nextStim))
+        stop("nextStim should be NULL for kinetic in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+
+    num_paths <- length(stim$path$x) - 1
+
+    if (num_paths != 1) 
+        stop("Sorry love; kinetic for SimHensonRT only works for single path vectors")
+
+    if (is.null(tt))
+        stop("tt must be a list of functions in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+
+    if (is(tt[[1]])[1] != "function")
+        stop("tt must be a *list* of functions in call to opiPresent (using SimHensonRT, opiKineticStimulus)")
+
+    if (length(stim$path$y) != num_paths + 1)
+        stop(paste("y is length ",length(stim$path$y), "and should be", num_paths+1, "in SimHensonRT - kinetic"))
+    if (length(stim$sizes) != num_paths)
+        stop(paste("sizes is length ",length(stim$sizes), "and should be", num_paths, "in SimHensonRT - kinetic"))
+    if (length(stim$colors) != num_paths)
+        stop(paste("colors is length ",length(stim$colors), "and should be", num_paths, "in SimHensonRT - kinetic"))
+    if (length(stim$levels) != num_paths)
+        stop(paste("levels is length ",length(stim$levels), "and should be", num_paths, "in SimHensonRT - kinetic"))
+    if (length(stim$speeds) != num_paths)
+        stop(paste("speeds is length ",length(stim$speeds), "and should be", num_paths, "in SimHensonRT - kinetic"))
+
+    ############################################################################## 
+    # Find the first location along the paths where Pr seeing is at least criteria.
+    # Assumes a FoS slope of Gauss(mean=min(6,exp(3.27 -0.081* tt)), stdev=0.25) at all locations.
+    ############################################################################## 
+    eDistP <- function(x1,y1,x2,y2) sqrt((x1-x2)^2 + (y1-y2)^2) 
+
+    prSeeing <- function(stim, tt) {
+        if (is.na(tt))
+            return(0)
+
+        slope <- rnorm(1, mean=min(.SimHEnv$cap, exp(.SimHEnv$A*tt + .SimHEnv$B)), 0.25)
+        return(1 - pnorm(stim, tt, slope))
+    }
+
+    path_num <- 1   # for future when multi-paths are supported (bwahahahaha!)
+
+    stim_db <- cdTodb(stim$levels[path_num], .SimHEnv$maxStim)
+    
+    path_len <- eDistP(stim$path$x[path_num], stim$path$y[path_num],
+                       stim$path$x[path_num+1], stim$path$y[path_num+1])
+
+    path_angle <- atan2(stim$path$y[path_num+1] - stim$path$y[path_num], stim$path$x[path_num+1] - stim$path$x[path_num])
+
+        # give difference between prSeeing at dist_along_path and criteria
+    f <- function(dist_along_path) prSeeing(stim_db, tt[[path_num]](dist_along_path))
+
+    ds <- seq(0,path_len, 0.01)
+    ii <- which(sapply(ds, f) >= criteria)
+
+    seeing_point <- NULL
+    if (length(ii) > 0)  # found!
+        seeing_point <- list(distance_in_path=ds[head(ii,1)], path_num=path_num)
+
+    #######################################################
+    # Check for false repsonses. Randomise order to check.
+    ######################################################
+    fn_ret <- list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA)
+
+    if (is.null(seeing_point)) {
+        max_d <- eDistP(stim$path$x[path_num], stim$path$y[path_num], stim$path$x[path_num+1], stim$path$y[path_num+1])
+    } else {
+        max_d <- seeing_point$distance_in_path
+    }
+
+    d <- runif(1, min=0, max=max_d)
+
+    fp_ret <- list(err=NULL,
+               seen=TRUE,
+               time=d / stim$speeds[path_num] * 1000, 
+               x=stim$path$x[path_num] + d*cos(path_angle),
+               y=stim$path$y[path_num] + d*sin(path_angle)
+           )
+
+    if (runif(1) < 0.5) {
+        if (runif(1) < fpr) return(fp_ret)   # fp first, then fn
+        if (runif(1) < fnr) return(fn_ret)
+    } else {
+        if (runif(1) < fnr) return(fn_ret)   # fn first, then fp
+        if (runif(1) < fpr) return(fp_ret)
+    }
+
+    #######################################################
+    # Get to here, then no false response
+    ######################################################
+    if (is.null(seeing_point)) {
+        return(list(err=NULL, seen=FALSE, time=NA, x=NA, y=NA))
+    } else {
+            #sample a reaction time
+        rt <- rgamma(1, shape=rt_shape, rate=rt_rate) / rt_scale
+
+        d <- seeing_point$distance_in_path + rt * stim$speeds[path_num] / 1000
+
+        return(list(err=NULL,
+                seen=TRUE,
+                time=d / stim$speeds[path_num] * 1000,
+                x=stim$path$x[path_num] + d*cos(path_angle),
+                y=stim$path$y[path_num] + d*sin(path_angle)
+        ))
+    }
 }
 
