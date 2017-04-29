@@ -66,20 +66,6 @@ determined by \code{simH.type} which is also set in the call to
 
 Note that if the stimulus value is less than zero, then the Henson
 formula is not used. The probability of seeing is \code{fpr}.
-}
-
-\subsection{SimHensonRT}{
-
-\code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt)}
-
-For static stimuli, this function is the same as for \code{SimHenson}, but reaction
-times are determined by sampling from \code{rtData} as passed to
-\code{opiInitialize}.  The \code{dist} parameter is the distance
-of the stimulus level from the true threshold, and should be in the
-same units as the \code{Dist} column of \code{rtData}. The default
-is just the straight difference between the stimulus level and the
-true threshold, but you might want it scaled somehow to match
-\code{rtData}.
 
 
 \code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=NULL, 
@@ -117,6 +103,22 @@ is the location where the probability of seeing equals \code{criteria},
 plus a response time sampled from a Gamma distribution parameterised 
 by \code{rt_shape} and \code{rt_rate} and multiplied by \code{rt_scale}.
 That is: \code{rgamma(1, shape=rt_shape, rate=rt_rate) / rt_scale}.
+}
+
+\subsection{SimHensonRT}{
+
+\code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt)}
+
+For static stimuli, this function is the same as for \code{SimHenson}, but reaction
+times are determined by sampling from \code{rtData} as passed to
+\code{opiInitialize}.  The \code{dist} parameter is the distance
+of the stimulus level from the true threshold, and should be in the
+same units as the \code{Dist} column of \code{rtData}. The default
+is just the straight difference between the stimulus level and the
+true threshold, but you might want it scaled somehow to match
+\code{rtData}.
+
+
 }
 
 

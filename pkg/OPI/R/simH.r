@@ -92,7 +92,7 @@ simH.opiSetBackground <- function(col, gridCol) {
 #
 ################################################################################
 simH.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30,
-                            criteria=0.95, rt_shape=5.3, rt_rate=1.4, rt_scale=0.1) {
+                            criteria=0.97, rt_shape=5.3, rt_rate=1.4, rt_scale=0.1) {
                             UseMethod("simH.opiPresent") }
 setGeneric("simH.opiPresent")
 
@@ -209,7 +209,8 @@ simH.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fn
         if (is.na(tt))
             return(0)
 
-        slope <- rnorm(1, mean=min(.SimHEnv$cap, exp(.SimHEnv$A*tt + .SimHEnv$B)), 0.25)
+        #slope <- rnorm(1, mean=min(.SimHEnv$cap, exp(.SimHEnv$A*tt + .SimHEnv$B)), 0.25)
+        slope <- min(.SimHEnv$cap, exp(.SimHEnv$A*tt + .SimHEnv$B))
         return(1 - pnorm(stim, tt, slope))
     }
 
@@ -279,4 +280,3 @@ simH.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fn
         ))
     }
 }
-

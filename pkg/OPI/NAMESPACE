@@ -56,6 +56,6 @@ export(.KowaAP7000Env)
 
 importFrom("grDevices", "dev.cur", "grey", "xy.coords")
 importFrom("graphics", "grid", "par", "plot", "points", "rect")
-importFrom("stats", "pnorm", "runif")
+importFrom("stats", "pnorm", "runif", "rgamma")
 importFrom("utils", "head", "tail")
 importFrom("stats", "approx")
