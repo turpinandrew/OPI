@@ -84,7 +84,19 @@ This function has no effect.
         \item \code{.KowaAP7000Env$FIX_AUX_LEFT}, fixation marker is as for AUX but only lower left.
     }
 }
-\subsection{Compass}{ Not implemented.}
+\subsection{Compass}{
+    \code{opiSetBackground(fixation=NA, tracking_on=NA)}
+    \itemize{
+    \item{\code{fixation}=c(x,y,t)} where
+        \itemize{
+        \item{\code{x}} is one of -15, -9, -3, 0, 3, 7, 15 degrees.
+        \item{\code{y}} is one of -3, 0, 3 degrees.
+        \item{\code{t}} is 0 for a spot fixation marker at \code{c(x,y)}, or 1 for a square 
+            centred on one of \code{(-3,0)}, \code{(0,0)}, \code{(+3,0)}.
+        }
+    \item{\code{tracking_on}} is either 0 (tracking off) or 1 (tracking on).
+    }
+}
 
 }
 
@@ -108,7 +120,7 @@ A. Turpin, P.H. Artes and A.M. McKendrick
 "The Open Perimetry Interface: An enabling tool for clinical visual psychophysics",
 Journal of Vision 12(11) 2012.
 
-http://perimetry.org/OPI
+http://people.eng.unimelb.edu.au/aturpin/opi/index.html
 }
 \author{
 Andrew Tuprin <aturpin@unimelb.edu.au>

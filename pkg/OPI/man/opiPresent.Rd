@@ -203,16 +203,16 @@ until the response from the subject if \code{seen} is \code{TRUE}.
 If \code{seen} is \code{FALSE}, this
 value is undefined.
 }
-\item{frames}{Only returned for Octopus 900 if \code{gazeFeed} is 2. An array of integer 0..255 for gaze image. 
-In version 1.5, only a single frame is returned.
-See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control what frames are returned.
-}
-\item{numFrames}{Only returned for Octopus 900. The number of frames in \code{frames}.
-}
-\item{width}{Only returned for Octopus 900. Width of frame in \code{frames}.
-}
-\item{height}{Only returned for Octopus 900. Height of frame in \code{frames}.
-}
+%\item{frames}{Only returned for Octopus 900 if \code{gazeFeed} is 2. An array of integer 0..255 for gaze image. 
+%In version 1.5, only a single frame is returned.
+%See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control what frames are returned.
+%}
+%\item{numFrames}{Only returned for Octopus 900. The number of frames in \code{frames}.
+%}
+%\item{width}{Only returned for Octopus 900. Width of frame in \code{frames}.
+%}
+%\item{height}{Only returned for Octopus 900. Height of frame in \code{frames}.
+%}
 \item{answer}{Only returned for \code{Octopus600}. Can be the following values:
   \itemize{
     \item 0 = stimulus not seen;
@@ -241,9 +241,16 @@ See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control wha
           x coordinate of stimuli when button is pressed.}
 \item{y}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 
           y coordinate of stimuli when button is pressed.}
-\item{pupildX}{Only returned for Compass, and it is the offset from the detected PRL in x (degrees).}
-\item{pupildY}{Only returned for Compass, and it is the offset from the detected PRL in y (degrees).}
 
+\item{time_rec}{Only returned for Compass. Time since epoch that the opiPresent command was received by the Compass.}
+\item{time_pres}{Only returned for Compass. Time since epoch that the stimulus was presented.}
+\item{num_track_events}{Only returned for Compass. The number of tracking events associated with this presentation.}
+\item{num_motor_fails}{Only returned for Compass. The number of time the motor could not keep pace with eye movements.}
+\item{pupil_diam}{Only returned for Compass. The diameter of the pupil on milimetres on presentation.}
+\item{loc_x}{Only returned for Compass. The x location in pixels of the presentation on the retinal image returned
+by \code{opiInitialize}.}
+\item{loc_y}{Only returned for Compass. The y location in pixels of the presentation on the retinal image returned
+by \code{opiInitialize}.}
 }
 \references{
 Please cite:
@@ -251,7 +258,7 @@ A. Turpin, P.H. Artes and A.M. McKendrick
 "The Open Perimetry Interface: An enabling tool for clinical visual psychophysics",
 Journal of Vision 12(11) 2012.
 
-http://perimetry.org/OPI
+http://people.eng.unimelb.edu.au/aturpin/opi/index.html
 
 David B. Henson, Shaila Chaudry, Paul H. Artes, E. Brian Faragher, and
 Alec Ansons.  
@@ -268,6 +275,7 @@ Andrew Tuprin <aturpin@unimelb.edu.au>
 \code{\link{opiKineticStimulus}}, 
 \code{\link{opiTemporalStimulus}}, 
 \code{\link{chooseOpi}}
+\code{\link{opiInitialize}}
 }
 
 \examples{

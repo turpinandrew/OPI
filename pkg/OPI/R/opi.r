@@ -190,6 +190,7 @@ chooseOpi <- function(opiImplementation) {
         return(TRUE)
     }
 }
+chooseOPI <- chooseOpi
 
 
 ####################################################################################

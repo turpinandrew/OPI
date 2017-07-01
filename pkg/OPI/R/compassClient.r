@@ -22,6 +22,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# Modified
+# Fri 30 Jun 2017: updated based on initial draft of protcol (The Helsinki Draft)
+#
 
 ###################################################################
 # .CompassEnv$socket is the connection to the Compass
@@ -38,7 +41,7 @@ if (!exists(".CompassEnv")) {
     .CompassEnv$MAX_X  <- 30  
     .CompassEnv$MIN_Y  <- -30
     .CompassEnv$MAX_Y  <- 30  
-    .CompassEnv$MIN_RESP_WINDOW  <- 200
+    .CompassEnv$MIN_RESP_WINDOW  <- 200    # XXX check this
     .CompassEnv$MAX_RESP_WINDOW  <- 2000
 
     .CompassEnv$SEEN     <- 1  
@@ -64,7 +67,10 @@ if (!exists(".CompassEnv")) {
 #   ip    = ip address on which server is listening
 #   port  = port number on which server is listening
 #
-# @return NULL if succeed, stop otherwise
+# @return list of 
+#       err NULL if succeed, error code otherwise
+#       prl c(x,y) of PRL
+#       image retinal image as a jpeg in raw bytes
 #######################################################################
 compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     cat("Looking for server... ")
@@ -78,7 +84,7 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     ))
     close(v)
     
-    print("found server :)")
+    cat("found server at",ip,port,":)\n")
 
     socket <- tryCatch(
         socketConnection(host=ip, port, open = "w+b", blocking = TRUE, timeout = 1000), 
@@ -86,8 +92,21 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     )
 
     assign("socket", socket, envir = .CompassEnv)
+
+    msg <- "OPI-OPEN"
+    writeLines(msg, socket)
     
-    return(NULL)
+    n <- readBin(socket, "integer", size=4)
+#print(paste("opiInitialize read: ", n))
+    if (n == 0) {
+        return(list(err="opiInitialise Error"))
+    } else {
+        prlx <- readBin(socket, "double", size=4)
+        prly <- readBin(socket, "double", size=4)
+        im <- readBin(socket, "raw", n=(n-8), size=1)
+
+        return(list(err=NULL, prl=c(prlx, prly), image=im))    
+    }
 }
 
 ###########################################################################
@@ -95,11 +114,16 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
 #   As per OPI spec
 #
 # Return a list of 
-#	err  = string message
-#	seen = TRUE if seen, FALSE otherwise
-#	time = reaction time (milliseconds)
-#   pupildX = list of x-coordinates of pupil relative to PRL position during presentation (degrees)
-#   pupildY = list of y-coordinates of pupil relative to PRL position during presentation (degrees)
+#    err             : (integer) 0 all clear, >= 1 some error codes (eg cannot track, etc)
+#    seen            : 0 for not seen, 1 for seen (button pressed in response window)
+#    time            : in ms (integer) (does this include/exclude the 200ms presentation time?) -1 for not seen.
+#    time_rec        : time since epoch when command was received at Compass (integer ms)
+#    time_pres       : time since epoch that stimulus was presented (integer ms)
+#    num_track_events: number of tracking events that occurred during presentation (integer)
+#    num_motor_fails : number of times motor could not follow fixation movement during presentation (integer)
+#    pupil_diam      : pupil diameter in mm (float)    
+#    loc_x           : pixels integer, location in image of presentation
+#    loc_y           : pixels integer, location in image of presentation
 ###########################################################################
 compass.opiPresent <- function(stim, nextStim=NULL) { UseMethod("compass.opiPresent") }
 setGeneric("compass.opiPresent")
@@ -107,7 +131,7 @@ setGeneric("compass.opiPresent")
 compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (is.null(stim)) {
         warning("opiPresent: NULL stimulus")
-        return(list(err="The NULL stimulus not supported", seen=NA, time=NA, pupilX=NA, pupilY=NA))
+        return(list(err="The NULL stimulus not supported", seen=NA, time=NA))
     }
 
     if(!is.null(stim$size)) warning("opiPresent: ignoring stimulus size")
@@ -120,36 +144,34 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     .CompassEnv$maxCheck(stim$y, .CompassEnv$MAX_Y, "Stimulus y")
     .CompassEnv$minCheck(stim$responseWindow, .CompassEnv$MIN_RESP_WINDOW, "Stimulus responseWindow")
     .CompassEnv$maxCheck(stim$responseWindow, .CompassEnv$MAX_RESP_WINDOW, "Stimulus responseWindow")
-    .CompassEnv$minCheck(stim$level, .CompassEnv$ZERO_DB_IN_ASB/pi/.CompassEnv$MIN_DB, "Stimulus level")
-    .CompassEnv$maxCheck(stim$level, .CompassEnv$ZERO_DB_IN_ASB/pi/.CompassEnv$MAX_DB, "Stimulus level")
+    lev <- round(cdTodb(stim$level, .CompassEnv$ZERO_DB_IN_ASB/pi),0)
+    .CompassEnv$minCheck(lev, .CompassEnv$MIN_DB, "Stimulus level")
+    .CompassEnv$maxCheck(lev, .CompassEnv$MAX_DB, "Stimulus level")
 
     if (!is.null(nextStim)) 
         warning("opiPresent: nextStim ignored")
 
-    msg <- "OPI-SET-RESPONSE-WINDOW"
-    msg <- paste(msg, " ", stim$responseWindow)
-    writeLines(msg, .CompassEnv$socket)
-    res <- readLines(.CompassEnv$socket, n=1)
-
-    if (res == "ERR")
-        return(list(err=paste("Cannot set response window to",stim$responseWindow), seen=FALSE, time=0))
-
     msg <- "OPI-PRESENT-STATIC"
-    msg <- paste(msg, stim$x, stim$y, cdTodb(stim$level, .CompassEnv$ZERO_DB_IN_ASB/pi))
+    msg <- paste(msg, stim$x, stim$y, lev, "3", 200, stim$responseWindow)
 
     writeLines(msg, .CompassEnv$socket)
     res <- readLines(.CompassEnv$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
 
-    if (s[1] == "ERR")
-        return(list(err="Could not present stim", seen=FALSE, time=0))
+    if (s[1] > 0)
+        return(list(err=s[1], seen=NA, time=NA))
 
     return(list(
-      err=NULL,
-      seen=ifelse(s[1] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
-      time=as.numeric(s[2]), 
-      pupildX=as.numeric(s[3]),
-      pupildY=as.numeric(s[4])
+      err             =NULL,
+      seen            =ifelse(s[2] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
+      time            =as.numeric(s[3]), 
+      time_rec        =as.numeric(s[4]),
+      time_pres       =as.numeric(s[5]),
+      num_track_events=as.numeric(s[6]),
+      num_motor_fails =as.numeric(s[7]),
+      pupil_diam      =as.numeric(s[8]),
+      loc_x           =as.numeric(s[9]),
+      loc_y           =as.numeric(s[10])
     ))
 }
 
@@ -170,31 +192,85 @@ compass.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 }#opiPresent.opiTemporalStimulus()
 
 ###########################################################################
-# set background color and/or fixation marker
-# color is one of .CompassEnv$BACKGROUND_WHITE or 
-#                 .CompassEnv$BACKGROUND_YELLOW
+# Used to turn tracking on or off or alter fixation.
 ###########################################################################
-compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
-    warning("Compass does not support setting backgrounds (yet)")
-    return(list(err="Compass does not support setting backgrounds (yet)", seen=FALSE, time=0))
+compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=NA) {
+    if (!is.na(lum) || !is.na(color))
+        warning("opiSetBackground: Compass does not support setting background color or luminance.")
+
+    if (!is.na(tracking_on)) {
+        if (tracking_on) {
+            writeLines("OPI-SET-TRACKING 1", .CompassEnv$socket)
+            res <- readLines(.CompassEnv$socket, n=1)
+            s <- strsplit(res, " ", fixed=TRUE)[[1]]
+            if (s[1] != 0) {
+                return(list(error=paste("opiSetBackground: failed turn tracking on ", s[1])))
+            }
+        } else {
+            writeLines("OPI-SET-TRACKING 0", .CompassEnv$socket)
+            res <- readLines(.CompassEnv$socket, n=1)
+            s <- strsplit(res, " ", fixed=TRUE)[[1]]
+            if (s[1] != 0) {
+                return(list(error=paste("opiSetBackground: failed turn tracking off ", s[1])))
+            }
+        }
+    }
+
+    if (length(fixation) > 1 || !is.na(fixation)) {
+        if (length(fixation) != 3) {
+            return(list(error="opiSetBackground: fixation parameter must have 3 fields c(x,y,t)"))
+        }
+        x <- fixation[1]
+        y <- fixation[2]
+        t <- fixation[3]
+
+        if (!(x %in% c(-15, -9, -3, 0, 3, 7, 15))) {
+            return(list(error="opiSetBackground: fixation x must be in c(-15, -9, -3, 0, 3, 7, 15)"))
+        }
+        if (!(y %in% c(-3, 0, 3))) {
+            return(list(error="opiSetBackground: fixation y must be in c(-3, 0, 3)"))
+        }
+        if (t == 1 && (!(x %in% c(-3, 0, 3)) || y != 0)) {
+            return(list(error="opiSetBackground: fixation type 1 can only be at ({-3,0,+3}, 0)"))
+        }
+        writeLines(paste("OPI-SET-FIXATION",x,y,t), .CompassEnv$socket)
+        res <- readLines(.CompassEnv$socket, n=1)
+        s <- strsplit(res, " ", fixed=TRUE)[[1]]
+        if (s[1] != 0) {
+            return(list(error=paste("opiSetBackground: failed to set fixation: ", s[1])))
+        }
+    }
+    
+    return(list(error=NULL))
 }
 
 ###########################################################################
-# return NULL on success (in fact, always!)
+# return list(err=NULL, fixations=matrix of fixations)
+#       matrix has one row per fixation
+#       col-1 timestamp (ms since epoch) 
+#       col-2 x in degrees 
+#       col-3 y in degrees 
 ###########################################################################
 compass.opiClose <- function() {
     writeLines("OPI-CLOSE", .CompassEnv$socket)
 
-    res <- readLines(.CompassEnv$socket, n=1)
+    num_bytes <- readBin(.CompassEnv$socket, "integer", size=4)
+
+    if (num_bytes == 0) {
+        warning("opiClose returned error")
+        return(list(err="ERR"))
+    }
+
+    num_triples <- num_bytes/12
+    fixations <- matrix(NA, ncol=3, nrow=num_triples)
+    for(i in 1:num_triples) {
+        fixations[i,1] <- readBin(.CompassEnv$socket, "integer", n=1, size=4)
+        fixations[i,2:3] <- readBin(.CompassEnv$socket, "double", n=2, size=4)
+    }
 
     close(.CompassEnv$socket)
 
-    if (res == "ERR") {
-        warning("Opi Close returned error")
-        return("ERR")
-    } else {
-        return(NULL)
-    }
+    return(list(err=NULL, fixations=fixations))
 }
 
 ###########################################################################
@@ -203,3 +279,4 @@ compass.opiClose <- function() {
 compass.opiQueryDevice <- function() {
     return(list(default="Nothing to report", isSim=FALSE))
 }
+

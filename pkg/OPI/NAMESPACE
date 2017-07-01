@@ -21,6 +21,7 @@ export(fourTwo.stop)
 export(fourTwo.final)
 
 export(chooseOpi)
+export(chooseOPI)
 export(dbTocd, cdTodb)
 
 export(opiPresent)

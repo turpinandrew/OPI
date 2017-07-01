@@ -1,5 +1,6 @@
 \name{chooseOpi}
 \alias{chooseOpi}
+\alias{chooseOPI}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Choose an implementation of the OPI.

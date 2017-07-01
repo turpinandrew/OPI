@@ -133,9 +133,10 @@ opiInitialise(...)
     If the chosen OPI implementation is \code{KowaAP7000}, then you must 
     specify the IP address and port of the AP-7000 server.
 
-    \code{ipAddress} is the IP address of the AP-7000 server as a string.
-
-    \code{port} is the TCP/IP port of the AP-7000 server as a number.
+    \itemize{
+        \item\code{ipAddress} is the IP address of the AP-7000 server as a string.
+        \item\code{port} is the TCP/IP port of the AP-7000 server as a number.
+    }
 }
 \subsection{imo}{
     \code{opiInitialize(ip, port)}
@@ -143,9 +144,10 @@ opiInitialise(...)
     If the chosen OPI implementation is \code{imo}, then you must 
     specify the IP address and port of the imo server.
 
-    \code{ip} is the IP address of the imo server as a string.
-
-    \code{port} is the TCP/IP port of the imo server as a number.
+    \itemize{
+        \item \code{ip} is the IP address of the imo server as a string.
+        \item \code{port} is the TCP/IP port of the imo server as a number.
+    }
 }
 \subsection{Compass}{
     \code{opiInitialize(ip, port)}
@@ -153,9 +155,12 @@ opiInitialise(...)
     If the chosen OPI implementation is \code{Compass}, then you must 
     specify the IP address and port of the Compass server.
 
-    \code{ip} is the IP address of the Compass server as a string.
+    \itemize{
+        \item\code{ip} is the IP address of the Compass server as a string.
+        \item\code{port} is the TCP/IP port of the Compass server as a number.
+    }
 
-    \code{port} is the TCP/IP port of the Compass server as a number.
+    Warning: this returns a list, not a single error code.
 }
 }
 
@@ -186,7 +191,12 @@ Always returns NULL. Will \code{stop} if there is an error.
 }
 
 \subsection{Compass}{
-Always returns NULL. Will \code{stop} if there is an error.
+Returns a list with elements:
+    \itemize{ 
+    \item{err} NULL if successful, not otherwise.
+    \item{prl} a pair giving the (x,y) in degrees of the Preferred Retinal Locus detected in the initial alignment.
+    \item{image} raw bytes being the JPEG compressed infra-red image acquired during alignment.
+    }
 }
 }
 \references{
@@ -195,7 +205,7 @@ A. Turpin, P.H. Artes and A.M. McKendrick
 "The Open Perimetry Interface: An enabling tool for clinical visual psychophysics",
 Journal of Vision 12(11) 2012.
 
-http://perimetry.org/OPI
+http://people.eng.unimelb.edu.au/aturpin/opi/index.html
 
 David B. Henson, Shaila Chaudry, Paul H. Artes, E. Brian Faragher, and
 Alec Ansons.  
@@ -261,6 +271,15 @@ opiInitialize(ip="192.168.1.7", port=44965)
     # Set up the imo
 chooseOpi("imo")
 opiInitialize(ip="192.168.1.7", port=44965)
+}
+
+\dontrun{
+    # Set up the imo
+chooseOpi("Compass")
+result <- opiInitialize(ip="192.168.1.7", port=44965)
+if (is.null(result$err)) {
+    print(result$prl)
+}
 }
 }
 
