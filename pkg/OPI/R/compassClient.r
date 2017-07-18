@@ -41,7 +41,7 @@ if (!exists(".CompassEnv")) {
     .CompassEnv$MAX_X  <- 30  
     .CompassEnv$MIN_Y  <- -30
     .CompassEnv$MAX_Y  <- 30  
-    .CompassEnv$MIN_RESP_WINDOW  <- 200    # XXX check this
+    .CompassEnv$MIN_RESP_WINDOW  <- 200    
     .CompassEnv$MAX_RESP_WINDOW  <- 2000
 
     .CompassEnv$SEEN     <- 1  
