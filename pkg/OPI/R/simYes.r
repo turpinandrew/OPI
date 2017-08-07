@@ -21,7 +21,7 @@
 #
 
 simYes.opiClose         <- function() { return(NULL) }
-simYes.opiQueryDevice   <- function() { return (list(type="SimNo", isSim=TRUE)) }
+simYes.opiQueryDevice   <- function() { return (list(type="SimYes", isSim=TRUE)) }
 
 ################################################################################
 # Input
@@ -31,7 +31,7 @@ simYes.opiQueryDevice   <- function() { return (list(type="SimNo", isSim=TRUE)) 
 ################################################################################
 simYes.opiInitialize <- function(display=NULL) {
     if(simDisplay.setupDisplay(display))
-        warning("opiInitialize (SimNo): display parameter may not contain 4 numbers.")
+        warning("opiInitialize (SimYes): display parameter may not contain 4 numbers.")
 
     return(NULL)
 }
