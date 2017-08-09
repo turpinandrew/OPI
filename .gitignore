@@ -10,3 +10,4 @@ pkg/OPI_*.tar.gz
 .Rproj.user
 *.Rcheck
 *.r~
+*.Rproj

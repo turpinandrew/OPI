@@ -29,8 +29,8 @@ simYes.opiQueryDevice   <- function() { return (list(type="SimYes", isSim=TRUE))
 #
 # Return NULL if succesful, string error message otherwise  
 ################################################################################
-simYes.opiInitialize <- function(display=NULL) {
-    if(simDisplay.setupDisplay(display))
+simYes.opiInitialize <- function(display=NULL, bg = "white", gridCol = grey(0.5)) {
+    if(simDisplay.setupDisplay(dimensions = display, bg = bg, gridCol = gridCol))
         warning("opiInitialize (SimYes): display parameter may not contain 4 numbers.")
 
     return(NULL)
@@ -50,7 +50,7 @@ simYes.opiSetBackground <- function(col, gridCol) {
 #
 ################################################################################
 simYes.opiPresent <- function(stim) {
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
+    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow, stim$size)
 
     return ( list(
         err = NULL,
