@@ -41,7 +41,7 @@ if (!exists(".SimHEnv"))
 #
 # Return NULL if succesful, string error message otherwise  
 ################################################################################
-simH.opiInitialize <- function(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi) {
+simH.opiInitialize <- function(type="C", A=NA, B=NA, cap=6, display=NULL, bg = "white", gridCol = grey(0.5), maxStim=10000/pi) {
     if (!is.element(type,c("N","G","C","X"))) {
         msg <- paste("Bad 'type' specified for SimHenson in opiInitialize():",type)
         warning(msg)
@@ -72,7 +72,7 @@ simH.opiInitialize <- function(type="C", A=NA, B=NA, cap=6, display=NULL, maxSti
     if (type == "X" && (is.na(A) || is.na(B)))
         warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
 
-    if(simDisplay.setupDisplay(display))
+    if(simDisplay.setupDisplay(dimensions = display, bg = bg, gridCol = gridCol))
         warning("opiInitialize (SimHenson): display parameter may not contain 4 numbers.")
 
     return(NULL)
@@ -139,7 +139,7 @@ simH.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr
     if (length(fpr) != length(fnr))
         warning("In opiPresent (using simHenson), recycling fpr or fnr as lengths differ")
 
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
+    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow, stim$size)
 
     return(simH.present(cdTodb(stim$level, .SimHEnv$maxStim), .SimHEnv$cap, fpr, fnr, tt, .SimHEnv$A, .SimHEnv$B))
 }
