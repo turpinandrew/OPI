@@ -49,7 +49,7 @@ simNo.opiSetBackground <- function(col, gridCol) {
 #
 ################################################################################
 simNo.opiPresent <- function(stim) {
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow, stim$size)
+    simDisplay.present(stim)
 
     return ( list(
         err = NULL,

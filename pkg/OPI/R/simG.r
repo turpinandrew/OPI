@@ -80,7 +80,7 @@ simG.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr
 
     prSeeing <- fpr + (1-fpr-fnr)*(1-pnorm(cdTodb(stim$level, .SimGEnv$maxStim), mean=tt, sd=as.numeric(.SimGEnv$sd)))
 
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow, stim$size)
+    simDisplay.present(stim)
 
     return ( list(
         err = NULL,

@@ -207,7 +207,7 @@ simH_RT.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, 
     if (length(fpr) != length(fnr))
         warning("In opiPresent (using SimHensonRT), recycling fpr or fnr as lengths differ")
 
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow, stim$size)
+    simDisplay.present(stim)
 
     return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), fpr, fnr, tt, dist))
 }
