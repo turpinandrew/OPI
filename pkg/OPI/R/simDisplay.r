@@ -81,18 +81,18 @@ simDisplay.setBackground <- function(col, gridCol) {
 # Show stim on plot for duration and wait responseWindow after.
 # No return, just die quietly if neccessary.
 ##################################################################################
-simDisplay.present <- function(x, y, color, duration, responseWindow, size = 0.43) {
+simDisplay.present <- function(stimulus) {
     if(exists("display", envir=.SimDisplayEnv)) {
         if (!is.na(.SimDisplayEnv$display)) {
             if (dev.cur() != .SimDisplayEnv$display) {  # check if window was closed
                 assign("display", NA, envir = .SimDisplayEnv)
             } else {
                 
-                simDraw.circle(x, y, size/2, col = color)
-                Sys.sleep(duration/1000.0)
+                simDraw.circle(stimulus$x, stimulus$y, stimulus$size/2, col = stimulus$color)
+                Sys.sleep(stimulus$duration/1000.0)
                 
                 simDisplay.resetDisplay()
-                Sys.sleep(abs(responseWindow - duration)/1000.0)
+                Sys.sleep(abs(stimulus$responseWindow - stimulus$duration)/1000.0)
             }
         }
     }

@@ -50,7 +50,7 @@ simYes.opiSetBackground <- function(col, gridCol) {
 #
 ################################################################################
 simYes.opiPresent <- function(stim) {
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow, stim$size)
+    simDisplay.present(stim)
 
     return ( list(
         err = NULL,
