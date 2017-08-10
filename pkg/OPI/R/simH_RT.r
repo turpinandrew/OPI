@@ -52,7 +52,7 @@ if (!exists(".SimHRTEnv"))
 #
 # Return NULL if successful, string error message otherwise  
 ################################################################################
-simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, maxStim=10000/pi, rtData, rtFP=1:1600) {
+simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, bg = "white", gridCol = grey(0.5), maxStim=10000/pi, rtData, rtFP=1:1600) {
     if (!is.element(type,c("N","G","C", "X"))) {
         msg <- paste("Bad 'type' specified for SimHensonRT in opiInitialize():",type)
         warning(msg)
@@ -75,7 +75,7 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
     if (type == "X" && (is.na(A) || is.na(B)))
         warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
       
-    if(simDisplay.setupDisplay(display))
+    if(simDisplay.setupDisplay(dimensions = display, bg = bg, gridCol = gridCol))
         warning("opiInitialize (SimHensonRT): display parameter may not contain 4 numbers.")
 
     #if (rtType == "sigma") {
@@ -207,7 +207,7 @@ simH_RT.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, 
     if (length(fpr) != length(fnr))
         warning("In opiPresent (using SimHensonRT), recycling fpr or fnr as lengths differ")
 
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
+    simDisplay.present(stim)
 
     return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), fpr, fnr, tt, dist))
 }

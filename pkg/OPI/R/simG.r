@@ -36,7 +36,7 @@ if (!exists(".SimGEnv"))
 #
 # Return NULL if succesful, string error message otherwise  
 ################################################################################
-simG.opiInitialize <- function(sd, display=NULL, maxStim=10000/pi) {
+simG.opiInitialize <- function(sd, display=NULL, bg = "white", gridCol = grey(0.5), maxStim=10000/pi) {
     if (!is.numeric(sd) || (sd < 0)) {
         msg <- paste("Invalid standard deviation in opiInitialize for SimGaussian:",sd)
         warning(msg)
@@ -46,7 +46,7 @@ simG.opiInitialize <- function(sd, display=NULL, maxStim=10000/pi) {
     .SimGEnv$sd <- sd
     .SimGEnv$maxStim <- maxStim
 
-    if (simDisplay.setupDisplay(display))
+    if (simDisplay.setupDisplay(dimensions = display, bg = bg, gridCol = gridCol))
         warning("opiInitialize (SimGaussian): perhaps display parameter does not contain 4 numbers?")
 
     return(NULL)
@@ -80,7 +80,7 @@ simG.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr
 
     prSeeing <- fpr + (1-fpr-fnr)*(1-pnorm(cdTodb(stim$level, .SimGEnv$maxStim), mean=tt, sd=as.numeric(.SimGEnv$sd)))
 
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
+    simDisplay.present(stim)
 
     return ( list(
         err = NULL,
