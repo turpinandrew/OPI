@@ -195,6 +195,7 @@ Returns a list with elements:
     \itemize{ 
     \item{err} NULL if successful, not otherwise.
     \item{prl} a pair giving the (x,y) in degrees of the Preferred Retinal Locus detected in the initial alignment.
+    \item{onh} a pair giving the (x,y) in degrees of the ONH as selected by the user.
     \item{image} raw bytes being the JPEG compressed infra-red image acquired during alignment.
     }
 }

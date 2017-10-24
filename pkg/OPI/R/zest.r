@@ -136,10 +136,7 @@ ZEST.step <- function(state, nextStim=NULL) {
     stim <- max(stim, state$minStimulus)   # check not outside [minStimulus,maxStimulus]
     stim <- min(stim, state$maxStimulus)
 
-    if (is.null(state$opiParams))
-        params <- list(stim=state$makeStim(stim, state$numPresentations), nextStim=nextStim)
-    else
-        params <- c(list(stim=state$makeStim(stim, state$numPresentations), nextStim=nextStim), state$opiParams)
+    params <- c(list(stim=state$makeStim(stim, state$numPresentations), nextStim=nextStim), state$opiParams)
     opiResp <- do.call(opiPresent, params)
     while (!is.null(opiResp$err))
         opiResp <- do.call(opiPresent, params)
@@ -286,7 +283,7 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 #         return(s)
 #     }
 #makeNextStim <- function(x,y) { 
-#         s <- list(x=9, y=9, level=dbTocd(db,10000), size=0.43, color="white",
+#         s <- list(x=9, y=9, level=dbTocd(db,10000/pi), size=0.43, color="white",
 #                  duration=200, responseWindow=1500)
 #         class(s) <- "opiStaticStimulus"
 #     
@@ -307,7 +304,7 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 #    ff <- function(db, n) db+n
 #
 #    body(ff) <- substitute(
-#        {s <- list(x=x, y=y, level=dbTocd(db,10000), size=0.43, color="white",
+#        {s <- list(x=x, y=y, level=dbTocd(db,10000/pi), size=0.43, color="white",
 #                  duration=200, responseWindow=1500)
 #         class(s) <- "opiStaticStimulus"
 #         return(s)

@@ -63,6 +63,9 @@ simDisplay.setBackground <- function(col, gridCol) {
     if(!exists("display", envir=.SimDisplayEnv))
         return(-1)
 
+    if (is.na(.SimDisplayEnv$display))
+        return(NULL)
+
     if(is.na(col)) {
         assign("bg" , "white", envir = .SimDisplayEnv)
     } else {
@@ -70,15 +73,15 @@ simDisplay.setBackground <- function(col, gridCol) {
     }
     assign("grid.color", gridCol, envir = .SimDisplayEnv)
 
-    if (!is.na(.SimDisplayEnv$display)) {
-        if (dev.cur() != .SimDisplayEnv$display) {  # check if window was closed
-            assign("display", NA, envir = .SimDisplayEnv)
-        } else {
-            rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = .SimDisplayEnv$bg)
-            if (!is.na(gridCol)) 
-                grid(lty=2, col=gridCol)
-        }
+    if (dev.cur() != .SimDisplayEnv$display) {  # check if window was closed
+        assign("display", NA, envir = .SimDisplayEnv)
+    } else {
+        rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = .SimDisplayEnv$bg)
+        if (!is.na(gridCol)) 
+            grid(lty=2, col=gridCol)
     }
+
+    return(NULL)
 }
 
 ##################################################################################

@@ -33,6 +33,8 @@
 if (!exists(".CompassEnv")) {
     .CompassEnv <- new.env()
 
+    .CompassEnv$endian <- "big"   # endianess of the compass OS
+
     .CompassEnv$ZERO_DB_IN_ASB <- 10000
 
     .CompassEnv$MAX_DB <- 50  
@@ -41,8 +43,8 @@ if (!exists(".CompassEnv")) {
     .CompassEnv$MAX_X  <- 30  
     .CompassEnv$MIN_Y  <- -30
     .CompassEnv$MAX_Y  <- 30  
-    .CompassEnv$MIN_RESP_WINDOW  <- 200    
-    .CompassEnv$MAX_RESP_WINDOW  <- 2000
+    .CompassEnv$MIN_RESP_WINDOW  <- 0    
+    .CompassEnv$MAX_RESP_WINDOW  <- 2680
 
     .CompassEnv$SEEN     <- 1  
     .CompassEnv$NOT_SEEN <- 0  
@@ -96,16 +98,18 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     msg <- "OPI-OPEN"
     writeLines(msg, socket)
     
-    n <- readBin(socket, "integer", size=4)
-#print(paste("opiInitialize read: ", n))
+    n <- readBin(socket, "integer", size=4, endian=.CompassEnv$endian)
+    #print(paste("opiInitialize read: ", n))
     if (n == 0) {
         return(list(err="opiInitialise Error"))
     } else {
-        prlx <- readBin(socket, "double", size=4)
-        prly <- readBin(socket, "double", size=4)
-        im <- readBin(socket, "raw", n=(n-8), size=1)
+        prlx <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
+        prly <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
+        onhx <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
+        onhy <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
+        im <- readBin(socket, "raw", n=(n-16), size=1, endian=.CompassEnv$endian)
 
-        return(list(err=NULL, prl=c(prlx, prly), image=im))    
+        return(list(err=NULL, prl=c(prlx, prly), onh=c(onhx, onhy), image=im))    
     }
 }
 
@@ -165,13 +169,14 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
       err             =NULL,
       seen            =ifelse(s[2] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
       time            =as.numeric(s[3]), 
-      time_rec        =as.numeric(s[4]),
-      time_pres       =as.numeric(s[5]),
-      num_track_events=as.numeric(s[6]),
-      num_motor_fails =as.numeric(s[7]),
-      pupil_diam      =as.numeric(s[8]),
-      loc_x           =as.numeric(s[9]),
-      loc_y           =as.numeric(s[10])
+      time_hw         =as.numeric(s[4]),
+      time_rec        =as.numeric(s[5]),
+      time_resp       =as.numeric(s[6]),
+      num_track_events=as.numeric(s[7]),
+      num_motor_fails =as.numeric(s[8]),
+      pupil_diam      =as.numeric(s[9]),
+      loc_x           =as.numeric(s[10]),
+      loc_y           =as.numeric(s[11])
     ))
 }
 
@@ -224,13 +229,13 @@ compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=
         y <- fixation[2]
         t <- fixation[3]
 
-        if (!(x %in% c(-15, -9, -3, 0, 3, 7, 15))) {
-            return(list(error="opiSetBackground: fixation x must be in c(-15, -9, -3, 0, 3, 7, 15)"))
+        if (!(x %in% c(-20, -6, -3, 0, 3, 6, 20))) {
+            return(list(error="opiSetBackground: fixation x must be in c(-20, -6, -3, 0, 3, 6, 20)"))
         }
-        if (!(y %in% c(-3, 0, 3))) {
-            return(list(error="opiSetBackground: fixation y must be in c(-3, 0, 3)"))
+        if (y != 0) {
+            return(list(error="opiSetBackground: fixation y must be 0"))
         }
-        if (t == 1 && (!(x %in% c(-3, 0, 3)) || y != 0)) {
+        if (t == 1 && (!(x %in% c(-3, 0, 3)))) {
             return(list(error="opiSetBackground: fixation type 1 can only be at ({-3,0,+3}, 0)"))
         }
         writeLines(paste("OPI-SET-FIXATION",x,y,t), .CompassEnv$socket)
@@ -254,18 +259,19 @@ compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=
 compass.opiClose <- function() {
     writeLines("OPI-CLOSE", .CompassEnv$socket)
 
-    num_bytes <- readBin(.CompassEnv$socket, "integer", size=4)
+    num_bytes <- readBin(.CompassEnv$socket, "integer", size=4, endian=.CompassEnv$endian)
+    print(paste("Num bytes", num_bytes))
 
     if (num_bytes == 0) {
-        warning("opiClose returned error")
-        return(list(err="ERR"))
+        warning("opiClose() returned no bytes - perhaps you forgot opiInitialise")
+        return(list(err="No Bytes"))
     }
 
     num_triples <- num_bytes/12
     fixations <- matrix(NA, ncol=3, nrow=num_triples)
     for(i in 1:num_triples) {
-        fixations[i,1] <- readBin(.CompassEnv$socket, "integer", n=1, size=4)
-        fixations[i,2:3] <- readBin(.CompassEnv$socket, "double", n=2, size=4)
+        fixations[i,1] <- readBin(.CompassEnv$socket, "integer", n=1, size=4, endian=.CompassEnv$endian)
+        fixations[i,2:3] <- readBin(.CompassEnv$socket, "double", n=2, size=4,  endian=.CompassEnv$endian)
     }
 
     close(.CompassEnv$socket)

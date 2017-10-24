@@ -183,6 +183,7 @@ If the chosen OPI implementation is \code{KowaAP7000}, then \code{nextStim} is i
 \code{opiPresent(stim, nextStim=NULL)}
 
 If the chosen OPI implementation is \code{Compass}, then \code{nextStim} is ignored. 
+Note that the dB level is rounded to the nearest integer.
 }
 
 
@@ -242,8 +243,15 @@ value is undefined.
 \item{y}{Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. 
           y coordinate of stimuli when button is pressed.}
 
-\item{time_rec}{Only returned for Compass. Time since epoch that the opiPresent command was received by the Compass.}
-\item{time_pres}{Only returned for Compass. Time since epoch that the stimulus was presented.}
+\item{time_rec}{Only returned for Compass. Time since epoch that the opiPresent command was received by the
+Compass in ms.}
+\item{time_hw}{Only returned for Compass. Hardware time of button press or response window expired (integer
+ms).
+To get the hardware time that a presentation began, subtract responseWindow from \code{th} (for aligning with
+fixation data returned by \code{opiClose()}.
+}
+\item{time_resp}{Only returned for Compass. Time since epoch that the response was received or response window
+expired (in ms).}
 \item{num_track_events}{Only returned for Compass. The number of tracking events associated with this presentation.}
 \item{num_motor_fails}{Only returned for Compass. The number of time the motor could not keep pace with eye movements.}
 \item{pupil_diam}{Only returned for Compass. The diameter of the pupil on milimetres on presentation.}

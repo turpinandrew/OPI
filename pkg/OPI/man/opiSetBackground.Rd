@@ -89,13 +89,17 @@ This function has no effect.
     \itemize{
     \item{\code{fixation}=c(x,y,t)} where
         \itemize{
-        \item{\code{x}} is one of -15, -9, -3, 0, 3, 7, 15 degrees.
-        \item{\code{y}} is one of -3, 0, 3 degrees.
+        \item{\code{x}} is one of -20, -6, -3, 0, 3, 6, 20 degrees.
+        \item{\code{y}} is 0 degrees.
         \item{\code{t}} is 0 for a spot fixation marker at \code{c(x,y)}, or 1 for a square 
             centred on one of \code{(-3,0)}, \code{(0,0)}, \code{(+3,0)}.
         }
     \item{\code{tracking_on}} is either 0 (tracking off) or 1 (tracking on).
     }
+
+Note: tracking will be relative to the PRL established with the fixation marker used at
+setup (call to OPI-OPEN), so when tracking is on you should use the 
+same fixation location as in the setup.
 }
 
 }

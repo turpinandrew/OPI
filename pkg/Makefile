@@ -25,7 +25,7 @@ OPI_FILES	=	$(addprefix OPI/,$(OPI_ROOT)) \
 				$(addprefix OPI/R/,$(OPI_R))
 
 
-all: check build install
+all: build check install
 
 check: OPI.Rcheck
 
