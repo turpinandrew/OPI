@@ -113,6 +113,7 @@ MOCS <- function(params=NA,
         ####################################################
         # loop through every presentation except last (is dummy)
         ####################################################
+    error_count <- 0
     results <- matrix(NA, nrow=nrow(mocs)-1, ncol=ncol(mocs)-1+3)
     nextStims <- makeStim(as.double(mocs[1,]), responseFloor)
     for(i in 1:(nrow(mocs)-1)) {
@@ -148,13 +149,18 @@ MOCS <- function(params=NA,
         if (responseWindowMeth == "forceKey")
           ret <- keyHandler(mocs[i, 4], ret)
  
-        if (ret$seen) 
-            beep_function('correct')
-        else 
-            beep_function('incorrect')
+        if (!is.null(ret$err)) {
+            warning("Opi Present return error in MOCS")
+            if (ret$seen) 
+                beep_function('correct')
+            else 
+                beep_function('incorrect')
         
-        if (ret$seen && responseWindowMeth == "speed") 
-            respTimeHistory <- c(tail(respTimeHistory, -1), ret$time)
+            if (ret$seen && responseWindowMeth == "speed") 
+                respTimeHistory <- c(tail(respTimeHistory, -1), ret$time)
+        } else {
+            error_count <- error_count + 1 
+        }
 
         cat(sprintf(' %5s %6g\n',ret$seen,  ret$time))
         
@@ -162,6 +168,9 @@ MOCS <- function(params=NA,
 
         results[i,] <- c(mocs[i,1:3], mocs[i,5:ncol(mocs)], ret$seen, ret$time, ifelse(is.null(ret$err),NA,ret$err))
     }
+    
+    if (error_count > 0)
+        warning(paste("There were", error_count, "Opi Present return errors in MOCS"))
     
     return(results)
 }#MOCS()
