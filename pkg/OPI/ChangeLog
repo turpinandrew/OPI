@@ -104,3 +104,8 @@ OPI 2.7
  - Added Kinetic Stimuli to SimHenson
  - Updated Compass protocl to The Helsinki Draft
  - Added MOCS
+
+OPI 2.8
+ - Added opiPresent error check into MOCS
+ - Changed return from MOCS to include all opiPresent return fields.
+ - fixed two bugs related to gaze feed in O900

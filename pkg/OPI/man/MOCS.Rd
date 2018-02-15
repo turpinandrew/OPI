@@ -109,14 +109,14 @@ Constant Stimuli test.
 
 }
 \value{
- Returns a data.frame with one row per stimulus copied from params with 3 extra columns, 
+ Returns a data.frame with one row per stimulus copied from params with extra columns that
+ are the return values from \code{opiPresent()}. These last values will differ depending
+ on which machine/simulation you are running (as chosen with \code{chooseOpi()}.
  \itemize{
         \item{column 1: x}
         \item{column 2: y}
-        \item{...}
-        \item{column last-2: TRUE {correct} or FALSE (incorrect)}
-        \item{column last-1: Response time measured form the final stimulus presentation in ms}
-        \item{column last: Error code as returned from \code{opiPresent}. \code{NA} for no error.}
+        \item{...: columns from params}
+        \item{...: columns from opiPresent return}
   }
 }
 

@@ -114,7 +114,7 @@ MOCS <- function(params=NA,
         # loop through every presentation except last (is dummy)
         ####################################################
     error_count <- 0
-    results <- matrix(NA, nrow=nrow(mocs)-1, ncol=ncol(mocs)-1+3)
+    results <- NULL
     nextStims <- makeStim(as.double(mocs[1,]), responseFloor)
     for(i in 1:(nrow(mocs)-1)) {
         if (responseWindowMeth == "constant") {
@@ -133,12 +133,14 @@ MOCS <- function(params=NA,
             s = stims[[stimNum]]
             if (stimNum == length(stims)) {
               ret <- opiPresent(stim=s, nextStim=nextStims[[stimNum]], ...)
-              cat(sprintf(" %+6.1f %+6.1f %s",s$x,s$y,stim_print(s,ret)))
+              cat(sprintf(" %+6.1f %+6.1f",s$x,s$y))
+              cat(stim_print(s,ret))
             } else {
               startTime = Sys.time()
 
               ret <- opiPresent(stim=s, nextStim=NULL, ...)
-              cat(sprintf(" %+6.1f %+6.1f %s",s$x,s$y,stim_print(s,ret)))
+              cat(sprintf(" %+6.1f %+6.1f",s$x,s$y))
+              cat(stim_print(s,ret))
 
                 # just check that the reponse window wasn't scuppered by a response
               while (Sys.time() - startTime < s$responseWindow/1000)
@@ -149,8 +151,7 @@ MOCS <- function(params=NA,
         if (responseWindowMeth == "forceKey")
           ret <- keyHandler(mocs[i, 4], ret)
  
-        if (!is.null(ret$err)) {
-            warning("Opi Present return error in MOCS")
+        if (is.null(ret$err)) {
             if (ret$seen) 
                 beep_function('correct')
             else 
@@ -159,6 +160,7 @@ MOCS <- function(params=NA,
             if (ret$seen && responseWindowMeth == "speed") 
                 respTimeHistory <- c(tail(respTimeHistory, -1), ret$time)
         } else {
+            warning("Opi Present return error in MOCS")
             error_count <- error_count + 1 
         }
 
@@ -166,7 +168,7 @@ MOCS <- function(params=NA,
         
         Sys.sleep(runif(1, min=interStimMin, max=interStimMax)/1000)
 
-        results[i,] <- c(mocs[i,1:3], mocs[i,5:ncol(mocs)], ret$seen, ret$time, ifelse(is.null(ret$err),NA,ret$err))
+        results <- rbind(results, c(mocs[i,1:3], mocs[i,5:ncol(mocs)], ret))
     }
     
     if (error_count > 0)

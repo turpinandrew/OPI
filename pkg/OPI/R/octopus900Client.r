@@ -103,7 +103,7 @@ setupBackgroundConstants <- function() {
 #   serverPort               = port number on which server is listening
 #   eyeSuiteSettingsLocation = dir name containing EyeSuite settings
 #   eye                      = "right" or "left"
-#   gazeFeed                 = 0 (none), 1 (single frame), 2 (all frames with *)
+#   gazeFeed                 = 0 (none), 1 (pupil xy)
 #   bigWheel                 = FALSE (standard machine), TRUE for modified apeture wheel
 #   pres_buzzer              = 0 (no buzzer),1,2, 3 (max volume)
 #   resp_buzzer              = 0 (no buzzer),1,2, 3 (max volume)
@@ -116,10 +116,10 @@ setupBackgroundConstants <- function() {
 #
 #######################################################################
 octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
-                                  eye=NA, gazeFeed=0, bigWheel=FALSE, 
+                                  eye=NA, gaze_feed=0, bigWheel=FALSE, 
                                   pres_buzzer=0, resp_buzzer=0,
                                  zero_dB_is_10000_asb=TRUE) {
-    assign("gazeFeed", gazeFeed, envir=.Octopus900Env)
+    assign("gazeFeed", gaze_feed, envir=.Octopus900Env)
 
     if (!bigWheel) {
         assign("GOLDMANN", c(6.5, 13, 26, 52, 104) / 60, envir=.Octopus900Env)
@@ -167,7 +167,7 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
     )
 
     assign("socket", socket, envir = .Octopus900Env)
-    msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", gazeFeed, " ", pres_buzzer, " ", resp_buzzer, " ", as.integer(zero_dB_is_10000_asb))
+    msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", pres_buzzer, " ", resp_buzzer, " ", as.integer(zero_dB_is_10000_asb))
     writeLines(msg, socket)
     res <- readLines(socket, n=1)
     
@@ -262,32 +262,6 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
         pupilY=as.numeric(s[5])
       ))
     }#gazeFeed=1
-
-
-
-    if (.Octopus900Env$gazeFeed==2) {
-      #frames <- strsplit(s[14], "###", fixed=TRUE)[[1]]
-      #for (i in 1:length(frames)) {
-      #  frames[i] <- as.numeric(strsplit(frames[i],",",fixed=T)[[1]])
-      #}
-      return(list(
-                   err=err, 
-                  seen=as.numeric(s[2]),
-                  time=as.numeric(s[3]),
-             numFrames=as.numeric(s[4]),
-                 times=as.numeric(strsplit(s[5],",",fixed=T)[[1]]),
-                   ids=as.numeric(strsplit(s[6],",",fixed=T)[[1]]),
-                 stars=as.numeric(strsplit(s[7],",",fixed=T)[[1]]),
-                 rings=as.numeric(strsplit(s[8],",",fixed=T)[[1]]),
-              diamters=as.numeric(strsplit(s[9],",",fixed=T)[[1]]),
-                 pupilX=as.numeric(strsplit(s[10],",",fixed=T)[[1]]),
-                pupilY=as.numeric(strsplit(s[11],",",fixed=T)[[1]]),
-        pupilMajorAxis=as.numeric(strsplit(s[12],",",fixed=T)[[1]]),
-        pupilMinorAxis=as.numeric(strsplit(s[13],",",fixed=T)[[1]]),
-          firstFrame=as.numeric(strsplit(s[14],",",fixed=T)[[1]])
-                #frames=frames
-      ))
-    }#gazeFeed=2
 }
 
 ###########################################################################
