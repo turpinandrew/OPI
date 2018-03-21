@@ -42,12 +42,21 @@
 #   stepFun  - function(state) returns a new state after one presentation
 #   stopFun  - function(state) returns TRUE if location finished
 #   finalFun - function(state) returns c(final threshold, number presenations)
+#   fp_check - Present fp_level every fp_check presentations.
+#   fp_level - dB level of false positive check.
+#   verbose  - if TRUE will print information about each trial
+
 #
 # RETURNS: list of two matrices, each with same dimensions as gp
 #           t is final threshold at each location
 #           n is number of presentations at each location
+#          and
+#           fp_shown - number of fp catch trials
+#           fp_seen  - number of fp buttons pressed
 ####################################################################
-procedureWithGrowthPattern <- function(gp, ops, startFun, stepFun, stopFun, finalFun) {
+procedureWithGrowthPattern <- function(gp, ops, startFun, stepFun, stopFun, finalFun,
+                                       fp_check=NA, fp_level=NA,
+                                       verbose=FALSE) {
 
     ####################################################################
     # Average all immediate 9 neighbours that have num less than "wave"
@@ -106,6 +115,8 @@ procedureWithGrowthPattern <- function(gp, ops, startFun, stepFun, stopFun, fina
     states <- vector("list", numLoc-1)  # indexed by map[row,col]
 
         # Now loop finishing 1s, start rest, etc
+    num_pres <- 0
+    fp_presented <- fp_seen <- 0
     wave <- 1
     while (wave <= max(gp, na.rm=TRUE)) {
             # Create a state for each "wave" location
@@ -122,18 +133,35 @@ procedureWithGrowthPattern <- function(gp, ops, startFun, stepFun, stopFun, fina
                 states[[index]] <- startFun(makeGuess(gp, wave, rw, cl, currentThresholds), rw, cl)
 
             states[[index]] <- stepFun(states[[index]])
-
+            num_pres <- num_pres + 1
+            
             if (stopFun(states[[index]])) {
                     # fill in currentThresholds and remove from locs
                 currentThresholds[rw,cl] <- finalFun(states[[index]])[1]
                 currentNumPres[rw,cl]    <- finalFun(states[[index]])[2]
                 locsToGo <- locsToGo[-which(locsToGo == i)]
             }
+            
+            if (!is.na(fp_check) && num_pres %% fp_check == 0) {
+              fp_presented <- fp_presented + 1
+              params <- c(list(stim=states[[index]]$makeStim(fp_level, 0), nextStim=NULL), states[[index]]$opiParams)
+              opiResp <- do.call(opiPresent, params)
+              while (!is.null(opiResp$err))
+                opiResp <- do.call(opiPresent, params)
+              
+              if (opiResp$seen)
+                fp_seen <- fp_seen + 1
+              
+              if (verbose) 
+                cat(sprintf("x= %+5.1f y= %+5.1f db= %5.2f seen= %5s time= %6.2f type= FP\n", 
+                            states[[index]]$makeStim(0,0)$x, states[[index]]$makeStim(0,0)$y,
+                            fp_level, opiResp$seen, opiResp$time))
+            }
         }
         wave <- wave + 1
     }
 
-    return(list(t=currentThresholds, n=currentNumPres))
+    return(list(t=currentThresholds, n=currentNumPres, fp_shown=fp_presented, fp_seen=fp_seen))
 }# procedureWithGrowthPattern()
 
 

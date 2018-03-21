@@ -17,6 +17,7 @@
 #
 # Modified Tue  1 Jul 2014: Allow for tt=NA (ie not simulator mode)
 # Modified Tue 30 Jan 2015: Added max stim brightness in dbTocd(...)
+# Modified Wed 21 Mar 2018: Added inter-stim intervals and false pos checks
 #
 
 source("growthPattern.r")
@@ -26,11 +27,17 @@ source("growthPattern.r")
 #   eye               - "right" or "left"
 #   primaryStartValue - the mode of the normal part of the prior pdf for
 #                       locations (+-9,+-9).
+#   min_isi           - minimum inter stimulus interval in ms
+#   max_isi           - maximum inter stimulus interval in ms
+#   fp_check          - Present fp_level every fp_check presentations.
+#   fp_level          - dB level of false positive check.
+#
 #   If running in simulation mode you need to specify 
 #     tt - an 8*9 matrix 24-2 field OD (blind spot on right) 
 #     fpv - false positive rate in range [0,1]
 #     fnv - false negative rate in range [0,1]
-#   
+# verbose - if TRUE will print information about each trial
+#
 # RETURNS: a list with
 #    np = matrix of number of presenations for each location
 #    ae = matrix of absolute error for each location
@@ -40,7 +47,10 @@ source("growthPattern.r")
 # ALGORITHMS: Makes use of procedureWithGrowthPattern(...).
 #########################################################################
 Zest242 <- function(eye="right", primaryStartValue=30, 
-                            tt=NA, fpv=0.00, fnv=0.00) {
+                    min_isi=0, max_isi=0, 
+                    fp_check=30, fp_level=60,
+                    verbose=FALSE,
+                    tt=NA, fpv=0.00, fnv=0.00) {
     ####################################################################
     # Each location derives its start value from the average of all of the
     # immediate 9 neighbours that are lower than it.
@@ -107,12 +117,12 @@ Zest242 <- function(eye="right", primaryStartValue=30,
     }
 
     ###############################
-    # Set up fp and fn matrices, and tt matrix if not supplied
+    # Set up fp and fn matrices, and tt matrix if not supplied (for simulation)
     ###############################
     z <- !is.na(growthPattern)
     fp <- z * matrix(fpv, nrow(growthPattern), ncol(growthPattern))
     fn <- z * matrix(fnv, nrow(growthPattern), ncol(growthPattern))
-    if (is.na(tt))
+    if (!is.matrix(tt))
         tt <- matrix(NA, nrow(growthPattern), ncol(growthPattern))
 
     #####################################################
@@ -159,9 +169,9 @@ Zest242 <- function(eye="right", primaryStartValue=30,
         }
 
         if (eye == "right")
-            ms <- makeStimHelper(27 - 6*rw, -27 + 6*cl)    
+            ms <- makeStimHelper(-27 + 6*(cl-1), 27 - 6*rw)    
         else
-            ms <- makeStimHelper(6+27 - 6*rw, -27 + 6*cl)    
+            ms <- makeStimHelper(-21 + 6*(cl-1), 27 - 6*rw)    
         return(ZEST.start(domain=domain, prior=prior, makeStim=ms, 
                     tt=tt[rw,cl],
                     fpr=fp[rw,cl],
@@ -172,7 +182,20 @@ Zest242 <- function(eye="right", primaryStartValue=30,
     #####################################################
     # Given a state, step the procedure and return new state
     #####################################################
-    stepF <- function(state) { return(ZEST.step(state)$state) } 
+    stepF <- function(state) { 
+      Sys.sleep(runif(1, min_isi/1000, max_isi/1000))
+      state <- ZEST.step(state)$state
+      
+      if (verbose) {
+        db <- tail(state$stimuli,1)
+        seen <- tail(state$responses,1)
+        tim <- tail(state$responseTimes,1)
+        cat(sprintf("x= %+5.1f y= %+5.1f db= %5.2f seen= %5s time= %6.2f type= Z\n", 
+          state$makeStim(0,0)$x, state$makeStim(0,0)$y, db, seen,tim))
+      }
+      
+      return(state) 
+    } 
 
     #####################################################
     # Given a state, return TRUE for finished, FALSE otherwise
@@ -188,11 +211,11 @@ Zest242 <- function(eye="right", primaryStartValue=30,
         return(c(t, state$numPresentations))
     }
 
-    res1 <- procedureWithGrowthPattern(growthPattern, onePriors, startF, stepF, stopF, finalF)
+    res1 <- procedureWithGrowthPattern(growthPattern, onePriors, startF, stepF, stopF, finalF, fp_check, fp_level, verbose)
     z <- res1$t < 0
     tz <- res1$t
     tz[z] <- 0
-    res <- list(np=res1$n, ae=abs(tz-tt), th=res1$t, trues=tt)
+    res <- list(np=res1$n, ae=abs(tz-tt), th=res1$t, trues=tt, fp_shown=res1$fp_shown, fp_seen=res1$fp_seen)
 
     return(res)
 }
@@ -200,21 +223,21 @@ Zest242 <- function(eye="right", primaryStartValue=30,
 ####################################
 # Example Usage
 ####################################
-##require(OPI)
-####chooseOpi("SimYes")
-##chooseOpi("SimNo")
-###chooseOpi("SimHenson")
-##opiInitialise()
-###
-###tt <- matrix(c(
-###   NA, NA,  23,  23,  23,  23, NA, NA, NA, 
-###   NA, 24,  24,  24,  24,  24, 24, NA, NA, 
-###   23, 24,  25,  24,  24,  25, 24, 23, NA, 
-###   23, NA,  24,  24,  24,  24, 24, 23,  4, 
-###   23, NA,  24,  24,  24,  24, 24, 23,  4, 
-###   23, 24,  25,  24,  24,  25, 24, 23, NA, 
-###   NA, 24,  24,  24,  24,  24, 24, NA, NA, 
-###   NA, NA,  23,  23,  23,  23, NA, NA, NA 
-###), nrow=8, ncol=9, byrow=TRUE)
-###
-##print(Zest242(eye="left", primaryStartValue=25, tt=tt, fpv=0, fnv=0))
+# require(OPI)
+# ####chooseOpi("SimYes")
+# ##chooseOpi("SimNo")
+# chooseOpi("SimHenson")
+# opiInitialise()
+# 
+# tt <- matrix(c(
+#   NA, NA,  23,  23,  23,  23, NA, NA, NA,
+#   NA, 24,  24,  24,  24,  24, 24, NA, NA,
+#   23, 24,  25,  24,  24,  25, 24, 23, NA,
+#   23, NA,  24,  24,  24,  24, 24, 23,  4,
+#   23, NA,  24,  24,  24,  24, 24, 23,  4,
+#   23, 24,  25,  24,  24,  25, 24, 23, NA,
+#   NA, 24,  24,  24,  24,  24, 24, NA, NA,
+#   NA, NA,  23,  23,  23,  23, NA, NA, NA
+# ), nrow=8, ncol=9, byrow=TRUE)
+# 
+# print(z <- Zest242(eye="left", primaryStartValue=25, verbose=TRUE, tt=tt, fpv=0, fnv=0))
