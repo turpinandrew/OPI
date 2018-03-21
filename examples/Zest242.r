@@ -31,6 +31,7 @@ source("growthPattern.r")
 #   max_isi           - maximum inter stimulus interval in ms
 #   fp_check          - Present fp_level every fp_check presentations.
 #   fp_level          - dB level of false positive check.
+#   zero_db_is_10000_asb - true if 0dB==10000asb, FALSE if 0dB == 4000 asb
 #
 #   If running in simulation mode you need to specify 
 #     tt - an 8*9 matrix 24-2 field OD (blind spot on right) 
@@ -50,6 +51,7 @@ Zest242 <- function(eye="right", primaryStartValue=30,
                     min_isi=0, max_isi=0, 
                     fp_check=30, fp_level=60,
                     verbose=FALSE,
+                    zero_db_is_10000_asb=TRUE,
                     tt=NA, fpv=0.00, fnv=0.00) {
     ####################################################################
     # Each location derives its start value from the average of all of the
@@ -159,7 +161,7 @@ Zest242 <- function(eye="right", primaryStartValue=30,
             ff <- function(db, n) db+n
 
             body(ff) <- substitute(
-                {s <- list(x=x, y=y, level=dbTocd(db,4000/pi), size=0.43, color="white",
+                {s <- list(x=x, y=y, level=dbTocd(db,ifelse(zero_db_is_10000_asb,10000,4000)/pi), size=0.43, color="white",
                         duration=200, responseWindow=1500)
                 class(s) <- "opiStaticStimulus"
                 return(s)

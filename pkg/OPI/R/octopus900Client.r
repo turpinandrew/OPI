@@ -165,7 +165,6 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
         socketConnection(host="localhost", serverPort, open = "w+b", blocking = TRUE, timeout = 1000), 
         error=function(e) stop(paste("Cannot connect to Octopus 900 on port", serverPort))
     )
-
     assign("socket", socket, envir = .Octopus900Env)
     msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", pres_buzzer, " ", resp_buzzer, " ", as.integer(zero_dB_is_10000_asb))
     writeLines(msg, socket)
@@ -233,6 +232,7 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
         msg <- paste(msg, stim$x * 10.0, stim$y * 10.0)
     }
 
+    #print(msg)
     writeLines(msg, .Octopus900Env$socket)
     #Sys.sleep(1)
     res <- readLines(.Octopus900Env$socket, n=1)
