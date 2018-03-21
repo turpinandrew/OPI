@@ -138,7 +138,7 @@ Zest242 <- function(eye="right", primaryStartValue=30,
     #  3) a domain of -5:30 dB
     #####################################################
     startF <- function(guess, rw, cl) {
-        domain <- -5:30 # note min(domain) should be <= 0 for bimodal pdf
+        domain <- -5:40 # note min(domain) should be <= 0 for bimodal pdf
 
         glaucomaPDF <- rep(0.001,length(domain))
         glaucomaPDF[1:(6+abs(domain[1]))] <- c(rep(0.001,abs(domain[1])),0.2, 0.3, 0.2, 0.15,0.1, 0.02)
