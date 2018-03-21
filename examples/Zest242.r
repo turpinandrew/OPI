@@ -49,7 +49,7 @@ source("growthPattern.r")
 #########################################################################
 Zest242 <- function(eye="right", primaryStartValue=30, 
                     min_isi=0, max_isi=0, 
-                    fp_check=30, fp_level=60,
+                    fp_check=30, fp_level=50,
                     verbose=FALSE,
                     zero_db_is_10000_asb=TRUE,
                     tt=NA, fpv=0.00, fnv=0.00) {
