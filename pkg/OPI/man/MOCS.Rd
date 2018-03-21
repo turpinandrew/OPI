@@ -81,7 +81,8 @@ Constant Stimuli test.
   \item{makeStim}{
             A helper function to take a row of \code{params} and a response window 
              length in ms, and create a list of OPI stimuli types for 
-             passing to opiPresent. See Example.
+             passing to opiPresent. This may include a \code{checkFixationOK} function.
+             See Example.
     }
 
   \item{stim_print}{A function that takes an \code{opiStaticStimulus} and return list from 
@@ -107,15 +108,22 @@ Constant Stimuli test.
     If a response is received before the final trial in a nIFC experiment,
     it is ignored.
 
+    If the \code{checkFixationOK} funciton is present in a stimulus, then it
+    is called after each presentation, and the result is ``anded'' with each stimulus 
+    in a trial to get a TRUE/FALSE for fixating on all stimuli in a trial.
+
 }
 \value{
  Returns a data.frame with one row per stimulus copied from params with extra columns that
- are the return values from \code{opiPresent()}. These last values will differ depending
+ are the return values from \code{opiPresent()} and a record of fixation (if \code{checkFixationOK} present in stim
+objects returned from \code{makeStim}: see example). These last values will differ depending
  on which machine/simulation you are running (as chosen with \code{chooseOpi()}.
  \itemize{
         \item{column 1: x}
         \item{column 2: y}
-        \item{...: columns from params}
+        \item{column 3: correct stimulus index}
+        \item{column 4: TRUE/FALSE was fixating for all presentations in this trial according to \code{checkFixationOK}}
+        \item{column 5...: columns from params}
         \item{...: columns from opiPresent return}
   }
 }
@@ -138,6 +146,10 @@ Andrew Turpin <aturpin@unimelb.edu.au>
 \code{\link{dbTocd}}, \code{\link{opiPresent}}
 }
 \examples{
+    # For the Octopus 900
+    # Check if pupil centre is within 10 pixels of (160,140)
+checkFixationOK <- function(ret) return(sqrt((ret$pupilX - 160)^2 + (ret$pupilY - 140)^2) < 10)
+
     # Return a list of opi stim objects (list of class opiStaticStimulus)
     # for each level (dB) in p[5:length(p)]. Each stim has responseWindow
     # BETWEEN_FLASH_TIME, except the last which has rwin.
@@ -149,7 +161,9 @@ makeStim <- function(p, rwin) {
     for(i in 5:length(p)) {
 
         s <- list(x=p[1], y=p[2], level=dbTocd(p[i],4000/pi), size=0.43, duration=200,
-                  responseWindow=ifelse(i < length(p), BETWEEN_FLASH_TIME, rwin))
+                  responseWindow=ifelse(i < length(p), BETWEEN_FLASH_TIME, rwin),
+                  checkFixationOK=NULL
+                )
         class(s) <- "opiStaticStimulus"
         res <- c(res, list(s))
     }

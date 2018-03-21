@@ -8,7 +8,7 @@ Stimulus parameter list.
  with an S3 class attribute of \code{opiStaticStimulus}.
 }
 \details{ 
-The list must contain the following elements.
+The list should contain the following elements.
 
 \code{x} coordinate of the center of stimulus in degrees 
          relative to fixation 
@@ -48,6 +48,10 @@ The list must contain the following elements.
                 nearest one tenth of a dB for display.
 
     \code{color} is ignored. Use \code{opiSetBackground()} to alter stimulus color.
+
+    \code{checkFixationOK} is a function that takes the return value from \code{opiPresent}
+    and returns either \code{TRUE}, indicating that fixation was food for the presentation;
+    or \code{FALSE}, indicating that fixation was not good for the presentation.
 }
 
 \subsection{Octopus 900 F310 Controller}{

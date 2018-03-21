@@ -98,10 +98,16 @@ Extra parameters to pass to the opiPresent function
     Note this function will repeatedly call \code{opiPresent} for a stimulus 
     until \code{opiPresent} returns \code{NULL} (ie no error occured).
 
+    The \code{checkFixationOK} function is called (if present in stim made from \code{makeStim}) 
+    after each presentation, and if it returns FALSE, the
+    pdf for that location is not changed (ie the presentation is ignored), but the stim, number of presentations etc is
+    recorded in the state.
+
     If more than one ZEST is to be interleaved (for example, testing multiple locations), then the 
     \code{ZEST.start}, \code{ZEST.step}, \code{ZEST.stop} and \code{ZEST.final} calls can maintain the state of
     the ZEST after each presentation, and should be used.
-    If only a single ZEST is required, then the simpler \code{ZEST} can be used.
+    If only a single ZEST is required, then the simpler \code{ZEST} can be used, which is a wrapper for the 
+    four functions that maintain state.
     See examples below.
 }
 \value{
@@ -111,7 +117,8 @@ Extra parameters to pass to the opiPresent function
 \code{ZEST} returns a list containing
 \itemize{
 \item{npres:}{ Total number of presentations used.}
-\item{respSeq:}{Response sequence stored as a matrix: row 1 is dB values, row 2 is 1/0 for seen/not-seen.}
+\item{respSeq:}{Response sequence stored as a matrix: row 1 is dB values of stimuli, row 2 is 1/0 for seen/not-seen, row
+3 is fixated 1/0 (always 1 if \code{checkFixationOK} not present in stim objects returned from \code{makeStim}).}
 \item{pdfs:}{ If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each presentation,
 otherwise NULL.}
 \item{final}{ The mean/median/mode of the final pdf, depending on \code{stimChoice}, which is the determined threshold.}
@@ -147,6 +154,8 @@ contains the following.
     \item{stimuli:}{ A vector containing the stimuli used at each call of \code{ZEST.step}.}
     \item{responses:}{ A vector containing the responses received at each call of \code{ZEST.step}.}
     \item{responseTimes:}{ A vector containing the response times received at each call of \code{ZEST.step}.}
+    \item{fixated:}{ A vector containing TRUE/FALSE if fixation was OK according to \code{checkFixationOK} for each call
+            of \code{ZEST.step} (defaults to TRUE if \code{checkFixationOK} not present).}
 }
 
 \code{ZEST.step} returns a list containing
@@ -204,7 +213,7 @@ if (!is.null(opiInitialize(type="C", cap=6)))
     # Stimulus is Size III white-on-white as in the HFA
 makeStim <- function(db, n) { 
     s <- list(x=9, y=9, level=dbTocd(db), size=0.43, color="white",
-             duration=200, responseWindow=1500)
+             duration=200, responseWindow=1500, checkFixationOK=NULL)
     class(s) <- "opiStaticStimulus"
 
     return(s)
@@ -232,7 +241,7 @@ makeStimHelper <- function(db,n, x, y) {  # returns a function of (db,n)
 
     body(ff) <- substitute(
         {s <- list(x=x, y=y, level=dbTocd(db), size=0.43, color="white",
-                  duration=200, responseWindow=1500)
+                  duration=200, responseWindow=1500, checkFixationOK=NULL)
          class(s) <- "opiStaticStimulus"
          return(s)
         }

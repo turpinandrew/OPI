@@ -103,6 +103,7 @@ ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
                 stimuli=NULL,                       # vector of stims shown
                 responses=NULL,                     # vector of responses (1 seen, 0 not)
                 responseTimes=NULL,                 # vector of response times
+                fixated=NULL,                       # vector of true/false for fixated one per stimuli
                 opiParams=list(...)                 # the extra params
             ))
 }# ZEST.start
@@ -120,6 +121,7 @@ ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 # Note 
 #   1) stims are rounded to nearest domain entry 
 #   2) opiPresent called infinitely until no error
+#   3) will call checkFixationOK() from stim if it exists
 ################################################################################
 ZEST.step <- function(state, nextStim=NULL) {
 
@@ -140,19 +142,30 @@ ZEST.step <- function(state, nextStim=NULL) {
     opiResp <- do.call(opiPresent, params)
     while (!is.null(opiResp$err))
         opiResp <- do.call(opiPresent, params)
+
+    fixation_is_good <- TRUE
+    if (!is.null(params$stim$checkFixationOK)) {
+        fixation_is_good <- params$stim$checkFixationOK(opiResp)
+    }
+
     state$stimuli          <- c(state$stimuli, stim)
     state$responses        <- c(state$responses, opiResp$seen)
     state$responseTimes    <- c(state$responseTimes, opiResp$time)
     state$numPresentations <- state$numPresentations + 1
-    
-    if(opiResp$seen) { 
-        if (stim == state$maxStimulus) state$currSeenLimit <- state$currSeenLimit + 1
-        state$pdf <- state$pdf * state$likelihood[stimIndex, ]
+    state$fixated          <- c(state$fixated, fixation_is_good)
+
+    if (fixation_is_good) {  # update the pdf
+        if(opiResp$seen) { 
+            if (stim == state$maxStimulus) state$currSeenLimit <- state$currSeenLimit + 1
+            state$pdf <- state$pdf * state$likelihood[stimIndex, ]
+        } else {
+            if (stim == state$minStimulus) state$currNotSeenLimit <- state$currNotSeenLimit + 1
+            state$pdf <- state$pdf * (1 - state$likelihood[stimIndex, ])
+        }
+        state$pdf <- state$pdf/sum(state$pdf)
     } else {
-        if (stim == state$minStimulus) state$currNotSeenLimit <- state$currNotSeenLimit + 1
-        state$pdf <- state$pdf * (1 - state$likelihood[stimIndex, ])
+        warning("ZEST.step: fixation lost during presentation, pdf not updated")
     }
-    state$pdf <- state$pdf/sum(state$pdf)
 
     return(list(state=state, resp=opiResp))
 }#ZEST.step()
@@ -216,7 +229,8 @@ ZEST.final <- function(state) {
 #   maxPresentations Maximum number of presentations
 #   verbose       1 if you want pdfs returned, 2 is 1+print, 0 for none
 #   makeStim      A helper function to create the required
-#                 OPI data type for passing to opiPresent
+#                 OPI data type for passing to opiPresent. 
+#                 Can include checkFixationOK function in the returned stim.
 #   stimChoice    "mean", "median", "mode"
 #   ...           Parameters for opiPresent
 # Returns a list containing
@@ -252,6 +266,7 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
         if (verbose == 2) {
             cat(sprintf("Presentation %2d: ", state$numPresentations))
             cat(sprintf("stim= %5s repsonse=%s ", tail(state$stimuli,1), tail(state$responses,1)))
+            cat(sprintf("fixation= %1.0g ", tail(state$fixated,1)))
             cat(sprintf("stdev= %8.4g H= %8.4g\n", ZEST.stdev(state), ZEST.entropy(state)))
         }
         if (verbose > 0)
@@ -260,7 +275,7 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 
     return(list(
         npres=tail(state$numPresentations,1),        # number of presentations
-        respSeq=mapply(c, state$stimuli, state$responses), # reposnse sequence (list of pairs)
+        respSeq=mapply(c, state$stimuli, state$responses, state$fixated), # reposnse sequence (list of triples)
         pdfs=pdfs,                                   # list of pdfs used (if verbose > 0)
         final=ZEST.final(state)                      # final threshold estimate
     ))
@@ -277,14 +292,15 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 #makeStim <- function(db, n) { 
 #         s <- list(x=9, y=9, level=dbTocd(db,10000/pi), size=0.43, 
 #                  color="white",
-#                  duration=200, responseWindow=1500)
+#                  duration=200, responseWindow=1500, 
+#                   checkFixationOK=NULL)
 #         class(s) <- "opiStaticStimulus"
 #     
 #         return(s)
 #     }
 #makeNextStim <- function(x,y) { 
 #         s <- list(x=9, y=9, level=dbTocd(db,10000/pi), size=0.43, color="white",
-#                  duration=200, responseWindow=1500)
+#                  duration=200, responseWindow=1500, checkFixationOK=NULL)
 #         class(s) <- "opiStaticStimulus"
 #     
 #         return(s)
@@ -305,7 +321,7 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 #
 #    body(ff) <- substitute(
 #        {s <- list(x=x, y=y, level=dbTocd(db,10000/pi), size=0.43, color="white",
-#                  duration=200, responseWindow=1500)
+#                  duration=200, responseWindow=1500, checkFixationOK=NULL)
 #         class(s) <- "opiStaticStimulus"
 #         return(s)
 #        }

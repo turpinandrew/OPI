@@ -59,7 +59,7 @@
 #
 #   makeStim  A helper function to take a row of params[] and a response window 
 #             length in ms, and create a list of OPI stimuli types for 
-#             passing to opiPresent.
+#             passing to opiPresent. Might include checkFixationOK function.
 #
 #   stim_print A function that takes opiStaticStimulus and return list from opiPresent
 #              and returns a string to print.
@@ -67,10 +67,16 @@
 #   ...       Parameters for opiPresent
 #
 # Returns a data.frame with one row per stim, 
-#       col 1 x, col2 y, col 3 correct_lum_num, ncol(params)-1 are same as params[5:],
+#       col 1 x 
+#       col 2 y 
+#       col 3 correct_lum_num 
+#       col 4 true/false all fixations in trial good according to checkFixationOK (TRUE if no checkFixationOK)
+#       ncol(params)-1 are same as params[5:],
 #       column last-2 = correct/incorrect
 #       column last-1 = response time 
 #       column last   = err code
+#
+# Also prints x,y,fixations_good,stim_print(stim, return) for each trial
 ################################################################################
 MOCS <- function(params=NA, 
                  order="random",
@@ -128,18 +134,31 @@ MOCS <- function(params=NA,
         nextStims <- makeStim(as.double(mocs[i+1,]), rwin)
 
         cat(sprintf('Trial %4g',i))
+        all_fixations_good <- TRUE
         for (stimNum in 1:length(stims)) {
             beep_function(stimNum)
-            s = stims[[stimNum]]
+            s <- stims[[stimNum]]
             if (stimNum == length(stims)) {
               ret <- opiPresent(stim=s, nextStim=nextStims[[stimNum]], ...)
-              cat(sprintf(" %+6.1f %+6.1f",s$x,s$y))
+
+              fixation_good <- TRUE
+              if (!is.null(s$checkFixationOK))
+                fixation_good <- s$checkFixationOK(ret)
+              all_fixations_good <- all_fixations_good && fixation_good
+            
+              cat(sprintf(" %+6.1f %+6.1f %1.0f ",s$x,s$y, fixation_good))
               cat(stim_print(s,ret))
             } else {
-              startTime = Sys.time()
+              startTime <- Sys.time()
 
               ret <- opiPresent(stim=s, nextStim=NULL, ...)
-              cat(sprintf(" %+6.1f %+6.1f",s$x,s$y))
+
+              fixation_good <- TRUE
+              if (!is.null(s$checkFixationOK))
+                fixation_good <- s$checkFixationOK(ret)
+              all_fixations_good <- all_fixations_good && fixation_good
+            
+              cat(sprintf(" %+6.1f %+6.1f %1.0f ",s$x,s$y, fixation_good))
               cat(stim_print(s,ret))
 
                 # just check that the reponse window wasn't scuppered by a response
@@ -168,7 +187,7 @@ MOCS <- function(params=NA,
         
         Sys.sleep(runif(1, min=interStimMin, max=interStimMax)/1000)
 
-        results <- rbind(results, c(mocs[i,1:3], mocs[i,5:ncol(mocs)], ret))
+        results <- rbind(results, c(mocs[i,1:3], all_fixations_good, mocs[i,5:ncol(mocs)], ret))
     }
     
     if (error_count > 0)
@@ -201,7 +220,9 @@ MOCS <- function(params=NA,
 ###    for(i in 5:length(p)) {
 ###
 ###        s <- list(x=p[1], y=p[2], level=p[5], size=0.43, duration=200,
-###                  responseWindow=ifelse(i < length(p), 0, BETWEEN_FLASH_TIME))
+###                  responseWindow=ifelse(i < length(p), 0, BETWEEN_FLASH_TIME),
+###                  checkFixationOK=NULL
+###             )
 ###        class(s) <- "opiStaticStimulus"
 ###        res <- c(res, list(s))
 ###    }
