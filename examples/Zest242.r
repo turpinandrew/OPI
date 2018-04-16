@@ -156,6 +156,9 @@ Zest242 <- function(eye="right", primaryStartValue=30,
         prior <- makeBiModalPDF(round(guess),4,0.001)
         prior <- prior/sum(prior)
       
+        domain <- 19:35
+        prior <- rep(1, length(domain))
+        prior <- prior/sum(prior)
         ###### helps create the makeStim function needed for the OPI
         makeStimHelper <- function(x, y) {  # returns a function of (db,n)
             ff <- function(db, n) db+n
@@ -217,7 +220,7 @@ Zest242 <- function(eye="right", primaryStartValue=30,
     z <- res1$t < 0
     tz <- res1$t
     tz[z] <- 0
-    res <- list(np=res1$n, ae=abs(tz-tt), th=res1$t, trues=tt, fp_shown=res1$fp_shown, fp_seen=res1$fp_seen)
+    res <- list(np=res1$n, ae=abs(tz-tt), th=res1$t, trues=tt, fp_shown=res1$fp_shown, fp_seen=res1$fp_seen, states=res1$states)
 
     return(res)
 }

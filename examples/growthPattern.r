@@ -161,7 +161,7 @@ procedureWithGrowthPattern <- function(gp, ops, startFun, stepFun, stopFun, fina
         wave <- wave + 1
     }
 
-    return(list(t=currentThresholds, n=currentNumPres, fp_shown=fp_presented, fp_seen=fp_seen))
+    return(list(t=currentThresholds, n=currentNumPres, fp_shown=fp_presented, fp_seen=fp_seen, states=states))
 }# procedureWithGrowthPattern()
 
 
