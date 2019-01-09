@@ -99,10 +99,12 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     writeLines(msg, socket)
     
     n <- readBin(socket, "integer", size=4, endian=.CompassEnv$endian)
-    #print(paste("opiInitialize read: ", n))
-    if (n == 0) {
-        return(list(err="opiInitialise Error"))
+
+    if (length(n) == 0) {    # Compass was not happy with that OPEN, try until it is (AHT: Sep 2018)
+        warning('Compass did not like the OPEN command. Suggest closeAllConnections() and try again')
+        return(list(err="Bad open", prl=NULL, onh=NULL, image=NULL))    
     } else {
+        #print(paste("opiInitialize read: ", n))
         prlx <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
         prly <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
         onhx <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)

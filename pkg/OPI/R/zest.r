@@ -104,6 +104,8 @@ ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
                 responses=NULL,                     # vector of responses (1 seen, 0 not)
                 responseTimes=NULL,                 # vector of response times
                 fixated=NULL,                       # vector of true/false for fixated one per stimuli
+                pupilXs=NULL,                       # vector of pupil X positions
+                pupilYs=NULL,                       # vector of pupil Y positions
                 opiParams=list(...)                 # the extra params
             ))
 }# ZEST.start
@@ -153,6 +155,8 @@ ZEST.step <- function(state, nextStim=NULL) {
     state$responseTimes    <- c(state$responseTimes, opiResp$time)
     state$numPresentations <- state$numPresentations + 1
     state$fixated          <- c(state$fixated, fixation_is_good)
+    state$pupilXs          <- c(state$pupilXs, opiResp$pupilX)
+    state$pupilYs          <- c(state$pupilYs, opiResp$pupilY)
 
     if (fixation_is_good) {  # update the pdf
         if(opiResp$seen) { 

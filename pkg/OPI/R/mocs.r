@@ -133,7 +133,7 @@ MOCS <- function(params=NA,
         stims     <- nextStims
         nextStims <- makeStim(as.double(mocs[i+1,]), rwin)
 
-        cat(sprintf('Trial %4g',i))
+        cat(sprintf('Trial,%g',i))
         all_fixations_good <- TRUE
         for (stimNum in 1:length(stims)) {
             beep_function(stimNum)
@@ -146,7 +146,7 @@ MOCS <- function(params=NA,
                 fixation_good <- s$checkFixationOK(ret)
               all_fixations_good <- all_fixations_good && fixation_good
             
-              cat(sprintf(" %+6.1f %+6.1f %1.0f ",s$x,s$y, fixation_good))
+              cat(sprintf(",%+6.1f,%+6.1f,%1.0f,",s$x,s$y, fixation_good))
               cat(stim_print(s,ret))
             } else {
               startTime <- Sys.time()
@@ -158,7 +158,7 @@ MOCS <- function(params=NA,
                 fixation_good <- s$checkFixationOK(ret)
               all_fixations_good <- all_fixations_good && fixation_good
             
-              cat(sprintf(" %+6.1f %+6.1f %1.0f ",s$x,s$y, fixation_good))
+              cat(sprintf(",%+6.1f,%+6.1f,%1.0f,",s$x,s$y, fixation_good))
               cat(stim_print(s,ret))
 
                 # just check that the reponse window wasn't scuppered by a response
@@ -183,7 +183,7 @@ MOCS <- function(params=NA,
             error_count <- error_count + 1 
         }
 
-        cat(sprintf(' %5s %6g\n',ret$seen,  ret$time))
+        cat(sprintf(',%g,%g\n',ret$seen,  ret$time))
         
         Sys.sleep(runif(1, min=interStimMin, max=interStimMax)/1000)
 
