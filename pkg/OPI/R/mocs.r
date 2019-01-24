@@ -27,7 +27,10 @@
 #
 # Input parameters
 #   params  A matrix where each row is 
-#            x y number-of-presentations correct_lum_num luminance-level-1 ll2 ll3 ...
+#           x y loc_num number-of-present'ns correct_lum_num luminance-level-1 ll2 ll3 ...
+#           Each row of params is presented number-of-presentations times in the
+#           order determined by the "order" paramter. For a yes/no MOCS, there is 
+#           only one luminance level. For @AFC, there are two, etc.
 #
 #   order     Control the order in which the stimuli are presented.
 #               "random" - uniform random for all trials.
@@ -67,10 +70,11 @@
 #   ...       Parameters for opiPresent
 #
 # Returns a data.frame with one row per stim, 
-#       col 1 x 
-#       col 2 y 
-#       col 3 correct_lum_num 
-#       col 4 true/false all fixations in trial good according to checkFixationOK (TRUE if no checkFixationOK)
+#       col 1 Location number (row number in input params matrix)
+#       col 2 x 
+#       col 3 y 
+#       col 4 correct_lum_num 
+#       col 5 true/false all fixations in trial good according to checkFixationOK (TRUE if no checkFixationOK)
 #       ncol(params)-1 are same as params[5:],
 #       column last-2 = correct/incorrect
 #       column last-1 = response time 
@@ -97,7 +101,7 @@ MOCS <- function(params=NA,
     mocs <- NULL
     if (order == "random") {
         for(i in 1:nrow(params)) {
-            reps <- params[i,3]
+            reps <- params[i,4]
             mocs <- rbind(mocs, matrix(params[i,], ncol=ncol(params), nrow=reps, byrow=T))
         }
         mocs <- mocs[order(runif(nrow(mocs))), ]
@@ -106,7 +110,7 @@ MOCS <- function(params=NA,
     } else {
         stop(paste("Invalid order in MOCS: ", order))
     }
-    mocs <- rbind(mocs, rep(0, ncol(params)))  # add dummy for final nextStim
+    mocs <- rbind(mocs, rep(0, ncol(mocs)))  # add dummy for final nextStim
 
         ####################################################
         # Set up response window time data structures
@@ -133,7 +137,7 @@ MOCS <- function(params=NA,
         stims     <- nextStims
         nextStims <- makeStim(as.double(mocs[i+1,]), rwin)
 
-        cat(sprintf('Trial,%g',i))
+        cat(sprintf('Trial,%g,Location,%g',i, mocs[i,3]))
         all_fixations_good <- TRUE
         for (stimNum in 1:length(stims)) {
             beep_function(stimNum)
@@ -146,7 +150,7 @@ MOCS <- function(params=NA,
                 fixation_good <- s$checkFixationOK(ret)
               all_fixations_good <- all_fixations_good && fixation_good
             
-              cat(sprintf(",%+6.1f,%+6.1f,%1.0f,",s$x,s$y, fixation_good))
+              cat(sprintf(",%f,%f,%f,",s$x,s$y, fixation_good))
               cat(stim_print(s,ret))
             } else {
               startTime <- Sys.time()
@@ -158,7 +162,7 @@ MOCS <- function(params=NA,
                 fixation_good <- s$checkFixationOK(ret)
               all_fixations_good <- all_fixations_good && fixation_good
             
-              cat(sprintf(",%+6.1f,%+6.1f,%1.0f,",s$x,s$y, fixation_good))
+              cat(sprintf(",%f,%f,%f,",s$x,s$y, fixation_good))
               cat(stim_print(s,ret))
 
                 # just check that the reponse window wasn't scuppered by a response
@@ -168,7 +172,7 @@ MOCS <- function(params=NA,
         }
 
         if (responseWindowMeth == "forceKey")
-          ret <- keyHandler(mocs[i, 4], ret)
+          ret <- keyHandler(mocs[i, 6], ret)
  
         if (is.null(ret$err)) {
             if (ret$seen) 
@@ -187,7 +191,7 @@ MOCS <- function(params=NA,
         
         Sys.sleep(runif(1, min=interStimMin, max=interStimMax)/1000)
 
-        results <- rbind(results, c(mocs[i,1:3], all_fixations_good, mocs[i,5:ncol(mocs)], ret))
+        results <- rbind(results, c(mocs[i,1:5], all_fixations_good, mocs[i,6:ncol(mocs)], ret))
     }
     
     if (error_count > 0)

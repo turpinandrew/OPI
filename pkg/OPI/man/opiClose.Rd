@@ -20,6 +20,11 @@ opiClose(...)
 \value{
 Returns NULL if close succeeded, 
 otherwise an implementation dependant error.
+
+\subsection{Compass}{
+    Returns a list of \code{err}, which is an error code, and \code{fixations}, which is a matrix with three columns:
+time, x, y, and one row per fixation. 
+}
 }
 \references{
 Please cite:

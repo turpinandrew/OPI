@@ -19,12 +19,13 @@ Constant Stimuli test.
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-    \item{params}{A matrix where each row is \code{x y n correct_n ll1 ll2 ... llm}
+    \item{params}{A matrix where each row is \code{x y i n correct_n ll1 ll2 ... llm}
         where
         \itemize{
             \item{\code{x} is X coordinate of location}
             \item{\code{y} is Y coordinate of location}
-            \item{\code{n} is Number of times this location/luminance(s) pair should be repeated}
+            \item{\code{i} is a location number (assigned by caller)}
+            \item{\code{n} is Number of times this location/luminance(s) should be repeated}
 
             \item{\code{correct_n} is the index i of the luminance level (\code{lli}) that
             should be treated as a ``correct'' response (the correct interval).
@@ -115,15 +116,16 @@ Constant Stimuli test.
 }
 \value{
  Returns a data.frame with one row per stimulus copied from params with extra columns that
- are the return values from \code{opiPresent()} and a record of fixation (if \code{checkFixationOK} present in stim
+ are location number in the first column, and the return values from \code{opiPresent()} and a record of fixation (if \code{checkFixationOK} present in stim
 objects returned from \code{makeStim}: see example). These last values will differ depending
  on which machine/simulation you are running (as chosen with \code{chooseOpi()}.
  \itemize{
         \item{column 1: x}
         \item{column 2: y}
-        \item{column 3: correct stimulus index}
-        \item{column 4: TRUE/FALSE was fixating for all presentations in this trial according to \code{checkFixationOK}}
-        \item{column 5...: columns from params}
+        \item{column 3: location number}
+        \item{column 4: correct stimulus index}
+        \item{column 5: TRUE/FALSE was fixating for all presentations in this trial according to \code{checkFixationOK}}
+        \item{column 6...: columns from params}
         \item{...: columns from opiPresent return}
   }
 }
