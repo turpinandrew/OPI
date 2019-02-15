@@ -130,6 +130,14 @@ opi.implementations <- list(
         opiSetBackground = "simH_RT.opiSetBackground",
         opiQueryDevice   = "simH_RT.opiQueryDevice",
         opiPresent       = "simH_RT.opiPresent"
+    ),
+    list(
+        name="Plot",
+        opiInitialize    = "plotDevice.opiInitialize",
+        opiClose         = "plotDevice.opiClose",
+        opiSetBackground = "plotDevice.opiSetBackground",
+        opiQueryDevice   = "plotDevice.opiQueryDevice",
+        opiPresent       = "plotDevice.opiPresent"
     )
 )
 

@@ -1,0 +1,17 @@
+Package: OPI
+Type: Package
+Title: Open Perimetry Interface
+Version: 2.8
+Date: 2018-02-27
+Authors@R:c(
+    person("Andrew","Turpin",email="aturpin@unimelb.edu.au",role=c("cre","aut","cph")), 
+    person("David","Lawson",role=c("ctb","cph")), 
+    person("Matthias","Muller",role="ctb"), 
+    person("Jonathan","Dennis",role=c("ctb","cph")), 
+    person("Astrid","Zeman",role="ctb"))
+Author: Andrew Turpin [cre, aut, cph], David Lawson [ctb, cph], Matthias Muller [ctb], Jonathan Dennis [ctb, cph], Astrid Zeman [ctb]
+Maintainer: Andrew Turpin <aturpin@unimelb.edu.au>
+Description: Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters). It specifies basic functions that allow many visual field tests to be constructed. As of October 2017 it is fully implemented on the Octopus 900 and partially on the Heidelberg Edge Perimeter, the Kowa AP 7000, the CrewT imo and the Centervue Compass. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
+License: GPL-3
+URL: http://people.eng.unimelb.edu.au/aturpin/opi/index.html
+Depends: methods
