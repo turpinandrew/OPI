@@ -138,6 +138,14 @@ opi.implementations <- list(
         opiSetBackground = "plotDevice.opiSetBackground",
         opiQueryDevice   = "plotDevice.opiQueryDevice",
         opiPresent       = "plotDevice.opiPresent"
+    ),
+    list(
+        name="Daydream",
+        opiInitialize    = "daydream.opiInitialize",
+        opiClose         = "daydream.opiClose",
+        opiSetBackground = "daydream.opiSetBackground",
+        opiQueryDevice   = "daydream.opiQueryDevice",
+        opiPresent       = "daydream.opiPresent"
     )
 )
 

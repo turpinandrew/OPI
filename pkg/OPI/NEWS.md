@@ -111,4 +111,5 @@
  * fixed two bugs related to gaze feed in O900
  * added checkFixationOK check to opiStaticStimulus, ZEST and MOCS (untested)
  * altered mocs to print comma separated lines and location number.
- * added Plot device to allow on-screen perimetry ```chooseOpi("Plot")```
+ * added Plot device to allow on-screen perimetry ```chooseOpi("Plot")``` (unfinished)
+ * added Daydream device to allow Google Daydream perimetry ```chooseOpi("Daydream")``` (unfinished)

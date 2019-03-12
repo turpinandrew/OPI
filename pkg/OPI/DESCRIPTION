@@ -3,7 +3,7 @@ Type: Package
 Title: Open Perimetry Interface
 Version: 2.8
 Date: 2018-02-27
-Authors@R:c(
+Authors@R: c(
     person("Andrew","Turpin",email="aturpin@unimelb.edu.au",role=c("cre","aut","cph")), 
     person("David","Lawson",role=c("ctb","cph")), 
     person("Matthias","Muller",role="ctb"), 
@@ -15,3 +15,4 @@ Description: Implementation of the Open Perimetry Interface (OPI) for simulating
 License: GPL-3
 URL: http://people.eng.unimelb.edu.au/aturpin/opi/index.html
 Depends: methods
+RoxygenNote: 6.1.1

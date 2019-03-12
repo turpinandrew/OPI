@@ -184,6 +184,8 @@ If the chosen OPI implementation is \code{KowaAP7000}, then \code{nextStim} is i
 
 If the chosen OPI implementation is \code{Compass}, then \code{nextStim} is ignored. 
 Note that the dB level is rounded to the nearest integer.
+
+If tracking is on, then this will block until the tracking is obtained, and the stimulus presented.
 }
 
 

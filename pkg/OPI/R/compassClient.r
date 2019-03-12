@@ -160,12 +160,22 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     msg <- "OPI-PRESENT-STATIC"
     msg <- paste(msg, stim$x, stim$y, lev, "3", 200, stim$responseWindow)
 
-    writeLines(msg, .CompassEnv$socket)
-    res <- readLines(.CompassEnv$socket, n=1)
-    s <- strsplit(res, " ", fixed=TRUE)[[1]]
+    presentBad <- TRUE
+    presentCount <- 0
+    while (presentBad) {
+        presentCount <- presentCount + 1
+        if (presentCount %% 10 == 0)
+            warning(paste('opiPresent: I have tried presenting',presentCount,'times.'))
 
-    if (s[1] > 0)
-        return(list(err=s[1], seen=NA, time=NA))
+        writeLines(msg, .CompassEnv$socket)
+        res <- readLines(.CompassEnv$socket, n=1)
+        s <- strsplit(res, " ", fixed=TRUE)[[1]]
+
+        presentBad <- s[1] > 0
+    }
+
+    # BUG - num_track_events, etc are for a single call to the protocolo, and not aggregated over the
+    # 'presentBad' loop.
 
     return(list(
       err             =NULL,
