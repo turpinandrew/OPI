@@ -56,8 +56,6 @@ S3method(kowaAP7000.opiPresent, opiKineticStimulus)
 S3method(kowaAP7000.opiPresent, opiTemporalStimulus)
 export(.KowaAP7000Env)
 
-S3method(plotDevice.opiPresent, opiStaticStimulus)
-
 S3method(daydream.opiPresent, opiStaticStimulus)
 S3method(daydream.opiPresent, opiKineticStimulus)
 S3method(daydream.opiPresent, opiTemporalStimulus)

@@ -104,8 +104,7 @@ ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
                 responses=NULL,                     # vector of responses (1 seen, 0 not)
                 responseTimes=NULL,                 # vector of response times
                 fixated=NULL,                       # vector of true/false for fixated one per stimuli
-                pupilXs=NULL,                       # vector of pupil X positions
-                pupilYs=NULL,                       # vector of pupil Y positions
+                opiResp=NULL,                       # list of opiPresent return values
                 opiParams=list(...)                 # the extra params
             ))
 }# ZEST.start
@@ -155,8 +154,7 @@ ZEST.step <- function(state, nextStim=NULL) {
     state$responseTimes    <- c(state$responseTimes, opiResp$time)
     state$numPresentations <- state$numPresentations + 1
     state$fixated          <- c(state$fixated, fixation_is_good)
-    state$pupilXs          <- c(state$pupilXs, opiResp$pupilX)
-    state$pupilYs          <- c(state$pupilYs, opiResp$pupilY)
+    state$opiResp          <- c(state$opiResp, list(opiResp))
 
     if (fixation_is_good) {  # update the pdf
         if(opiResp$seen) { 
@@ -255,6 +253,8 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
             maxSeenLimit=2,
             minNotSeenLimit=2,
             maxPresentations=100,
+            minInterStimInterval=NA,
+            maxInterStimInterval=NA,
             verbose=0, makeStim, 
             stimChoice="mean",
             ...) {
@@ -275,13 +275,17 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
         }
         if (verbose > 0)
             pdfs <- c(pdfs, list(state$pdf))
+
+        if (!is.na(minInterStimInterval) && !is.na(maxInterStimInterval))
+            Sys.sleep(runif(1, min=minInterStimInterval, max=maxInterStimInterval)/1000)
     }
 
     return(list(
         npres=tail(state$numPresentations,1),        # number of presentations
         respSeq=mapply(c, state$stimuli, state$responses, state$fixated), # reposnse sequence (list of triples)
         pdfs=pdfs,                                   # list of pdfs used (if verbose > 0)
-        final=ZEST.final(state)                      # final threshold estimate
+        final=ZEST.final(state),                     # final threshold estimate
+        opiResp=state$opiResp                        # list of all responses from opiPresent
     ))
 }#ZEST
 

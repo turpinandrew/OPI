@@ -108,8 +108,9 @@
 # OPI 2.8
  * Added opiPresent error check into MOCS
  * Changed return from MOCS to include all opiPresent return fields.
- * fixed two bugs related to gaze feed in O900
- * added checkFixationOK check to opiStaticStimulus, ZEST and MOCS (untested)
- * altered mocs to print comma separated lines and location number.
- * added Plot device to allow on-screen perimetry ```chooseOpi("Plot")``` (unfinished)
- * added Daydream device to allow Google Daydream perimetry ```chooseOpi("Daydream")``` (unfinished)
+ * Changed ZEST state to include all opiPresent return fields.
+ * Fixed two bugs related to gaze feed in O900
+ * Added checkFixationOK check to opiStaticStimulus, ZEST and MOCS (untested)
+ * Altered mocs to print comma separated lines and location number.
+ * Added Daydream device to allow Google Daydream perimetry ```chooseOpi("Daydream")``` (unfinished)
+ * Fixed bug where stimulus color was not transmitted to the O900

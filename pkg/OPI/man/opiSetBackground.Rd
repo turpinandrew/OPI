@@ -49,6 +49,8 @@ opiSetBackground(...)
 
     \item\code{fixIntensity} is a percentage between 0 and 100. 0 is off, 100 the brightest.
   }
+
+  Note if you specify \code{fixation} you also have to specify \code{fixIntensity}.
 }
 \subsection{SimHenson and SimGaussian}{ 
     \code{opiSetBackground(col, gridCol)} 
@@ -102,6 +104,17 @@ setup (call to OPI-OPEN), so when tracking is on you should use the
 same fixation location as in the setup.
 }
 
+\subsection{Daydream}{
+    \code{opiSetBackground(lum=NA, color=NA, fixation="Cross", fixation_size=21, fixation_color=c(0,128,0), eye="L")}
+
+    \itemize{
+    \item{\code{lum}} in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey value in \code{lut} from \code{opiInitialize}.
+    \item{\code{color}} is ignored.
+    \item{\code{fixation}} can only be \code{'Cross'} at the moment.
+    \item{\code{fixation_size}} is the number of pixels one cross-hair is in length.
+    \item{\code{fixation_color}} RGB value of coor of fixation cross. Values in range [0,255].
+    }
+}
 }
 
 \value{

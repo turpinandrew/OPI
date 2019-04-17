@@ -37,13 +37,13 @@ if (!exists(".DayDreamEnv")) {
     .DayDreamEnv$LUT <- NULL
     .DayDreamEnv$degrees_to_pixels <- NULL
 
-    .DayDreamEnv$background_left <- NA    # NA or an array[1..3,1..w,1..h] if set
-    .DayDreamEnv$background_right <- NA
-
     .DayDreamEnv$width <- NA        # of whole phone screen
     .DayDreamEnv$height <- NA
-    .DayDreamEnv$single_width <- NA    # just one eye image
+    .DayDreamEnv$single_width <- NA
     .DayDreamEnv$single_height <- NA
+
+    .DayDreamEnv$background_left <- NA    # stored MONO background
+    .DayDreamEnv$background_right <- NA
 
     .DayDreamEnv$SEEN     <- 1  
     .DayDreamEnv$NOT_SEEN <- 0  
@@ -75,7 +75,7 @@ daydream.opiInitialize <- function(
         ip="127.0.0.1",
         port=50008, 
         lut = rep(1000, 256),
-        degrees_to_pixels = function(x,y) return(20*c(x,y))
+        degrees_to_pixels = function(x,y) return(50*c(x,y))
     ) {
     cat("Looking for phone at ", ip, "\n")
     suppressWarnings(tryCatch(    
@@ -104,7 +104,9 @@ daydream.opiInitialize <- function(
     assign("height",       readBin(.DayDreamEnv$socket, "integer", size=4, endian=.DayDreamEnv$endian), envir=.DayDreamEnv)
     assign("single_width", readBin(.DayDreamEnv$socket, "integer", size=4, endian=.DayDreamEnv$endian), envir=.DayDreamEnv)
     assign("single_height",readBin(.DayDreamEnv$socket, "integer", size=4, endian=.DayDreamEnv$endian), envir=.DayDreamEnv)
+    readBin(.DayDreamEnv$socket, "integer", size=1, endian=.DayDreamEnv$endian) # the \n
 
+    print(paste("Phone res", .DayDreamEnv$width, .DayDreamEnv$height, .DayDreamEnv$single_width, .DayDreamEnv$single_height))
     return(list(err=NULL))
 }
 
@@ -117,47 +119,29 @@ find_pixel_value <- function(cdm2) {
 }
 
 ###########################################################################
-# Load an image of a stimuli with background given by 
-# .DayDreamEnv$background_{eye} and forgraound given by pv.
-# The stim is a circle at (x,y) which are in degrees.
+# Load an image to server
 #
-# Assumes .DayDreamEnv$background_{eye} is set.
-#
-# @param fg integer in range [0,255]
-# @param eye is 'L' or 'R'
+# @param im is an array of RGB values dim=c(h,w,3)
 #
 # @return TRUE if succeeds, FALSE otherwise
 ###########################################################################
-load_image <- function(size, x, y, fg, eye) {
-    if (eye == 'L') {
-        im <- .DayDreamEnv$background_left
-    } else {
-        im <- .DayDreamEnv$background_right
-    }
-
+load_image <- function(im) {
     h <- dim(im)[1]
     w <- dim(im)[2]     # assert(dim(im)[3] == 3)
-
-    radius <- round(mean(.DayDreamEnv$degrees_to_pixels(size/2, size/2)))
-    xy <- .DayDreamEnv$degrees_to_pixels(x, y)
-
-    for (ix in -radius:radius)
-        for (iy in -radius:radius)
-            if (ix^2 + iy^2 <= radius)
-                im[xy[2] + iy, xy[1] + ix, ] <- pv      # BUG! prob wrong indexes 
 
     writeLines(paste("OPI_IMAGE", w, h), .DayDreamEnv$socket)
     res <- readLines(.DayDreamEnv$socket, n=1)
     if (res == "READY") {
         for (iy in 1:h)
             for (ix in 1:w)
-                writeBin(as.integer(rep(im[iy,ix,])), .DayDreamEnv$socket, size=3*4, endian=.DayDreamEnv$endian)
+                for (i in 1:3)
+                    writeBin(as.integer(rep(im[iy,ix,i])), .DayDreamEnv$socket, size=1, endian=.DayDreamEnv$endian)
     } else {
         return(FALSE)
     }
 
     res <- readLines(.DayDreamEnv$socket, n=1)
-
+    print(paste('Load image',res))
     return (res == "OK")
 }
 
@@ -184,26 +168,37 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (is.null(stim$responseWindow)) return(list(err="No responseWindow in stimulus", seen=NA, time=NA))
     if (is.null(stim$eye)) return(list(err="No eye in stimulus", seen=NA, time=NA))
 
-    if (stim$eye == "R" && !.DayDreamEnv$background_right)
-        return(list(err="Background image for right eye not set.", seen=NA, time=NA))
+        # make the stimulus
+    fg <- find_pixel_value(stim$level)
+    radius <- round(mean(.DayDreamEnv$degrees_to_pixels(stim$size/2, stim$size/2)))
+    xy <- .DayDreamEnv$degrees_to_pixels(stim$x, stim$y)
 
-    if (stim$eye == "L" && !.DayDreamEnv$background_left)
-        return(list(err="Background image for left eye not set.", seen=NA, time=NA))
+    bg <- ifelse(stim$eye == "L", .DayDreamEnv$background_left, .DayDreamEnv$background_right)
+    im <- array(bg, dim=c(2*radius, 2*radius, 3))
+    for (ix in -radius:radius)
+        for (iy in -radius:radius)
+            if (ix^2 + iy^2 <= radius)
+                im[radius+1+iy, radius+1+ix, ] <- fg
 
-    if (!is.null(nextStim)) 
-        warning("opiPresent: nextStim ignored")
-
-    pv <- find_pixel_value(stim$level)
-    if (load_image(stim$size, stim$x, stim$y, pv, stim$eye)) {
-        msg <- paste("OPI_PRESENT", stim$eye, stim$duration, stim$responseWindow, sep=" ")
+    if (load_image(im)) {
+        msg <- paste("OPI_MONO_PRESENT", stim$eye, xy[1], xy[2], stim$duration, stim$responseWindow, sep=" ")
         writeLines(msg, .DayDreamEnv$socket)
 
-        seen <- readBin(.DayDreamEnv$socket, "character", size=1) == '1'
+        seen <- readBin(.DayDreamEnv$socket, "integer", size=1)
         time <- readBin(.DayDreamEnv$socket, "double", size=4, endian=.DayDreamEnv$endian)
+        readBin(.DayDreamEnv$socket, "integer", size=1, endian=.DayDreamEnv$endian) # the \n
+
+        cat("seen: "); print(seen)
+        cat("time: "); print(time)
+        seen <- seen == '1'
 
         if (!seen && time == 0)
             return(list(err="Background image not set", seen=NA, time=NA))
         if (!seen && time == 1)
+            return(list(err="Trouble with stim image", seen=NA, time=NA))
+        if (!seen && time == 2)
+            return(list(err="Location out of range for daydream", seen=NA, time=NA))
+        if (!seen && time == 3)
             return(list(err="OPI present error back from daydream", seen=NA, time=NA))
 
         return(list(
@@ -225,7 +220,7 @@ daydream.opiPresent.opiKineticStimulus <- function(stim, ...) {
 }
 
 ###########################################################################
-# Not supported on AP 7000
+# Not supported on Daydream
 ###########################################################################
 daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     warning("DayDream does not support temporal stimuli (yet)")
@@ -233,46 +228,60 @@ daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 }#opiPresent.opiTemporalStimulus()
 
 ###########################################################################
-# Used to turn tracking on or off or alter fixation.
+# Used to set background for one eye.
+# @param lum            cd/m^2
+# @param color          Ignored for now
+# @param fixation       Just 'Cross' for now
+# @param fixation_color RGB triple with values in range [0,255]
+# @param fixation_size  Length of cross hairs In pixels
+# @param eye            "L" or "R"
+#
+# @return string on error
+# @return NULL if everything works
 ###########################################################################
-daydream.opiSetBackground <- function(lum=NA, color=c(128,128,128), eye="L") {
-    w <- .DayDreamEnv$single_width
-    h <- .DayDreamEnv$single_height
-
-    print(paste("setbg",w,h))
-
-    if (!is.na(lum)) {
-        if (!is.na(color))
-            warning("opiSetBackground: Ignoring color and using lum")
-        a <- array(find_pixel_value(lum), dim=c(3, w, h))
-    } else {
-        a <- array(color, dim=c(3, w, h))
+daydream.opiSetBackground <- function(lum=NA, color=NA, 
+        fixation="Cross", 
+        fixation_size=21,    # probably should be odd
+        fixation_color=c(0,128,0), 
+        eye="L") {
+    if (is.na(lum)) {
+        warning('Cannot set background to NA in opiSetBackground')
+        return('Cannot set background to NA in opiSetBackground')
     }
+    if (!is.na(color)) { warning('Color ignored in opiSetBackground.') }
 
-    writeLines(paste("OPI_IMAGE", w, h), .DayDreamEnv$socket)
+    g <- find_pixel_value(lum)
+    writeLines(paste("OPI_MONO_SET_BG", eye, g), .DayDreamEnv$socket)
     res <- readLines(.DayDreamEnv$socket, n=1)
-    print(res)
-    if (res == "READY") {
-        writeBin(as.integer(a[,,]), .DayDreamEnv$socket, size=1, endian=.DayDreamEnv$endian)
-    } else {
-        return(-1)
-    }
-
-    res <- readLines(.DayDreamEnv$socket, n=1)
-
     if (res != "OK")
-        return(-2)
+        return(paste0("Cannot set background to ",g," in opiSetBackground"))
 
-    writeLines(paste("OPI_SET_BACKGROUND", eye), .DayDreamEnv$socket)
-    res <- readLines(.DayDreamEnv$socket, n=1)
-    if (res == "ERR")
-        return(-3)
-    
-    if (eye == 'L')
-        assign("background_left", a, envir=.DayDreamEnv)
+    if (eye == "L")
+        .DayDreamEnv$background_left <- g
     else
-        assign("background_right", a, envir=.DayDreamEnv)
+        .DayDreamEnv$background_right <- g
 
+    if (fixation == 'Cross') { 
+            # set fixation to a cross
+        m <- (fixation_size + 1) /2
+        im <- array(0, dim=c(fixation_size, fixation_size, 3))
+        for (i in 1:fixation_size) {
+            im[m, i, ] <- fixation_color
+            im[i, m, ] <- fixation_color
+        }
+        if (!load_image(im))
+            return("Trouble loading fixation image in opiSetBackground.")
+
+        cx <- round(.DayDreamEnv$single_width / 2)
+        cy <- round(.DayDreamEnv$single_height / 2)
+        print(paste(eye, cx, cy))
+
+        writeLines(paste("OPI_MONO_BG_ADD", eye, cx, cy), .DayDreamEnv$socket)
+        res <- readLines(.DayDreamEnv$socket, n=1)
+        if (res != "OK")
+            return("Trouble adding fixation to background in opiSetBackground")
+    }
+    
     return(NULL)
 }
 
@@ -283,33 +292,26 @@ daydream.opiSetBackground <- function(lum=NA, color=c(128,128,128), eye="L") {
 ####       col-2 x in degrees 
 ####       col-3 y in degrees 
 ##############################################################################
-###compass.opiClose <- function() {
-###    writeLines("OPI-CLOSE", .CompassEnv$socket)
-###
-###    num_bytes <- readBin(.CompassEnv$socket, "integer", size=4, endian=.CompassEnv$endian)
-###    print(paste("Num bytes", num_bytes))
-###
-###    if (num_bytes == 0) {
-###        warning("opiClose() returned no bytes - perhaps you forgot opiInitialise")
-###        return(list(err="No Bytes"))
-###    }
-###
-###    num_triples <- num_bytes/12
-###    fixations <- matrix(NA, ncol=3, nrow=num_triples)
-###    for(i in 1:num_triples) {
-###        fixations[i,1] <- readBin(.CompassEnv$socket, "integer", n=1, size=4, endian=.CompassEnv$endian)
-###        fixations[i,2:3] <- readBin(.CompassEnv$socket, "double", n=2, size=4,  endian=.CompassEnv$endian)
-###    }
-###
-###    close(.CompassEnv$socket)
-###
-###    return(list(err=NULL, fixations=fixations))
-###}
-###
+daydream.opiClose <- function() {
+    writeLines("OPI_CLOSE", .DayDreamEnv$socket)
+
+    res <- readLines(.DayDreamEnv$socket, n=1)
+
+    close(.DayDreamEnv$socket)
+
+    if (res != "OK")
+        return(list(err="Trouble closing daydream connection."))
+    else
+        return(list(err=NULL))
+}
+
 ##############################################################################
 #### Lists defined constants
 ##############################################################################
-###compass.opiQueryDevice <- function() {
-###    return(list(default="Nothing to report", isSim=FALSE))
-###}
-###
+daydream.opiQueryDevice <- function() {
+    vars <- ls(.DayDreamEnv)
+    lst <- lapply(vars, function(i) .DayDreamEnv[[i]])
+    names(lst) <- vars
+    return(lst)
+}
+

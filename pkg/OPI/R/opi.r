@@ -132,14 +132,6 @@ opi.implementations <- list(
         opiPresent       = "simH_RT.opiPresent"
     ),
     list(
-        name="Plot",
-        opiInitialize    = "plotDevice.opiInitialize",
-        opiClose         = "plotDevice.opiClose",
-        opiSetBackground = "plotDevice.opiSetBackground",
-        opiQueryDevice   = "plotDevice.opiQueryDevice",
-        opiPresent       = "plotDevice.opiPresent"
-    ),
-    list(
         name="Daydream",
         opiInitialize    = "daydream.opiInitialize",
         opiClose         = "daydream.opiClose",

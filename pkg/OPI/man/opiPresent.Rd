@@ -188,6 +188,15 @@ Note that the dB level is rounded to the nearest integer.
 If tracking is on, then this will block until the tracking is obtained, and the stimulus presented.
 }
 
+\subsection{DayDream}{
+If the chosen OPI implementation is \code{DayDream}, then \code{nextStim} is ignored. 
+Note that the dB level is rounded to the nearest cd/\eqn{\mbox{m}^2}{m^2} that is in the \code{lut} specified in 
+\code{opiInitialise}.
+
+Currently uses the most simple algorithm for drawing a 'circle' (ie not Bresenham's).
+
+Currently only implemented for \code{opiStaticStimulus}.
+}
 
 }
 \value{

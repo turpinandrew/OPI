@@ -213,6 +213,7 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
         warning("opiPresent: no stim responseWindow specified. Assuming 1500ms.")
         stim$responseWindow <- 1500
     }
+    if (is.null(stim$color)) stim$color <- 0   # white I hope
 
     if(min(abs(.Octopus900Env$GOLDMANN - stim$size), na.rm=TRUE) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
@@ -226,6 +227,7 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     msg <- paste(msg, (which.min(abs(.Octopus900Env$GOLDMANN - stim$size))))
     msg <- paste(msg, stim$duration)
     msg <- paste(msg, stim$responseWindow)
+    msg <- paste(msg, stim$color)
     if (!is.null(nextStim)) {
         msg <- paste(msg, nextStim$x * 10.0, nextStim$y * 10.0)
     } else {
@@ -433,6 +435,15 @@ octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity
 
     if (all(is.na(c(lum, color, fixation, fixIntensity)))) {
         warning("At least one parameter must be not NA in opiSetBackground")
+        return(-4)
+    }
+
+    if (!is.na(fixation) && is.na(fixIntensity)) {
+        warning("If fixation is specified, fixIntensity must also be given in opiSetBackground")
+        return(-4)
+    }
+    if (!is.na(fixIntensity) && is.na(fixation)) {
+        warning("If fixIntensity is specified, fixation must also be given in opiSetBackground")
         return(-4)
     }
 

@@ -162,6 +162,20 @@ opiInitialise(...)
 
     Warning: this returns a list, not a single error code.
 }
+\subsection{DayDream}{
+    \code{opiInitialize(ip="127.0.0.1", port=50008, lut= rep(1000, 256), degrees_to_pixels= function(x,y) return(50*c(x,y)))}
+
+    If the chosen OPI implementation is \code{Daydream}, then you must 
+    specify the IP address of the Android phone that is in the Daydream,
+    and the port on which the server running on the phone is listening.
+
+    \itemize{
+    \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the cd/\eqn{\mbox{m}^2}{m^2}
+            value for grey level i.
+    \item\code{degrees_to_pixels} is a function that takes in \code{x} and \code{y} in degrees and returns 
+            a vector of the (x,y) coordinates in pixels for one eye.
+    }
+}
 }
 
 \value{

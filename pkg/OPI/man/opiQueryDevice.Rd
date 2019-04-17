@@ -24,6 +24,10 @@ If the chosen OPI is \code{KowaAP7000}, then this function returns
 the current location of the pupil.
 See the Value section for details.
 }
+
+\subsection{Daydream}{
+Returns all constants in \code{.DayDreamEnv} as a list.
+}
 }
 \value{
 Returns a list that contains \code{isSim} and implementation dependant data.
