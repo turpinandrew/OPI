@@ -173,7 +173,7 @@ opiInitialise(...)
     \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the cd/\eqn{\mbox{m}^2}{m^2}
             value for grey level i.
     \item\code{degrees_to_pixels} is a function that takes in \code{x} and \code{y} in degrees and returns 
-            a vector of the (x,y) coordinates in pixels for one eye.
+            a vector of the (x,y) coordinates in pixels for one eye. This assumes the viewing distance (z-coordinate) is 30cm.
     }
 }
 }

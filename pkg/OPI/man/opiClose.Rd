@@ -23,7 +23,8 @@ otherwise an implementation dependant error.
 
 \subsection{Compass}{
     Returns a list of \code{err}, which is an error code, and \code{fixations}, which is a matrix with three columns:
-time, x, y, and one row per fixation. 
+time (same as \code{time_hw} in \code{opiPresent}), x (degrees relative to the centre of the image returned
+by \code{opiInitialise} - not the PRL), y (as for x), and one row per fixation. 
 }
 }
 \references{

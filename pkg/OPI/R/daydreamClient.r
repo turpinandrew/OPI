@@ -171,7 +171,9 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
         # make the stimulus
     fg <- find_pixel_value(stim$level)
     radius <- round(mean(.DayDreamEnv$degrees_to_pixels(stim$size/2, stim$size/2)))
-    xy <- .DayDreamEnv$degrees_to_pixels(stim$x, stim$y)
+    cx <- round(.DayDreamEnv$single_width / 2)
+    cy <- round(.DayDreamEnv$single_height / 2)
+    xy <- c(cx,cy) + .DayDreamEnv$degrees_to_pixels(stim$x, -stim$y) 
 
     bg <- ifelse(stim$eye == "L", .DayDreamEnv$background_left, .DayDreamEnv$background_right)
     im <- array(bg, dim=c(2*radius, 2*radius, 3))
@@ -242,7 +244,7 @@ daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 daydream.opiSetBackground <- function(lum=NA, color=NA, 
         fixation="Cross", 
         fixation_size=21,    # probably should be odd
-        fixation_color=c(0,128,0), 
+        fixation_color=c(0,255,0), 
         eye="L") {
     if (is.na(lum)) {
         warning('Cannot set background to NA in opiSetBackground')
@@ -264,7 +266,7 @@ daydream.opiSetBackground <- function(lum=NA, color=NA,
     if (fixation == 'Cross') { 
             # set fixation to a cross
         m <- (fixation_size + 1) /2
-        im <- array(0, dim=c(fixation_size, fixation_size, 3))
+        im <- array(find_pixel_value(lum), dim=c(fixation_size, fixation_size, 3))
         for (i in 1:fixation_size) {
             im[m, i, ] <- fixation_color
             im[i, m, ] <- fixation_color
@@ -274,7 +276,7 @@ daydream.opiSetBackground <- function(lum=NA, color=NA,
 
         cx <- round(.DayDreamEnv$single_width / 2)
         cy <- round(.DayDreamEnv$single_height / 2)
-        print(paste(eye, cx, cy))
+        cat("Fixation at: ", eye, " ", cx, " ", cy, "\n")
 
         writeLines(paste("OPI_MONO_BG_ADD", eye, cx, cy), .DayDreamEnv$socket)
         res <- readLines(.DayDreamEnv$socket, n=1)

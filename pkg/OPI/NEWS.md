@@ -114,3 +114,4 @@
  * Altered mocs to print comma separated lines and location number.
  * Added Daydream device to allow Google Daydream perimetry ```chooseOpi("Daydream")``` (unfinished)
  * Fixed bug where stimulus color was not transmitted to the O900
+ * Updated documentation for opiClose re Compass.

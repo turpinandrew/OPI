@@ -109,7 +109,6 @@ simH.present <- function(db, cap=6, fpr=0.03, fnr=0.01, tt=30, A, B) {
     } else {
         prSeeing <- fpr
     }
-
     return ( list(
         err = NULL,
         seen= runif(1) < prSeeing,
