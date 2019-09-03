@@ -115,3 +115,8 @@
  * Added Daydream device to allow Google Daydream perimetry ```chooseOpi("Daydream")``` (unfinished)
  * Fixed bug where stimulus color was not transmitted to the O900
  * Updated documentation for opiClose re Compass.
+
+# OPI 2.9
+ * Removed all individual environments for each perimeter and made one OPIEnv (not backwards compatible)
+    * .Octopus900Env$x has become .OPIEnv$O900$x
+ * Added hooks for Shiny (or other event driven packages) in OPIEnv

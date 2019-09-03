@@ -32,8 +32,8 @@
 simH_RT.opiClose         <- function() { return(NULL) }
 simH_RT.opiQueryDevice   <- function() { return (list(type="SimHensonRT", isSim=TRUE)) }
 
-if (!exists(".SimHRTEnv"))
-    .SimHRTEnv <- new.env(size=5)
+if (exists(".OpiEnv") && !exists("SimHRT", where=.OpiEnv))
+    assign("SimHRT", new.env(5), envir=.OpiEnv)
 
 ################################################################################
 # Input
@@ -44,11 +44,11 @@ if (!exists(".SimHRTEnv"))
 #   rtData data.frame with colnames == "Rt", "Dist", "Person"
 #
 # Side effects if successful:
-#   Set .SimHRTEnv$type   to type
-#   Set .SimHRTEnv$cap    to cap
-#   Set .SimHRTEnv$A      to A
-#   Set .SimHRTEnv$B      to B
-#   Set .SimHRTEnv$rtData to 3 col data frame to rtData
+#   Set .OpiEnv$SimHRT$type   to type
+#   Set .OpiEnv$SimHRT$cap    to cap
+#   Set .OpiEnv$SimHRT$A      to A
+#   Set .OpiEnv$SimHRT$B      to B
+#   Set .OpiEnv$SimHRT$rtData to 3 col data frame to rtData
 #
 # Return NULL if successful, string error message otherwise  
 ################################################################################
@@ -66,11 +66,11 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
     if (cap < 0)
         warning("cap is negative in call to opiInitialize (SimHensonRT)")
     
-    .SimHRTEnv$type <- type
-    .SimHRTEnv$cap  <-  cap
-    .SimHRTEnv$A    <-  A
-    .SimHRTEnv$B    <-  B
-    .SimHRTEnv$maxStim <- maxStim
+    .OpiEnv$SimHRT$type <- type
+    .OpiEnv$SimHRT$cap  <-  cap
+    .OpiEnv$SimHRT$A    <-  A
+    .OpiEnv$SimHRT$B    <-  B
+    .OpiEnv$SimHRT$maxStim <- maxStim
 
     if (type == "X" && (is.na(A) || is.na(B)))
         warning("opiInitialize (SimHenson): you have chosen type X, but one/both A and B are NA")
@@ -79,11 +79,11 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
         warning("opiInitialize (SimHensonRT): display parameter may not contain 4 numbers.")
 
     #if (rtType == "sigma") {
-    #    load(paste(.Library,"/OPI/data/RtSigmaUnits.RData",sep=""), envir=.SimHRTEnv)
-    #    assign("rtData", .SimHRTEnv$RtSigmaUnits, envir=.SimHRTEnv)
+    #    load(paste(.Library,"/OPI/data/RtSigmaUnits.RData",sep=""), envir=.OpiEnv$SimHRT)
+    #    assign("rtData", .OpiEnv$SimHRT$RtSigmaUnits, envir=.OpiEnv$SimHRT)
     #} else if (rtType == "db") {
-    #    load(paste(.Library,"/OPI/data/RtDbUnits.RData",sep=""), envir=.SimHRTEnv)
-    #    assign("rtData", .SimHRTEnv$RtDbUnits, envir=.SimHRTEnv)
+    #    load(paste(.Library,"/OPI/data/RtDbUnits.RData",sep=""), envir=.OpiEnv$SimHRT)
+    #    assign("rtData", .OpiEnv$SimHRT$RtDbUnits, envir=.OpiEnv$SimHRT)
     #} else {
     #    msg <- paste("opiInitialize (SimHensonRT): unknown response time data type",rtType)
     #    warning(msg)
@@ -97,9 +97,9 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
         warning(msg)
         return(msg)
     }
-    assign("rtData", rtData, envir=.SimHRTEnv)
+    assign("rtData", rtData, envir=.OpiEnv$SimHRT)
 
-    #print(.SimHRTEnv$rtData[1:10,])
+    #print(.OpiEnv$SimHRT$rtData[1:10,])
 
     if (length(rtFP) < 1) {
         msg <- "opiInitialize (SimHensonRT): rtFP must have at least 1 element"
@@ -107,7 +107,7 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
         return(msg)
     }
 
-    assign("rtFP", rtFP, envir=.SimHRTEnv)
+    assign("rtFP", rtFP, envir=.OpiEnv$SimHRT)
 
     return(NULL)
 }
@@ -132,7 +132,7 @@ setGeneric("simH_RT.opiPresent")
 #
 # Helper function that allows different coefficients from Table 1 of Henson 2000.
 # Note prob seeing <0 is 1 (but false neg still poss)
-# Response time for false positive is uniform sample from .SimHRTEnv$rtFP
+# Response time for false positive is uniform sample from .OpiEnv$SimHRT$rtFP
 #
 # @param tt - true threshold (in dB)
 #                If <0 always seen (unless fn) 
@@ -142,10 +142,10 @@ setGeneric("simH_RT.opiPresent")
 simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
 
     falsePosRt <- function() {
-        if(length(.SimHRTEnv$rtFP) < 2) 
-            return(.SimHRTEnv$rtFP)
+        if(length(.OpiEnv$SimHRT$rtFP) < 2) 
+            return(.OpiEnv$SimHRT$rtFP)
         else
-            return(sample(.SimHRTEnv$rtFP,size=1))
+            return(sample(.OpiEnv$SimHRT$rtFP,size=1))
     }
 
     if (!is.na(tt) && tt < 0)         # force false pos if t < 0
@@ -171,15 +171,15 @@ simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
         return(list(err=NULL, seen=FALSE, time=0))
 
         # if get to here then need to check Gaussian
-        # and if seen=TRUE need to get a time from .SimHRTEnv$rtData
+        # and if seen=TRUE need to get a time from .OpiEnv$SimHRT$rtData
         # assume pxVar is sigma for RT is in sigma units
-    pxVar <- min(.SimHRTEnv$cap, exp(.SimHRTEnv$A*tt + .SimHRTEnv$B)) # variability of patient, henson formula 
-#print(paste(db,tt,pxVar, .SimHRTEnv$cap, .SimHRTEnv$A*tt ,.SimHRTEnv$B))
+    pxVar <- min(.OpiEnv$SimHRT$cap, exp(.OpiEnv$SimHRT$A*tt + .OpiEnv$SimHRT$B)) # variability of patient, henson formula 
+#print(paste(db,tt,pxVar, .OpiEnv$SimHRT$cap, .OpiEnv$SimHRT$A*tt ,.OpiEnv$SimHRT$B))
     if ( runif(1) < 1 - pnorm(db, mean=tt, sd=pxVar)) {
 
-        o <- head(order(abs(.SimHRTEnv$rtData$Dist - dist)), 100)
+        o <- head(order(abs(.OpiEnv$SimHRT$rtData$Dist - dist)), 100)
 
-        return(list(err=NULL, seen=TRUE, time=sample(.SimHRTEnv$rtData[o,"Rt"], size=1)))
+        return(list(err=NULL, seen=TRUE, time=sample(.OpiEnv$SimHRT$rtData[o,"Rt"], size=1)))
     } else {
         return(list(err=NULL, seen=FALSE, time=0))
     }
@@ -189,7 +189,7 @@ simH_RT.present <- function(db, fpr=0.03, fnr=0.01, tt=30, dist) {
 # stim is list of type opiStaticStimulus
 #
 simH_RT.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt) {
-    if (!exists("type", envir=.SimHRTEnv)) {
+    if (!exists("type", envir=.OpiEnv$SimHRT)) {
         return ( list(
             err = "opiInitialize(type,cap) was not called before opiPresent()",
             seen= NA,
@@ -209,7 +209,7 @@ simH_RT.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, 
 
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 
-    return(simH_RT.present(cdTodb(stim$level, .SimHRTEnv$maxStim), fpr, fnr, tt, dist))
+    return(simH_RT.present(cdTodb(stim$level, .OpiEnv$SimHRT$maxStim), fpr, fnr, tt, dist))
 }
 
 ########################################## TO DO !

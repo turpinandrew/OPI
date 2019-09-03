@@ -27,36 +27,35 @@
 #
 
 ###################################################################
-# .CompassEnv$socket is the connection to the Compass
-# .CompassEnv$...    a variety of constants, etc
+# .OpiEnv$Compass$socket is the connection to the Compass
+# .OpiEnv$Compass$...    a variety of constants, etc
 ###################################################################
-if (!exists(".CompassEnv")) {
-    .CompassEnv <- new.env()
+if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
+    assign("Compass", new.env(25), envir=.OpiEnv)
+    .OpiEnv$Compass$endian <- "big"   # endianess of the compass OS
 
-    .CompassEnv$endian <- "big"   # endianess of the compass OS
+    .OpiEnv$Compass$ZERO_DB_IN_ASB <- 10000
 
-    .CompassEnv$ZERO_DB_IN_ASB <- 10000
+    .OpiEnv$Compass$MAX_DB <- 50  
+    .OpiEnv$Compass$MIN_DB <- 0  
+    .OpiEnv$Compass$MIN_X  <- -30
+    .OpiEnv$Compass$MAX_X  <- 30  
+    .OpiEnv$Compass$MIN_Y  <- -30
+    .OpiEnv$Compass$MAX_Y  <- 30  
+    .OpiEnv$Compass$MIN_RESP_WINDOW  <- 0    
+    .OpiEnv$Compass$MAX_RESP_WINDOW  <- 2680
 
-    .CompassEnv$MAX_DB <- 50  
-    .CompassEnv$MIN_DB <- 0  
-    .CompassEnv$MIN_X  <- -30
-    .CompassEnv$MAX_X  <- 30  
-    .CompassEnv$MIN_Y  <- -30
-    .CompassEnv$MAX_Y  <- 30  
-    .CompassEnv$MIN_RESP_WINDOW  <- 0    
-    .CompassEnv$MAX_RESP_WINDOW  <- 2680
-
-    .CompassEnv$SEEN     <- 1  
-    .CompassEnv$NOT_SEEN <- 0  
+    .OpiEnv$Compass$SEEN     <- 1  
+    .OpiEnv$Compass$NOT_SEEN <- 0  
 
     # Utility functions for validating inputs
-    .CompassEnv$minCheck <- function(x, limit, txt) {
+    .OpiEnv$Compass$minCheck <- function(x, limit, txt) {
         if (x < limit) {
 	        opiClose()
             stop(paste("opiPresent: ", txt, "is too small (minimum ", limit, ")"))
 	    }
     }
-    .CompassEnv$maxCheck <- function(x, limit, txt) {
+    .OpiEnv$Compass$maxCheck <- function(x, limit, txt) {
         if (x > limit) {
 	        opiClose()
             stop(paste("opiPresent: ", txt, "is too big (maximum ", limit, ")"))
@@ -93,23 +92,23 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
         error=function(e) stop(paste("Cannot connect to Compass at",ip,"on port", port))
     )
 
-    assign("socket", socket, envir = .CompassEnv)
+    assign("socket", socket, envir = .OpiEnv$Compass)
 
     msg <- "OPI-OPEN"
     writeLines(msg, socket)
     
-    n <- readBin(socket, "integer", size=4, endian=.CompassEnv$endian)
+    n <- readBin(socket, "integer", size=4, endian=.OpiEnv$Compass$endian)
 
     if (length(n) == 0) {    # Compass was not happy with that OPEN, try until it is (AHT: Sep 2018)
         warning('Compass did not like the OPEN command. Suggest closeAllConnections() and try again')
         return(list(err="Bad open", prl=NULL, onh=NULL, image=NULL))    
     } else {
         #print(paste("opiInitialize read: ", n))
-        prlx <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
-        prly <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
-        onhx <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
-        onhy <- readBin(socket, "double", size=4, endian=.CompassEnv$endian)
-        im <- readBin(socket, "raw", n=(n-16), size=1, endian=.CompassEnv$endian)
+        prlx <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
+        prly <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
+        onhx <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
+        onhy <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
+        im <- readBin(socket, "raw", n=(n-16), size=1, endian=.OpiEnv$Compass$endian)
 
         return(list(err=NULL, prl=c(prlx, prly), onh=c(onhx, onhy), image=im))    
     }
@@ -144,15 +143,15 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if(!is.null(stim$color)) warning("opiPresent: ignoring stimulus color")
     if(!is.null(stim$duration)) warning("opiPresent: ignoring stimulus duration")
 
-    .CompassEnv$minCheck(stim$x, .CompassEnv$MIN_X, "Stimulus x")
-    .CompassEnv$maxCheck(stim$x, .CompassEnv$MAX_X, "Stimulus x")
-    .CompassEnv$minCheck(stim$y, .CompassEnv$MIN_Y, "Stimulus y")
-    .CompassEnv$maxCheck(stim$y, .CompassEnv$MAX_Y, "Stimulus y")
-    .CompassEnv$minCheck(stim$responseWindow, .CompassEnv$MIN_RESP_WINDOW, "Stimulus responseWindow")
-    .CompassEnv$maxCheck(stim$responseWindow, .CompassEnv$MAX_RESP_WINDOW, "Stimulus responseWindow")
-    lev <- round(cdTodb(stim$level, .CompassEnv$ZERO_DB_IN_ASB/pi),0)
-    .CompassEnv$minCheck(lev, .CompassEnv$MIN_DB, "Stimulus level")
-    .CompassEnv$maxCheck(lev, .CompassEnv$MAX_DB, "Stimulus level")
+    .OpiEnv$Compass$minCheck(stim$x, .OpiEnv$Compass$MIN_X, "Stimulus x")
+    .OpiEnv$Compass$maxCheck(stim$x, .OpiEnv$Compass$MAX_X, "Stimulus x")
+    .OpiEnv$Compass$minCheck(stim$y, .OpiEnv$Compass$MIN_Y, "Stimulus y")
+    .OpiEnv$Compass$maxCheck(stim$y, .OpiEnv$Compass$MAX_Y, "Stimulus y")
+    .OpiEnv$Compass$minCheck(stim$responseWindow, .OpiEnv$Compass$MIN_RESP_WINDOW, "Stimulus responseWindow")
+    .OpiEnv$Compass$maxCheck(stim$responseWindow, .OpiEnv$Compass$MAX_RESP_WINDOW, "Stimulus responseWindow")
+    lev <- round(cdTodb(stim$level, .OpiEnv$Compass$ZERO_DB_IN_ASB/pi),0)
+    .OpiEnv$Compass$minCheck(lev, .OpiEnv$Compass$MIN_DB, "Stimulus level")
+    .OpiEnv$Compass$maxCheck(lev, .OpiEnv$Compass$MAX_DB, "Stimulus level")
 
     if (!is.null(nextStim)) 
         warning("opiPresent: nextStim ignored")
@@ -167,8 +166,8 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
         if (presentCount %% 10 == 0)
             warning(paste('opiPresent: I have tried presenting',presentCount,'times.'))
 
-        writeLines(msg, .CompassEnv$socket)
-        res <- readLines(.CompassEnv$socket, n=1)
+        writeLines(msg, .OpiEnv$Compass$socket)
+        res <- readLines(.OpiEnv$Compass$socket, n=1)
         s <- strsplit(res, " ", fixed=TRUE)[[1]]
 
         presentBad <- s[1] > 0
@@ -217,15 +216,15 @@ compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=
 
     if (!is.na(tracking_on)) {
         if (tracking_on) {
-            writeLines("OPI-SET-TRACKING 1", .CompassEnv$socket)
-            res <- readLines(.CompassEnv$socket, n=1)
+            writeLines("OPI-SET-TRACKING 1", .OpiEnv$Compass$socket)
+            res <- readLines(.OpiEnv$Compass$socket, n=1)
             s <- strsplit(res, " ", fixed=TRUE)[[1]]
             if (s[1] != 0) {
                 return(list(error=paste("opiSetBackground: failed turn tracking on ", s[1])))
             }
         } else {
-            writeLines("OPI-SET-TRACKING 0", .CompassEnv$socket)
-            res <- readLines(.CompassEnv$socket, n=1)
+            writeLines("OPI-SET-TRACKING 0", .OpiEnv$Compass$socket)
+            res <- readLines(.OpiEnv$Compass$socket, n=1)
             s <- strsplit(res, " ", fixed=TRUE)[[1]]
             if (s[1] != 0) {
                 return(list(error=paste("opiSetBackground: failed turn tracking off ", s[1])))
@@ -250,8 +249,8 @@ compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=
         if (t == 1 && (!(x %in% c(-3, 0, 3)))) {
             return(list(error="opiSetBackground: fixation type 1 can only be at ({-3,0,+3}, 0)"))
         }
-        writeLines(paste("OPI-SET-FIXATION",x,y,t), .CompassEnv$socket)
-        res <- readLines(.CompassEnv$socket, n=1)
+        writeLines(paste("OPI-SET-FIXATION",x,y,t), .OpiEnv$Compass$socket)
+        res <- readLines(.OpiEnv$Compass$socket, n=1)
         s <- strsplit(res, " ", fixed=TRUE)[[1]]
         if (s[1] != 0) {
             return(list(error=paste("opiSetBackground: failed to set fixation: ", s[1])))
@@ -269,9 +268,9 @@ compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=
 #       col-3 y in degrees 
 ###########################################################################
 compass.opiClose <- function() {
-    writeLines("OPI-CLOSE", .CompassEnv$socket)
+    writeLines("OPI-CLOSE", .OpiEnv$Compass$socket)
 
-    num_bytes <- readBin(.CompassEnv$socket, "integer", size=4, endian=.CompassEnv$endian)
+    num_bytes <- readBin(.OpiEnv$Compass$socket, "integer", size=4, endian=.OpiEnv$Compass$endian)
     print(paste("Num bytes", num_bytes))
 
     if (num_bytes == 0) {
@@ -282,11 +281,11 @@ compass.opiClose <- function() {
     num_triples <- num_bytes/12
     fixations <- matrix(NA, ncol=3, nrow=num_triples)
     for(i in 1:num_triples) {
-        fixations[i,1] <- readBin(.CompassEnv$socket, "integer", n=1, size=4, endian=.CompassEnv$endian)
-        fixations[i,2:3] <- readBin(.CompassEnv$socket, "double", n=2, size=4,  endian=.CompassEnv$endian)
+        fixations[i,1] <- readBin(.OpiEnv$Compass$socket, "integer", n=1, size=4, endian=.OpiEnv$Compass$endian)
+        fixations[i,2:3] <- readBin(.OpiEnv$Compass$socket, "double", n=2, size=4,  endian=.OpiEnv$Compass$endian)
     }
 
-    close(.CompassEnv$socket)
+    close(.OpiEnv$Compass$socket)
 
     return(list(err=NULL, fixations=fixations))
 }
@@ -297,4 +296,3 @@ compass.opiClose <- function() {
 compass.opiQueryDevice <- function() {
     return(list(default="Nothing to report", isSim=FALSE))
 }
-

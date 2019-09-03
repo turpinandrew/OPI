@@ -1,8 +1,8 @@
 Package: OPI
 Type: Package
 Title: Open Perimetry Interface
-Version: 2.8
-Date: 2019-04-17
+Version: 2.9
+Date: 2019-08-23
 Authors@R: c(
     person("Andrew","Turpin",email="aturpin@unimelb.edu.au",role=c("cre","aut","cph")), 
     person("David","Lawson",role=c("ctb","cph")), 
@@ -16,3 +16,4 @@ License: GPL-3
 URL: http://people.eng.unimelb.edu.au/aturpin/opi/index.html
 Depends: methods
 RoxygenNote: 6.1.1
+Collate: opi.r compassClient.r daydreamClient.r dbTocd.r fourTwo.r full_threshold.r full_threshold_state.r imoClient.r kowaAP7000Client.r mocs.r multiLocation.r octopus600.r octopus900Client.r pix2deg.r simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r zest.r

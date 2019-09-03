@@ -21,11 +21,12 @@
 #
 
 # Globals
-# .SimDisplayEnv$display    # device number of plot, or NA
-# .SimDisplayEnv$bg         # bg color for plot
-# .SimDisplayEnv$grid.color # color of display grid or NA
+# .OpiEnv$SimDisplay$display    # device number of plot, or NA
+# .OpiEnv$SimDisplay$bg         # bg color for plot
+# .OpiEnv$SimDisplay$grid.color # color of display grid or NA
 
-.SimDisplayEnv <- new.env(size=3)
+if (exists(".OpiEnv") && !exists("SimDisplay", where=.OpiEnv))
+    assign("SimDisplay", new.env(3), envir=.OpiEnv)
 
 ###########################################################################
 # dimensions = c(xlo,xhi,ylo,yhi)
@@ -34,7 +35,7 @@
 #   1 fail
 ###########################################################################
 simDisplay.setupDisplay <- function(dimensions) {
-    assign("display", NA, envir = .SimDisplayEnv)
+    assign("display", NA, envir = .OpiEnv$SimDisplay)
     if (is.null(dimensions))     return(0)
     if (length(dimensions) != 4) return(1)
 
@@ -44,10 +45,10 @@ simDisplay.setupDisplay <- function(dimensions) {
         xlab="",
         ylab=""
     )
-    assign("display"   , dev.cur(), envir = .SimDisplayEnv)
-    assign("bg"        , "white",   envir = .SimDisplayEnv)
-    assign("grid.color", grey(0.5), envir = .SimDisplayEnv)
-    grid(lty=2, col=.SimDisplayEnv$grid.color)
+    assign("display"   , dev.cur(), envir = .OpiEnv$SimDisplay)
+    assign("bg"        , "white",   envir = .OpiEnv$SimDisplay)
+    assign("grid.color", grey(0.5), envir = .OpiEnv$SimDisplay)
+    grid(lty=2, col=.OpiEnv$SimDisplay$grid.color)
 
     return (0)
 }
@@ -60,23 +61,23 @@ simDisplay.setupDisplay <- function(dimensions) {
 #     -1 -  setupDisplay has not been called
 #######################################################################################
 simDisplay.setBackground <- function(col, gridCol) { 
-    if(!exists("display", envir=.SimDisplayEnv))
+    if(!exists("display", envir=.OpiEnv$SimDisplay))
         return(-1)
 
-    if (is.na(.SimDisplayEnv$display))
+    if (is.na(.OpiEnv$SimDisplay$display))
         return(NULL)
 
     if(is.na(col)) {
-        assign("bg" , "white", envir = .SimDisplayEnv)
+        assign("bg" , "white", envir = .OpiEnv$SimDisplay)
     } else {
-        assign("bg" , col    , envir = .SimDisplayEnv)
+        assign("bg" , col    , envir = .OpiEnv$SimDisplay)
     }
-    assign("grid.color", gridCol, envir = .SimDisplayEnv)
+    assign("grid.color", gridCol, envir = .OpiEnv$SimDisplay)
 
-    if (dev.cur() != .SimDisplayEnv$display) {  # check if window was closed
-        assign("display", NA, envir = .SimDisplayEnv)
+    if (dev.cur() != .OpiEnv$SimDisplay$display) {  # check if window was closed
+        assign("display", NA, envir = .OpiEnv$SimDisplay)
     } else {
-        rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = .SimDisplayEnv$bg)
+        rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = .OpiEnv$SimDisplay$bg)
         if (!is.na(gridCol)) 
             grid(lty=2, col=gridCol)
     }
@@ -89,17 +90,17 @@ simDisplay.setBackground <- function(col, gridCol) {
 # No return, just die quietly if neccessary.
 ##################################################################################
 simDisplay.present <- function(x, y, color, duration, responseWindow) {
-    if(exists("display", envir=.SimDisplayEnv)) {
-        if (!is.na(.SimDisplayEnv$display)) {
-            if (dev.cur() != .SimDisplayEnv$display) {  # check if window was closed
-                assign("display", NA, envir = .SimDisplayEnv)
+    if(exists("display", envir=.OpiEnv$SimDisplay)) {
+        if (!is.na(.OpiEnv$SimDisplay$display)) {
+            if (dev.cur() != .OpiEnv$SimDisplay$display) {  # check if window was closed
+                assign("display", NA, envir = .OpiEnv$SimDisplay)
             } else {
                 startTime <- Sys.time()
                 points(x, y, pch=19, col=color)
                 dt <- difftime(Sys.time(), startTime, units="secs")*1000
                 while (dt < duration)
                     dt <- difftime(Sys.time(), startTime, units="secs")*1000
-                points(x, y, pch=19, col=.SimDisplayEnv$bg)  # blank it
+                points(x, y, pch=19, col=.OpiEnv$SimDisplay$bg)  # blank it
                 while (dt < duration + responseWindow)
                     dt <- difftime(Sys.time(), startTime, units="secs")*1000
             }

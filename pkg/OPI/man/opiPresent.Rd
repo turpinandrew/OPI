@@ -12,7 +12,6 @@ different parameters are available for \code{opiPresent}.
 \usage{
 opiPresent(stim, nextStim=NULL, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{stim}{
     A list of class \code{\link{opiStaticStimulus}}, \code{\link{opiKineticStimulus}}, or
@@ -270,6 +269,14 @@ expired (in ms).}
 by \code{opiInitialize}.}
 \item{loc_y}{Only returned for Compass. The y location in pixels of the presentation on the retinal image returned
 by \code{opiInitialize}.}
+
+As a side effect, \code{.OpiEnv$event_hook$stim},
+\code{.OpiEnv$event_hook$resp},
+\code{.OpiEnv$event_hook$tstamp} 
+are set with the \code{stim} parameter,
+the response list, and a time stamp respectively. 
+This is useful for user interfaces
+that wish to react (raise an event) when these values change.
 }
 \references{
 Please cite:
@@ -326,6 +333,9 @@ if (!is.null(opiInitialize(type="C", cap=6, rtData=RtSigmaUnits)))
 
 dist <- (10 - 30)/min(exp(-0.098 * 30 + 3.62), 6)
 result <- opiPresent(stim=makeStim(10,0), tt=30, fpr=0.15, fnr=0.01, dist=dist)
+
+print(.OpiEnv$event_hook$stim)
+print(.OpiEnv$event_hook$resp)
 
 if (!is.null(opiClose()))
     warning("opiClose() failed")

@@ -24,14 +24,14 @@
 #
 
 ###################################################################
-# .imoEnv$socket is the connection to the imo
-# .imoEnv$...    a variety of constants 
+# .OpiEnv$Imo$socket is the connection to the imo
+# .OpiEnv$Imo$...    a variety of constants 
 ###################################################################
-if (!exists(".imoEnv")) {
-    .imoEnv <- new.env()
+if (exists(".OpiEnv") && !exists("Imo", where=.OpiEnv)) {
+    assign("Imo", new.env(25), envir=.OpiEnv)
 
-    .imoEnv$checkOK <- function(txt, stop_if_bad=TRUE) {
-        res <- readBin(.imoEnv$socket, what="integer", size=1, n=1)
+    .OpiEnv$Imo$checkOK <- function(txt, stop_if_bad=TRUE) {
+        res <- readBin(.OpiEnv$Imo$socket, what="integer", size=1, n=1)
         if (res != 0) {
             if (stop_if_bad)
                 stop(paste(txt, "did not return OK from imo"))
@@ -59,9 +59,9 @@ imo.opiInitialize <- function(ip= "localhost", port=9999) {
 
     print("found server :)")
 
-    assign("socket", socket, envir = .imoEnv)
+    assign("socket", socket, envir = .OpiEnv$Imo)
     writeChar("STAR", socket, nchars=4, eos=NULL)
-    .imoEnv$checkOK("Start", stop_if_bad=TRUE)
+    .OpiEnv$Imo$checkOK("Start", stop_if_bad=TRUE)
     
     return(NULL)
 }
@@ -97,38 +97,38 @@ imo.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (all(dim(stim$image[[2]]) != c(1080,1080))) 
         warning(".imo$createImage: expecting im_list[[2]] to be a 1080x1080 matrix")
 
-    writeChar("LOAD", .imoEnv$socket, nchars=4, eos=NULL)
+    writeChar("LOAD", .OpiEnv$Imo$socket, nchars=4, eos=NULL)
     for (i in 1:nrow(stim$image[[1]]))
-        writeBin(as.integer(stim$image[[1]][i,]), .imoEnv$socket, size=1)
+        writeBin(as.integer(stim$image[[1]][i,]), .OpiEnv$Imo$socket, size=1)
     for (i in 1:nrow(stim$image[[2]]))
-        writeBin(as.integer(stim$image[[2]][i,]), .imoEnv$socket, size=1)
+        writeBin(as.integer(stim$image[[2]][i,]), .OpiEnv$Imo$socket, size=1)
 
-    .imoEnv$checkOK("LOAD", stop_if_bad=TRUE)
+    .OpiEnv$Imo$checkOK("LOAD", stop_if_bad=TRUE)
 
-    writeChar("PRES", .imoEnv$socket, nchars=4, eos=NULL)
-    writeBin(as.integer(1), .imoEnv$socket, size=4, endian="big")
+    writeChar("PRES", .OpiEnv$Imo$socket, nchars=4, eos=NULL)
+    writeBin(as.integer(1), .OpiEnv$Imo$socket, size=4, endian="big")
 
-    writeBin(as.integer(0),   .imoEnv$socket, size=4, endian="big")  # image number 0
-    writeBin(as.integer(2),   .imoEnv$socket, size=4, endian="big")  # both eyes
-    writeBin(as.integer(stim$duration), .imoEnv$socket, size=4, endian="big")  # pres time
+    writeBin(as.integer(0),   .OpiEnv$Imo$socket, size=4, endian="big")  # image number 0
+    writeBin(as.integer(2),   .OpiEnv$Imo$socket, size=4, endian="big")  # both eyes
+    writeBin(as.integer(stim$duration), .OpiEnv$Imo$socket, size=4, endian="big")  # pres time
 
-    writeBin(as.integer(0),                   .imoEnv$socket, size=4, endian="big")  # cycle
-    writeBin(as.integer(stim$responseWindow), .imoEnv$socket, size=4, endian="big")  # wait
+    writeBin(as.integer(0),                   .OpiEnv$Imo$socket, size=4, endian="big")  # cycle
+    writeBin(as.integer(stim$responseWindow), .OpiEnv$Imo$socket, size=4, endian="big")  # wait
 
     if (any(names(stim) == "tracking")) 
-        writeBin(as.integer(stim$tracking), .imoEnv$socket, size=4, endian="big")  # tracking
+        writeBin(as.integer(stim$tracking), .OpiEnv$Imo$socket, size=4, endian="big")  # tracking
     else
-        writeBin(as.integer(1), .imoEnv$socket, size=4, endian="big")  # tracking
+        writeBin(as.integer(1), .OpiEnv$Imo$socket, size=4, endian="big")  # tracking
 
-    .imoEnv$checkOK("PRES", stop_if_bad=TRUE)
+    .OpiEnv$Imo$checkOK("PRES", stop_if_bad=TRUE)
 
-    p    <- readBin(.imoEnv$socket, what="integer", size=4, n=1)
-    time <- readBin(.imoEnv$socket, what="integer", size=4, n=1)
-    n    <- readBin(.imoEnv$socket, what="integer", size=4, n=1)
+    p    <- readBin(.OpiEnv$Imo$socket, what="integer", size=4, n=1)
+    time <- readBin(.OpiEnv$Imo$socket, what="integer", size=4, n=1)
+    n    <- readBin(.OpiEnv$Imo$socket, what="integer", size=4, n=1)
 
     pupil <- ellipse <- times <- NULL
     for (i in 1:n) {
-        d <- readBin(.imoEnv$socket, what="double", size=4, n=7)
+        d <- readBin(.OpiEnv$Imo$socket, what="double", size=4, n=7)
         if (d[1] == 1) {
             pupil   <- c(pupil  , list(list(dx=d[2], dy=d[3])))
             ellipse <- c(ellipse, list(list(d1=d[4], d2=d[5], rho=d[6])))
@@ -162,35 +162,35 @@ imo.opiPresent.opiKineticStimulus <- function(stim, ...) {
     if (length(xy.coords(stim$path)$x) > 2) 
         warning("opiPresent (kinetic): Kowa AP-7000 only supports paths of length 2 (start and end).  Ignoring all but the first two elements of stim$path etc")
 
-        # convert sizes to .imoEnv$SIZES_DEGREES
+        # convert sizes to .OpiEnv$Imo$SIZES_DEGREES
     stim$sizes <- sapply(stim$sizes, function(s) {
-         i <- which.min(abs(.imoEnv$SIZES_DEGREES - s))
-         if(abs(.imoEnv$SIZES_DEGREES[i] - s) > 0.000001) {
+         i <- which.min(abs(.OpiEnv$Imo$SIZES_DEGREES - s))
+         if(abs(.OpiEnv$Imo$SIZES_DEGREES[i] - s) > 0.000001) {
              warning(paste("opiPresent: Rounding stimulus size",s,"to nearest Goldmann size"))
          } 
          return(i)
     })
 
-    if (!is.element(stim$colors[1], c(.imoEnv$COLOR_WHITE,
-                                  .imoEnv$COLOR_GREEN,
-                                  .imoEnv$COLOR_BLUE ,
-                                  .imoEnv$COLOR_RED  ))) {
+    if (!is.element(stim$colors[1], c(.OpiEnv$Imo$COLOR_WHITE,
+                                  .OpiEnv$Imo$COLOR_GREEN,
+                                  .OpiEnv$Imo$COLOR_BLUE ,
+                                  .OpiEnv$Imo$COLOR_RED  ))) {
         opiClose()
         stop("opiPresent: stimulus color is not supported.")
      }
 
-    .imoEnv$minCheck(xy.coords(stim$path)$x[1], -80, "Start x")
-    .imoEnv$maxCheck(xy.coords(stim$path)$x[1], 80, "Start x")
-    .imoEnv$minCheck(xy.coords(stim$path)$x[2], -80, "End x")
-    .imoEnv$maxCheck(xy.coords(stim$path)$x[2], 80, "End x")
-    .imoEnv$minCheck(xy.coords(stim$path)$y[1], -70, "Start y")
-    .imoEnv$maxCheck(xy.coords(stim$path)$y[1], 65, "Start y")
-    .imoEnv$minCheck(xy.coords(stim$path)$y[2], -70, "End y")
-    .imoEnv$maxCheck(xy.coords(stim$path)$y[2], 65, "End y")
-    .imoEnv$minCheck(stim$levels[1],  10000/pi/10^5, "Stimulus level")
-    .imoEnv$maxCheck(stim$levels[1],  10000/pi     , "Stimulus level")
-    .imoEnv$minCheck(stim$speeds[1],  3, "Stimulus speed")
-    .imoEnv$maxCheck(stim$speeds[1],  5, "Stimulus speed")
+    .OpiEnv$Imo$minCheck(xy.coords(stim$path)$x[1], -80, "Start x")
+    .OpiEnv$Imo$maxCheck(xy.coords(stim$path)$x[1], 80, "Start x")
+    .OpiEnv$Imo$minCheck(xy.coords(stim$path)$x[2], -80, "End x")
+    .OpiEnv$Imo$maxCheck(xy.coords(stim$path)$x[2], 80, "End x")
+    .OpiEnv$Imo$minCheck(xy.coords(stim$path)$y[1], -70, "Start y")
+    .OpiEnv$Imo$maxCheck(xy.coords(stim$path)$y[1], 65, "Start y")
+    .OpiEnv$Imo$minCheck(xy.coords(stim$path)$y[2], -70, "End y")
+    .OpiEnv$Imo$maxCheck(xy.coords(stim$path)$y[2], 65, "End y")
+    .OpiEnv$Imo$minCheck(stim$levels[1],  10000/pi/10^5, "Stimulus level")
+    .OpiEnv$Imo$maxCheck(stim$levels[1],  10000/pi     , "Stimulus level")
+    .OpiEnv$Imo$minCheck(stim$speeds[1],  3, "Stimulus speed")
+    .OpiEnv$Imo$maxCheck(stim$speeds[1],  5, "Stimulus speed")
 
     msg <- "OPI-PRESENT-KINETIC "
     xs <- xy.coords(stim$path)$x[1]
@@ -205,8 +205,8 @@ imo.opiPresent.opiKineticStimulus <- function(stim, ...) {
     msg <- paste(msg, stim$speeds[1])
 	msg <- paste(msg, "\r", sep="")
    
-    writeLines(msg, .imoEnv$socket)
-    res <- readLines(.imoEnv$socket, n=1)
+    writeLines(msg, .OpiEnv$Imo$socket)
+    res <- readLines(.OpiEnv$Imo$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
 
     if (s[1] != "OK")
@@ -231,32 +231,32 @@ imo.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
 ###########################################################################
 # set background color and/or fixation marker
-# color is one of .imoEnv$BACKGROUND_WHITE or 
-#                 .imoEnv$BACKGROUND_YELLOW
+# color is one of .OpiEnv$Imo$BACKGROUND_WHITE or 
+#                 .OpiEnv$Imo$BACKGROUND_YELLOW
 ###########################################################################
 imo.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     if (!is.na(fixation)) {
-        .imoEnv$minCheck(fixation, 0, "Fixation")
-        .imoEnv$maxCheck(fixation, 3, "Fixation")
+        .OpiEnv$Imo$minCheck(fixation, 0, "Fixation")
+        .OpiEnv$Imo$maxCheck(fixation, 3, "Fixation")
 
         msg <- paste("OPI-SET-FIXATION ", fixation, "\r", sep="")
-        writeLines(msg, .imoEnv$socket)
-        .imoEnv$checkOK("opiSetBackground fixation")
+        writeLines(msg, .OpiEnv$Imo$socket)
+        .OpiEnv$Imo$checkOK("opiSetBackground fixation")
     }
 
     if (!is.na(lum) && !is.na(color)) {
-        if (lum == 10 && color != .imoEnv$BACKGROUND_WHITE)
+        if (lum == 10 && color != .OpiEnv$Imo$BACKGROUND_WHITE)
             warning("Can only have a 10 cd/m^2 background that is white")
-        if (lum == 100 && color != .imoEnv$BACKGROUND_YELLOW)
+        if (lum == 100 && color != .OpiEnv$Imo$BACKGROUND_YELLOW)
             warning("Can only have a 100 cd/m^2 background that is yellow")
     }
 
     if (!is.na(lum) && is.na(color)) {
         if (lum == 10) {
-            color <- .imoEnv$BACKGROUND_WHITE
+            color <- .OpiEnv$Imo$BACKGROUND_WHITE
             warning("Can only have a 10 cd/m^2 background that is white")
         } else if (lum == 100) {
-            color <- .imoEnv$BACKGROUND_YELLOW
+            color <- .OpiEnv$Imo$BACKGROUND_YELLOW
             warning("Can only have a 100 cd/m^2 background that is yellow")
         } else {
             opiClose()
@@ -265,11 +265,11 @@ imo.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     }
     
     if (!is.na(color)) {
-        .imoEnv$minCheck(color, 0, "Background color")
-        .imoEnv$maxCheck(color, 1, "Background color")
+        .OpiEnv$Imo$minCheck(color, 0, "Background color")
+        .OpiEnv$Imo$maxCheck(color, 1, "Background color")
         msg <- paste0("OPI-SET-BACKGROUND ", color,"\r")
-        writeLines(msg, .imoEnv$socket)
-        .imoEnv$checkOK("opiSetBackground color")
+        writeLines(msg, .OpiEnv$Imo$socket)
+        .OpiEnv$Imo$checkOK("opiSetBackground color")
     }
         
     return(NULL)
@@ -279,9 +279,9 @@ imo.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
 # return NULL on success (in fact, always!)
 ###########################################################################
 imo.opiClose <- function() {
-    writeChar("STOP", .imoEnv$socket, nchars=4, eos=NULL)
-    .imoEnv$checkOK("opiClose")
-    close(.imoEnv$socket)
+    writeChar("STOP", .OpiEnv$Imo$socket, nchars=4, eos=NULL)
+    .OpiEnv$Imo$checkOK("opiClose")
+    close(.OpiEnv$Imo$socket)
     return(NULL)
 }
 
@@ -291,10 +291,10 @@ imo.opiClose <- function() {
 imo.opiQueryDevice <- function() {
     cat("Defined constants and functions\n")
     cat("-------------------------------\n")
-    ls(envir=.imoEnv)
+    ls(envir=.OpiEnv$Imo)
 
-    writeLines("OPI-GET-PUPILPOS\r", .imoEnv$socket)
-    res <- readLines(.imoEnv$socket, n=1)
+    writeLines("OPI-GET-PUPILPOS\r", .OpiEnv$Imo$socket)
+    res <- readLines(.OpiEnv$Imo$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
 
     if (s[1] != "OK")

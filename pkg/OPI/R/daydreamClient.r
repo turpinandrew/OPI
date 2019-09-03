@@ -24,29 +24,29 @@
 #
 
 ###################################################################
-# .DayDreamEnv$socket is the connection to the daydream
-# .DayDreamEnv$LUT has 256 entries. LUT[x] is cd/m^2 value for grey level x
-# .DayDreamEnv$degrees_to_pixels() function(x,y) in degrees to (x,y) 
-# .DayDreamEnv$...    a variety of constants, etc
+# .OpiEnv$DayDream$socket is the connection to the daydream
+# .OpiEnv$DayDream$LUT has 256 entries. LUT[x] is cd/m^2 value for grey level x
+# .OpiEnv$DayDream$degrees_to_pixels() function(x,y) in degrees to (x,y) 
+# .OpiEnv$DayDream$...    a variety of constants, etc
 ###################################################################
-if (!exists(".DayDreamEnv")) {
-    .DayDreamEnv <- new.env()
+if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
+    assign("DayDream", new.env(25), envir=.OpiEnv)
 
-    .DayDreamEnv$endian <- "little"
+    .OpiEnv$DayDream$endian <- "little"
 
-    .DayDreamEnv$LUT <- NULL
-    .DayDreamEnv$degrees_to_pixels <- NULL
+    .OpiEnv$DayDream$LUT <- NULL
+    .OpiEnv$DayDream$degrees_to_pixels <- NULL
 
-    .DayDreamEnv$width <- NA        # of whole phone screen
-    .DayDreamEnv$height <- NA
-    .DayDreamEnv$single_width <- NA
-    .DayDreamEnv$single_height <- NA
+    .OpiEnv$DayDream$width <- NA        # of whole phone screen
+    .OpiEnv$DayDream$height <- NA
+    .OpiEnv$DayDream$single_width <- NA
+    .OpiEnv$DayDream$single_height <- NA
 
-    .DayDreamEnv$background_left <- NA    # stored MONO background
-    .DayDreamEnv$background_right <- NA
+    .OpiEnv$DayDream$background_left <- NA    # stored MONO background
+    .OpiEnv$DayDream$background_right <- NA
 
-    .DayDreamEnv$SEEN     <- 1  
-    .DayDreamEnv$NOT_SEEN <- 0  
+    .OpiEnv$DayDream$SEEN     <- 1  
+    .OpiEnv$DayDream$NOT_SEEN <- 0  
 }
 
 #######################################################################
@@ -95,27 +95,27 @@ daydream.opiInitialize <- function(
         error=function(e) stop(paste("Cannot connect to phone at",ip,"on port", port))
     )
 
-    assign("socket", socket, envir = .DayDreamEnv)
-    assign("LUT", lut, envir = .DayDreamEnv)
-    assign("degrees_to_pixels", degrees_to_pixels, envir = .DayDreamEnv)
+    assign("socket", socket, envir = .OpiEnv$DayDream)
+    assign("LUT", lut, envir = .OpiEnv$DayDream)
+    assign("degrees_to_pixels", degrees_to_pixels, envir = .OpiEnv$DayDream)
 
-    writeLines("OPI_GET_RES", .DayDreamEnv$socket)
-    assign("width",        readBin(.DayDreamEnv$socket, "integer", size=4, endian=.DayDreamEnv$endian), envir=.DayDreamEnv)
-    assign("height",       readBin(.DayDreamEnv$socket, "integer", size=4, endian=.DayDreamEnv$endian), envir=.DayDreamEnv)
-    assign("single_width", readBin(.DayDreamEnv$socket, "integer", size=4, endian=.DayDreamEnv$endian), envir=.DayDreamEnv)
-    assign("single_height",readBin(.DayDreamEnv$socket, "integer", size=4, endian=.DayDreamEnv$endian), envir=.DayDreamEnv)
-    readBin(.DayDreamEnv$socket, "integer", size=1, endian=.DayDreamEnv$endian) # the \n
+    writeLines("OPI_GET_RES", .OpiEnv$DayDream$socket)
+    assign("width",        readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
+    assign("height",       readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
+    assign("single_width", readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
+    assign("single_height",readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
+    readBin(.OpiEnv$DayDream$socket, "integer", size=1, endian=.OpiEnv$DayDream$endian) # the \n
 
-    print(paste("Phone res", .DayDreamEnv$width, .DayDreamEnv$height, .DayDreamEnv$single_width, .DayDreamEnv$single_height))
+    print(paste("Phone res", .OpiEnv$DayDream$width, .OpiEnv$DayDream$height, .OpiEnv$DayDream$single_width, .OpiEnv$DayDream$single_height))
     return(list(err=NULL))
 }
 
 ###########################################################################
-# Find the closest pixel value (index into .DayDreamEnv$LUT less 1)
+# Find the closest pixel value (index into .OpiEnv$DayDream$LUT less 1)
 # for cd/m^2 param cdm2
 ###########################################################################
 find_pixel_value <- function(cdm2) {
-    return (which.min(abs(.DayDreamEnv$LUT - cdm2) - 1))
+    return (which.min(abs(.OpiEnv$DayDream$LUT - cdm2) - 1))
 }
 
 ###########################################################################
@@ -129,18 +129,18 @@ load_image <- function(im) {
     h <- dim(im)[1]
     w <- dim(im)[2]     # assert(dim(im)[3] == 3)
 
-    writeLines(paste("OPI_IMAGE", w, h), .DayDreamEnv$socket)
-    res <- readLines(.DayDreamEnv$socket, n=1)
+    writeLines(paste("OPI_IMAGE", w, h), .OpiEnv$DayDream$socket)
+    res <- readLines(.OpiEnv$DayDream$socket, n=1)
     if (res == "READY") {
         for (iy in 1:h)
             for (ix in 1:w)
                 for (i in 1:3)
-                    writeBin(as.integer(rep(im[iy,ix,i])), .DayDreamEnv$socket, size=1, endian=.DayDreamEnv$endian)
+                    writeBin(as.integer(rep(im[iy,ix,i])), .OpiEnv$DayDream$socket, size=1, endian=.OpiEnv$DayDream$endian)
     } else {
         return(FALSE)
     }
 
-    res <- readLines(.DayDreamEnv$socket, n=1)
+    res <- readLines(.OpiEnv$DayDream$socket, n=1)
     print(paste('Load image',res))
     return (res == "OK")
 }
@@ -170,12 +170,12 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
         # make the stimulus
     fg <- find_pixel_value(stim$level)
-    radius <- round(mean(.DayDreamEnv$degrees_to_pixels(stim$size/2, stim$size/2)))
-    cx <- round(.DayDreamEnv$single_width / 2)
-    cy <- round(.DayDreamEnv$single_height / 2)
-    xy <- c(cx,cy) + .DayDreamEnv$degrees_to_pixels(stim$x, -stim$y) 
+    radius <- round(mean(.OpiEnv$DayDream$degrees_to_pixels(stim$size/2, stim$size/2)))
+    cx <- round(.OpiEnv$DayDream$single_width / 2)
+    cy <- round(.OpiEnv$DayDream$single_height / 2)
+    xy <- c(cx,cy) + .OpiEnv$DayDream$degrees_to_pixels(stim$x, -stim$y) 
 
-    bg <- ifelse(stim$eye == "L", .DayDreamEnv$background_left, .DayDreamEnv$background_right)
+    bg <- ifelse(stim$eye == "L", .OpiEnv$DayDream$background_left, .OpiEnv$DayDream$background_right)
     im <- array(bg, dim=c(2*radius, 2*radius, 3))
     for (ix in -radius:radius)
         for (iy in -radius:radius)
@@ -184,11 +184,11 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
     if (load_image(im)) {
         msg <- paste("OPI_MONO_PRESENT", stim$eye, xy[1], xy[2], stim$duration, stim$responseWindow, sep=" ")
-        writeLines(msg, .DayDreamEnv$socket)
+        writeLines(msg, .OpiEnv$DayDream$socket)
 
-        seen <- readBin(.DayDreamEnv$socket, "integer", size=1)
-        time <- readBin(.DayDreamEnv$socket, "double", size=4, endian=.DayDreamEnv$endian)
-        readBin(.DayDreamEnv$socket, "integer", size=1, endian=.DayDreamEnv$endian) # the \n
+        seen <- readBin(.OpiEnv$DayDream$socket, "integer", size=1)
+        time <- readBin(.OpiEnv$DayDream$socket, "double", size=4, endian=.OpiEnv$DayDream$endian)
+        readBin(.OpiEnv$DayDream$socket, "integer", size=1, endian=.OpiEnv$DayDream$endian) # the \n
 
         cat("seen: "); print(seen)
         cat("time: "); print(time)
@@ -253,15 +253,15 @@ daydream.opiSetBackground <- function(lum=NA, color=NA,
     if (!is.na(color)) { warning('Color ignored in opiSetBackground.') }
 
     g <- find_pixel_value(lum)
-    writeLines(paste("OPI_MONO_SET_BG", eye, g), .DayDreamEnv$socket)
-    res <- readLines(.DayDreamEnv$socket, n=1)
+    writeLines(paste("OPI_MONO_SET_BG", eye, g), .OpiEnv$DayDream$socket)
+    res <- readLines(.OpiEnv$DayDream$socket, n=1)
     if (res != "OK")
         return(paste0("Cannot set background to ",g," in opiSetBackground"))
 
     if (eye == "L")
-        .DayDreamEnv$background_left <- g
+        .OpiEnv$DayDream$background_left <- g
     else
-        .DayDreamEnv$background_right <- g
+        .OpiEnv$DayDream$background_right <- g
 
     if (fixation == 'Cross') { 
             # set fixation to a cross
@@ -274,12 +274,12 @@ daydream.opiSetBackground <- function(lum=NA, color=NA,
         if (!load_image(im))
             return("Trouble loading fixation image in opiSetBackground.")
 
-        cx <- round(.DayDreamEnv$single_width / 2)
-        cy <- round(.DayDreamEnv$single_height / 2)
+        cx <- round(.OpiEnv$DayDream$single_width / 2)
+        cy <- round(.OpiEnv$DayDream$single_height / 2)
         cat("Fixation at: ", eye, " ", cx, " ", cy, "\n")
 
-        writeLines(paste("OPI_MONO_BG_ADD", eye, cx, cy), .DayDreamEnv$socket)
-        res <- readLines(.DayDreamEnv$socket, n=1)
+        writeLines(paste("OPI_MONO_BG_ADD", eye, cx, cy), .OpiEnv$DayDream$socket)
+        res <- readLines(.OpiEnv$DayDream$socket, n=1)
         if (res != "OK")
             return("Trouble adding fixation to background in opiSetBackground")
     }
@@ -295,11 +295,11 @@ daydream.opiSetBackground <- function(lum=NA, color=NA,
 ####       col-3 y in degrees 
 ##############################################################################
 daydream.opiClose <- function() {
-    writeLines("OPI_CLOSE", .DayDreamEnv$socket)
+    writeLines("OPI_CLOSE", .OpiEnv$DayDream$socket)
 
-    res <- readLines(.DayDreamEnv$socket, n=1)
+    res <- readLines(.OpiEnv$DayDream$socket, n=1)
 
-    close(.DayDreamEnv$socket)
+    close(.OpiEnv$DayDream$socket)
 
     if (res != "OK")
         return(list(err="Trouble closing daydream connection."))
@@ -311,8 +311,8 @@ daydream.opiClose <- function() {
 #### Lists defined constants
 ##############################################################################
 daydream.opiQueryDevice <- function() {
-    vars <- ls(.DayDreamEnv)
-    lst <- lapply(vars, function(i) .DayDreamEnv[[i]])
+    vars <- ls(.OpiEnv$DayDream)
+    lst <- lapply(vars, function(i) .OpiEnv$DayDream[[i]])
     names(lst) <- vars
     return(lst)
 }

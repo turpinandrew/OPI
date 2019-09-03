@@ -24,55 +24,54 @@
 #
 
 ###################################################################
-# .KowaAP7000Env$socket is the connection to the AP 7000
-# .KowaAP7000Env$...    a variety of constants for colors, etc
+# .OpiEnv$KowaAP7000$socket is the connection to the AP 7000
+# .OpiEnv$KowaAP7000$...    a variety of constants for colors, etc
 ###################################################################
-if (!exists(".KowaAP7000Env")) {
-    .KowaAP7000Env <- new.env()
+if (exists(".OpiEnv") && !exists("KowaAP7000", where=.OpiEnv)) {
+    assign("KowaAP7000", new.env(25), envir=.OpiEnv)
 
-    .KowaAP7000Env$BACKGROUND_WHITE  <- 0  # white, 10 cd/m^2
-    .KowaAP7000Env$BACKGROUND_YELLOW <- 1  # yellow, 100 cd/m^2
+    .OpiEnv$KowaAP7000$BACKGROUND_WHITE  <- 0  # white, 10 cd/m^2
+    .OpiEnv$KowaAP7000$BACKGROUND_YELLOW <- 1  # yellow, 100 cd/m^2
 
-    .KowaAP7000Env$FIX_CENTRE   <- 0   # fixation markers
-    .KowaAP7000Env$FIX_CENTER   <- 0   # usa spelling
-    .KowaAP7000Env$FIX_AUX      <- 1
-    .KowaAP7000Env$FIX_MACULA   <- 2
-    .KowaAP7000Env$FIX_AUX_LEFT <- 3
+    .OpiEnv$KowaAP7000$FIX_CENTRE   <- 0   # fixation markers
+    .OpiEnv$KowaAP7000$FIX_CENTER   <- 0   # usa spelling
+    .OpiEnv$KowaAP7000$FIX_AUX      <- 1
+    .OpiEnv$KowaAP7000$FIX_MACULA   <- 2
+    .OpiEnv$KowaAP7000$FIX_AUX_LEFT <- 3
 
-    .KowaAP7000Env$SIZES_DEGREES <- c(6.5, 13, 26, 52, 104) / 60 # Goldmann target sizes in degrees
+    .OpiEnv$KowaAP7000$SIZES_DEGREES <- c(6.5, 13, 26, 52, 104) / 60 # Goldmann target sizes in degrees
 
-    .KowaAP7000Env$COLOR_WHITE <- 0
-    .KowaAP7000Env$COLOR_GREEN <- 1
-    .KowaAP7000Env$COLOR_BLUE  <- 2
-    .KowaAP7000Env$COLOR_RED   <- 3
+    .OpiEnv$KowaAP7000$COLOR_WHITE <- 0
+    .OpiEnv$KowaAP7000$COLOR_GREEN <- 1
+    .OpiEnv$KowaAP7000$COLOR_BLUE  <- 2
+    .OpiEnv$KowaAP7000$COLOR_RED   <- 3
 
     # Utility functions for validating inputs
-    .KowaAP7000Env$minCheck <- function(x, limit, txt) {
+    .OpiEnv$KowaAP7000$minCheck <- function(x, limit, txt) {
         if (x < limit) {
 	    opiClose()
             stop(paste("opiPresent: ", txt, "is too small (minimum ", limit, ")"))
 	}
     }
-    .KowaAP7000Env$maxCheck <- function(x, limit, txt) {
+    .OpiEnv$KowaAP7000$maxCheck <- function(x, limit, txt) {
         if (x > limit) {
 	    opiClose()
             stop(paste("opiPresent: ", txt, "is too big (maximum ", limit, ")"))
 	}
     }
-    .KowaAP7000Env$checkOK <- function(txt) {
-        res <- readLines(.KowaAP7000Env$socket, n=1)
+    .OpiEnv$KowaAP7000$checkOK <- function(txt) {
+        res <- readLines(.OpiEnv$KowaAP7000$socket, n=1)
         #cat("ap7000 sends back>>>", res, "<<<\n")
         if (res != "OK")
             warning(paste(txt, "did not return OK from AP-7000"))
     }
-
 }
 
 #######################################################################
 # INPUT: 
 #   ip                       = ip address on which server is listening
 #   port                     = port number on which server is listening
-#   mode                     = .KowaAP7000Env$MODE_WoW or .KowaAP7000Env$MODE_BoY
+#   mode                     = .OpiEnv$KowaAP7000$MODE_WoW or .OpiEnv$KowaAP7000$MODE_BoY
 #
 # @return NULL if succeed
 # @return 1    server not found/ready at the ip+port provided
@@ -96,10 +95,10 @@ kowaAP7000.opiInitialize <- function(ip= "192.168.1.2", port=44965) {
         error=function(e) stop(paste("Cannot connect to AP 7000 at",ip,"on port", port))
     )
 
-    assign("socket", socket, envir = .KowaAP7000Env)
+    assign("socket", socket, envir = .OpiEnv$KowaAP7000)
     msg <- paste0("OPI-SET-MODE\r")
     writeLines(msg, socket)
-    res <- readLines(.KowaAP7000Env$socket, n=1)
+    res <- readLines(.OpiEnv$KowaAP7000$socket, n=1)
 
     if (res != "OK")
         stop(paste("Trouble initialising AP-7000. OPI-SET-MODE returns ",res))
@@ -127,41 +126,41 @@ kowaAP7000.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
         return(list(err="NULL stimulus not supported", seen=NA, time=NA, pupilX=NA, pupilY=NA))
     }
 
-    if(min(abs(.KowaAP7000Env$SIZES_DEGREES - stim$size)) != 0)
+    if(min(abs(.OpiEnv$KowaAP7000$SIZES_DEGREES - stim$size)) != 0)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
-    if (!is.element(stim$color, c(.KowaAP7000Env$COLOR_WHITE,
-                                  .KowaAP7000Env$COLOR_GREEN,
-                                  .KowaAP7000Env$COLOR_BLUE ,
-                                  .KowaAP7000Env$COLOR_RED  ))) {
+    if (!is.element(stim$color, c(.OpiEnv$KowaAP7000$COLOR_WHITE,
+                                  .OpiEnv$KowaAP7000$COLOR_GREEN,
+                                  .OpiEnv$KowaAP7000$COLOR_BLUE ,
+                                  .OpiEnv$KowaAP7000$COLOR_RED  ))) {
         opiClose()
         stop("opiPresent: stimulus color is not supported.")
     }
 
-    .KowaAP7000Env$minCheck(stim$x, -80, "Stimulus x")
-    .KowaAP7000Env$maxCheck(stim$x,  80, "Stimulus x")
-    .KowaAP7000Env$minCheck(stim$y, -70, "Stimulus y")
-    .KowaAP7000Env$maxCheck(stim$y,  65, "Stimulus y")
-    .KowaAP7000Env$minCheck(stim$duration,  100, "Stimulus duration")
-    .KowaAP7000Env$maxCheck(stim$duration, 1200, "Stimulus duration")
-    .KowaAP7000Env$minCheck(stim$responseWindow,  stim$duration, "Stimulus responseWindow")
-    .KowaAP7000Env$maxCheck(stim$responseWindow,           5000, "Stimulus responseWindow")
-    .KowaAP7000Env$minCheck(stim$level,  10000/pi/10^5, "Stimulus level")
-    .KowaAP7000Env$maxCheck(stim$level,  10000/pi     , "Stimulus level")
+    .OpiEnv$KowaAP7000$minCheck(stim$x, -80, "Stimulus x")
+    .OpiEnv$KowaAP7000$maxCheck(stim$x,  80, "Stimulus x")
+    .OpiEnv$KowaAP7000$minCheck(stim$y, -70, "Stimulus y")
+    .OpiEnv$KowaAP7000$maxCheck(stim$y,  65, "Stimulus y")
+    .OpiEnv$KowaAP7000$minCheck(stim$duration,  100, "Stimulus duration")
+    .OpiEnv$KowaAP7000$maxCheck(stim$duration, 1200, "Stimulus duration")
+    .OpiEnv$KowaAP7000$minCheck(stim$responseWindow,  stim$duration, "Stimulus responseWindow")
+    .OpiEnv$KowaAP7000$maxCheck(stim$responseWindow,           5000, "Stimulus responseWindow")
+    .OpiEnv$KowaAP7000$minCheck(stim$level,  10000/pi/10^5, "Stimulus level")
+    .OpiEnv$KowaAP7000$maxCheck(stim$level,  10000/pi     , "Stimulus level")
 
     if (!is.null(nextStim)) 
         warning("opiPresent: nextStim ignored")
 
     msg <- "OPI-PRESENT-STATIC"
     msg <- paste(msg, stim$x, stim$y, cdTodb(stim$level, 10000/pi))
-    msg <- paste(msg, (which.min(abs(.KowaAP7000Env$SIZES_DEGREES - stim$size))))
+    msg <- paste(msg, (which.min(abs(.OpiEnv$KowaAP7000$SIZES_DEGREES - stim$size))))
     msg <- paste(msg, stim$color)
     msg <- paste(msg, stim$duration)
     msg <- paste(msg, stim$responseWindow)
     msg <- paste(msg, "\r", sep="")
 
-    writeLines(msg, .KowaAP7000Env$socket)
-    res <- readLines(.KowaAP7000Env$socket, n=1)
+    writeLines(msg, .OpiEnv$KowaAP7000$socket)
+    res <- readLines(.OpiEnv$KowaAP7000$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
 
     if (s[1] != "OK")
@@ -190,35 +189,35 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
     if (length(xy.coords(stim$path)$x) > 2) 
         warning("opiPresent (kinetic): Kowa AP-7000 only supports paths of length 2 (start and end).  Ignoring all but the first two elements of stim$path etc")
 
-        # convert sizes to .KowaAP7000Env$SIZES_DEGREES
+        # convert sizes to .OpiEnv$KowaAP7000$SIZES_DEGREES
     stim$sizes <- sapply(stim$sizes, function(s) {
-         i <- which.min(abs(.KowaAP7000Env$SIZES_DEGREES - s))
-         if(abs(.KowaAP7000Env$SIZES_DEGREES[i] - s) > 0.000001) {
+         i <- which.min(abs(.OpiEnv$KowaAP7000$SIZES_DEGREES - s))
+         if(abs(.OpiEnv$KowaAP7000$SIZES_DEGREES[i] - s) > 0.000001) {
              warning(paste("opiPresent: Rounding stimulus size",s,"to nearest Goldmann size"))
          } 
          return(i)
     })
 
-    if (!is.element(stim$colors[1], c(.KowaAP7000Env$COLOR_WHITE,
-                                  .KowaAP7000Env$COLOR_GREEN,
-                                  .KowaAP7000Env$COLOR_BLUE ,
-                                  .KowaAP7000Env$COLOR_RED  ))) {
+    if (!is.element(stim$colors[1], c(.OpiEnv$KowaAP7000$COLOR_WHITE,
+                                  .OpiEnv$KowaAP7000$COLOR_GREEN,
+                                  .OpiEnv$KowaAP7000$COLOR_BLUE ,
+                                  .OpiEnv$KowaAP7000$COLOR_RED  ))) {
         opiClose()
         stop("opiPresent: stimulus color is not supported.")
      }
 
-    .KowaAP7000Env$minCheck(xy.coords(stim$path)$x[1], -80, "Start x")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$x[1], 80, "Start x")
-    .KowaAP7000Env$minCheck(xy.coords(stim$path)$x[2], -80, "End x")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$x[2], 80, "End x")
-    .KowaAP7000Env$minCheck(xy.coords(stim$path)$y[1], -70, "Start y")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$y[1], 65, "Start y")
-    .KowaAP7000Env$minCheck(xy.coords(stim$path)$y[2], -70, "End y")
-    .KowaAP7000Env$maxCheck(xy.coords(stim$path)$y[2], 65, "End y")
-    .KowaAP7000Env$minCheck(stim$levels[1],  10000/pi/10^5, "Stimulus level")
-    .KowaAP7000Env$maxCheck(stim$levels[1],  10000/pi     , "Stimulus level")
-    .KowaAP7000Env$minCheck(stim$speeds[1],  3, "Stimulus speed")
-    .KowaAP7000Env$maxCheck(stim$speeds[1],  5, "Stimulus speed")
+    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$x[1], -80, "Start x")
+    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$x[1], 80, "Start x")
+    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$x[2], -80, "End x")
+    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$x[2], 80, "End x")
+    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$y[1], -70, "Start y")
+    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$y[1], 65, "Start y")
+    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$y[2], -70, "End y")
+    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$y[2], 65, "End y")
+    .OpiEnv$KowaAP7000$minCheck(stim$levels[1],  10000/pi/10^5, "Stimulus level")
+    .OpiEnv$KowaAP7000$maxCheck(stim$levels[1],  10000/pi     , "Stimulus level")
+    .OpiEnv$KowaAP7000$minCheck(stim$speeds[1],  3, "Stimulus speed")
+    .OpiEnv$KowaAP7000$maxCheck(stim$speeds[1],  5, "Stimulus speed")
 
     msg <- "OPI-PRESENT-KINETIC "
     xs <- xy.coords(stim$path)$x[1]
@@ -233,8 +232,8 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
     msg <- paste(msg, stim$speeds[1])
 	msg <- paste(msg, "\r", sep="")
    
-    writeLines(msg, .KowaAP7000Env$socket)
-    res <- readLines(.KowaAP7000Env$socket, n=1)
+    writeLines(msg, .OpiEnv$KowaAP7000$socket)
+    res <- readLines(.OpiEnv$KowaAP7000$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
 
     if (s[1] != "OK")
@@ -259,32 +258,32 @@ kowaAP7000.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) 
 
 ###########################################################################
 # set background color and/or fixation marker
-# color is one of .KowaAP7000Env$BACKGROUND_WHITE or 
-#                 .KowaAP7000Env$BACKGROUND_YELLOW
+# color is one of .OpiEnv$KowaAP7000$BACKGROUND_WHITE or 
+#                 .OpiEnv$KowaAP7000$BACKGROUND_YELLOW
 ###########################################################################
 kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     if (!is.na(fixation)) {
-        .KowaAP7000Env$minCheck(fixation, 0, "Fixation")
-        .KowaAP7000Env$maxCheck(fixation, 3, "Fixation")
+        .OpiEnv$KowaAP7000$minCheck(fixation, 0, "Fixation")
+        .OpiEnv$KowaAP7000$maxCheck(fixation, 3, "Fixation")
 
         msg <- paste("OPI-SET-FIXATION ", fixation, "\r", sep="")
-        writeLines(msg, .KowaAP7000Env$socket)
-        .KowaAP7000Env$checkOK("opiSetBackground fixation")
+        writeLines(msg, .OpiEnv$KowaAP7000$socket)
+        .OpiEnv$KowaAP7000$checkOK("opiSetBackground fixation")
     }
 
     if (!is.na(lum) && !is.na(color)) {
-        if (lum == 10 && color != .KowaAP7000Env$BACKGROUND_WHITE)
+        if (lum == 10 && color != .OpiEnv$KowaAP7000$BACKGROUND_WHITE)
             warning("Can only have a 10 cd/m^2 background that is white")
-        if (lum == 100 && color != .KowaAP7000Env$BACKGROUND_YELLOW)
+        if (lum == 100 && color != .OpiEnv$KowaAP7000$BACKGROUND_YELLOW)
             warning("Can only have a 100 cd/m^2 background that is yellow")
     }
 
     if (!is.na(lum) && is.na(color)) {
         if (lum == 10) {
-            color <- .KowaAP7000Env$BACKGROUND_WHITE
+            color <- .OpiEnv$KowaAP7000$BACKGROUND_WHITE
             warning("Can only have a 10 cd/m^2 background that is white")
         } else if (lum == 100) {
-            color <- .KowaAP7000Env$BACKGROUND_YELLOW
+            color <- .OpiEnv$KowaAP7000$BACKGROUND_YELLOW
             warning("Can only have a 100 cd/m^2 background that is yellow")
         } else {
             opiClose()
@@ -293,11 +292,11 @@ kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     }
     
     if (!is.na(color)) {
-        .KowaAP7000Env$minCheck(color, 0, "Background color")
-        .KowaAP7000Env$maxCheck(color, 1, "Background color")
+        .OpiEnv$KowaAP7000$minCheck(color, 0, "Background color")
+        .OpiEnv$KowaAP7000$maxCheck(color, 1, "Background color")
         msg <- paste0("OPI-SET-BACKGROUND ", color,"\r")
-        writeLines(msg, .KowaAP7000Env$socket)
-        .KowaAP7000Env$checkOK("opiSetBackground color")
+        writeLines(msg, .OpiEnv$KowaAP7000$socket)
+        .OpiEnv$KowaAP7000$checkOK("opiSetBackground color")
     }
         
     return(NULL)
@@ -307,9 +306,9 @@ kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
 # return NULL on success (in fact, always!)
 ###########################################################################
 kowaAP7000.opiClose <- function() {
-    writeLines("OPI-CLOSE\r", .KowaAP7000Env$socket)
-    .KowaAP7000Env$checkOK("opiClose")
-    close(.KowaAP7000Env$socket)
+    writeLines("OPI-CLOSE\r", .OpiEnv$KowaAP7000$socket)
+    .OpiEnv$KowaAP7000$checkOK("opiClose")
+    close(.OpiEnv$KowaAP7000$socket)
     return(NULL)
 }
 
@@ -319,10 +318,10 @@ kowaAP7000.opiClose <- function() {
 kowaAP7000.opiQueryDevice <- function() {
     cat("Defined constants and functions\n")
     cat("-------------------------------\n")
-    ls(envir=.KowaAP7000Env)
+    ls(envir=.OpiEnv$KowaAP7000)
 
-    writeLines("OPI-GET-PUPILPOS\r", .KowaAP7000Env$socket)
-    res <- readLines(.KowaAP7000Env$socket, n=1)
+    writeLines("OPI-GET-PUPILPOS\r", .OpiEnv$KowaAP7000$socket)
+    res <- readLines(.OpiEnv$KowaAP7000$socket, n=1)
     s <- strsplit(res, " ", fixed=TRUE)[[1]]
 
     if (s[1] != "OK")

@@ -22,8 +22,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if (!exists(".Octopus600Env"))
-    .Octopus600Env <- new.env()
+if (exists(".OpiEnv") && !exists("O600", where=.OpiEnv))
+    assign("O600", new.env(6), envir=.OpiEnv)
 
 #######################################################################
 # Networking helper functions
@@ -94,17 +94,17 @@ octo600.opiInitialize <- function(ipAddress, eye, pupilTracking=FALSE, pulsar=FA
     error = function(e) stop(paste("Cannot connect to Octopus 600 on", ipAddress))
   )
   
-  assign("socket", socket, envir = .Octopus600Env)
+  assign("socket", socket, envir = .OpiEnv$O600)
   
   print("Connected to Octopus 600")
   
   # set_eyecontrol()
-  res = sendCommand(.Octopus600Env$socket, 2005, eyeControl, 60, 47, 136, 75)
+  res = sendCommand(.OpiEnv$O600$socket, 2005, eyeControl, 60, 47, 136, 75)
   if (res[[2]] != 0)
     return(res[[2]])
   
   # initialise_perimeter()
-  res = sendCommand(.Octopus600Env$socket, 2001, ifelse(pulsar, 3183, 1000))
+  res = sendCommand(.OpiEnv$O600$socket, 2001, ifelse(pulsar, 3183, 1000))
   if (res[[2]] != 0)
     return(res[[2]])
   
@@ -112,26 +112,26 @@ octo600.opiInitialize <- function(ipAddress, eye, pupilTracking=FALSE, pulsar=FA
   
   if (pupilTracking) {
     # set_ir_illumination()
-    res = sendCommand(.Octopus600Env$socket, 2007, eye=="left", eye=="right")
+    res = sendCommand(.OpiEnv$O600$socket, 2007, eye=="left", eye=="right")
     if (res[[2]] != 0)
       return(res[[2]])
   }
   
   # set_fixationmark()
   if (pulsar) {
-    res = sendCommand(.Octopus600Env$socket, 2003, eye=="left", 1, 2, 255) # yellow dot
+    res = sendCommand(.OpiEnv$O600$socket, 2003, eye=="left", 1, 2, 255) # yellow dot
     if (res[[2]] != 0)
       return(res[[2]])
   } else {
-    res = sendCommand(.Octopus600Env$socket, 2003, eye=="left", 2, 2, 255) # yellow cross
+    res = sendCommand(.OpiEnv$O600$socket, 2003, eye=="left", 2, 2, 255) # yellow cross
     if (res[[2]] != 0)
       return(res[[2]])
   }
   
-  assign("pupilTrackingEnabled", pupilTracking, envir = .Octopus600Env)
-  assign("pupilBlackLevelSet", !pupilTracking, envir = .Octopus600Env)
-  assign("eye", eye, envir = .Octopus600Env)
-  assign("pulsar", pulsar, envir = .Octopus600Env)
+  assign("pupilTrackingEnabled", pupilTracking, envir = .OpiEnv$O600)
+  assign("pupilBlackLevelSet", !pupilTracking, envir = .OpiEnv$O600)
+  assign("eye", eye, envir = .OpiEnv$O600)
+  assign("pulsar", pulsar, envir = .OpiEnv$O600)
   
 	return(NULL)
 }
@@ -151,25 +151,25 @@ setGeneric("octo600.opiPresent")
 
 octo600.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
   
-  leftEye = .Octopus600Env$eye == "left"
+  leftEye = .OpiEnv$O600$eye == "left"
   
-  if (!.Octopus600Env$pupilBlackLevelSet) {
+  if (!.OpiEnv$O600$pupilBlackLevelSet) {
     # adjustPupilBlackLevel()
-    res = sendCommand(.Octopus600Env$socket, 2029, leftEye)
+    res = sendCommand(.OpiEnv$O600$socket, 2029, leftEye)
     if (res[[2]] != 0)
       return(list(err = res[[2]], seen=NA, time=NA))
     else
-      assign("pupilBlackLevelSet", TRUE, envir = .Octopus600Env)
+      assign("pupilBlackLevelSet", TRUE, envir = .OpiEnv$O600)
   }
   
   # display_stimulus()
   res <- sendCommand(
-    .Octopus600Env$socket, 2000,
+    .OpiEnv$O600$socket, 2000,
     0, #checkBGIllumi [Do always set to 0]
     0, #BGIntensity [If checkBGIllumi is set to 0, don't care]
     stim$x*10, #positionX [in 1/10deg]
     stim$y*10, #positionY [in 1/10deg]
-    .Octopus600Env$pulsar*5, #method [0 = White-On-White, 5 = pulsar]
+    .OpiEnv$O600$pulsar*5, #method [0 = White-On-White, 5 = pulsar]
     0, #color [don't care]
     3, #stimulusSize [don't care] (has to be 3 for W-on-W, don't care for pulsar)
     cdTodb(stim$level, 4000/pi)*10, #dLog (intensity) [in 1/10 dB]
@@ -208,10 +208,10 @@ octo600.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, ...) {
 
 ###########################################################################
 #
-# Input paras are the Octopus600Env$* constants
-# lum is in cd/m^2 (as per OPI spec) * 100 == .Octopus600Env$BG_{OFF | 1 | 10 | 100 }
-# color is .Octopus600Env$MET_COL_{WW | BY | RW | BLUE_WHITE | RED_YELLOW | WHITE_YELLOW }
-# fixation is .Octopus600Env$FIX_{RING | CROSS | CENTRE}
+# Input paras are the OpiEnv$O600$* constants
+# lum is in cd/m^2 (as per OPI spec) * 100 == .OpiEnv$O600$BG_{OFF | 1 | 10 | 100 }
+# color is .OpiEnv$O600$MET_COL_{WW | BY | RW | BLUE_WHITE | RED_YELLOW | WHITE_YELLOW }
+# fixation is .OpiEnv$O600$FIX_{RING | CROSS | CENTRE}
 # fixIntensity is 0..100 %
 #
 # @return NULL is succeed.
@@ -233,12 +233,12 @@ octo600.opiSetBackground <- function(bgColor=NA, fixType=NA, fixColor=NA, fixInt
   #todo return -1 if opiInitialize has not been successfully called
   
   # setBackground()
-  res = sendCommand(.Octopus600Env$socket, 2021, ifelse(is.na(bgColor), 0, bgColor), ifelse(is.na(bgColor), .Octopus600Env$pulsar*5, -1))
+  res = sendCommand(.OpiEnv$O600$socket, 2021, ifelse(is.na(bgColor), 0, bgColor), ifelse(is.na(bgColor), .OpiEnv$O600$pulsar*5, -1))
   if (res[[2]] != 0)
     return(-2)
   
   # set_fixationmark()
-  res = sendCommand(.Octopus600Env$socket, 2003, .Octopus600Env$eye == "left", fixType, fixColor, fixIntensity)
+  res = sendCommand(.OpiEnv$O600$socket, 2003, .OpiEnv$O600$eye == "left", fixType, fixColor, fixIntensity)
   if (res[[2]] != 0)
     return(-3)
   
@@ -249,7 +249,7 @@ octo600.opiSetBackground <- function(bgColor=NA, fixType=NA, fixColor=NA, fixInt
 # return NULL on success (in fact, always!)
 ###########################################################################
 octo600.opiClose <- function() {
-    close(.Octopus600Env$socket)
+    close(.OpiEnv$O600$socket)
     return(NULL)
 }
 
@@ -257,7 +257,7 @@ octo600.opiClose <- function() {
 # Call opiPresent with a NULL stimulus
 ###########################################################################
 octo600.opiQueryDevice <- function() {
-  res <- sendCommand(.Octopus600Env$socket, 3004)
+  res <- sendCommand(.OpiEnv$O600$socket, 3004)
   
   ret <- list(
     answerButton        = res[[1]][8],

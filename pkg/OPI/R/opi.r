@@ -34,9 +34,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-packageStartupMessage("OPI version 2.5")
+packageStartupMessage("OPI version 2.9")
 
-.OpiEnv <- new.env(size=1)
+.OpiEnv <- new.env(size=20)
+assign("event_hook", list(stim=NA, resp=NA, tstamp=NA), envir=.OpiEnv)
 
 ################################################################################
 # A list of available OPI implementations for chooseOpi to choose from, and 
@@ -175,17 +176,6 @@ chooseOpi <- function(opiImplementation) {
     } 
 
         #
-        # Check OPIOctopus900 package exists
-        #
-    #if ((opiImplementation == "Octopus900") && !require(OPIOctopus900)) {
-    #    cat("***********************************************************************\n")
-    #    cat("* You cannot choose the Octopus900 OPI without installing the package *\n")
-    #    cat("* OPIOctopus900, which is available with permission from HAAG-STREIT. *\n")
-    #    cat("***********************************************************************\n")
-    #    stop("Get the Octopus900 package")
-    #}
-
-        #
         # Find the index in opi.implementations
         #
     i <- which(opiImplementation == possible)
@@ -221,10 +211,22 @@ opiDistributor <- function(method, ...) {
     if (length(argsNotPassed) > 0)
         warning(paste(method, "Ignored argument ", argsNotPassed, "\n"))
 #print(paste("Passing args: ", argsToPass))
-    do.call(toCall, list(...)[argsToPass])
+    result <- do.call(toCall, list(...)[argsToPass])
+    temp <- .OpiEnv$event_hook
+    temp$resp <- result
+    temp$tstamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%OS5")
+    assign("event_hook", temp, envir=.OpiEnv)
+
+    return(result)
 }
 
-opiPresent        <- function(stim,nextStim=NULL,...) { opiDistributor("opiPresent", stim=stim, nextStim=nextStim, ...) }
+opiPresent        <- function(stim,nextStim=NULL,...) { 
+    temp <- .OpiEnv$event_hook
+    temp$stim <- stim
+    temp$tstamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%OS5")
+    assign("event_hook", temp, envir=.OpiEnv)
+    opiDistributor("opiPresent", stim=stim, nextStim=nextStim, ...) 
+}
 
 opiInitialize     <- function(...) { opiDistributor("opiInitialize", ...) }
 opiInitialise     <- function(...) { opiDistributor("opiInitialize", ...) }

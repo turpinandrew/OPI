@@ -28,8 +28,8 @@
 simH.opiClose         <- function() { return(NULL) }
 simH.opiQueryDevice   <- function() { return (list(type="SimHenson", isSim=TRUE)) }
 
-if (!exists(".SimHEnv"))
-    .SimHEnv <- new.env(size=5)
+if (exists(".OpiEnv") && !exists("SimH", where=.OpiEnv))
+    assign("SimH", new.env(), envir=.OpiEnv)
 
 ################################################################################
 # Input
@@ -51,22 +51,22 @@ simH.opiInitialize <- function(type="C", A=NA, B=NA, cap=6, display=NULL, maxSti
     if (cap < 0)
         warning("cap is negative in call to opiInitialize (simHenson)")
 
-    assign("type",    type, envir = .SimHEnv)
-    assign("cap",     cap, envir = .SimHEnv)
-    assign("maxStim", maxStim, envir = .SimHEnv)
+    assign("type",    type, envir = .OpiEnv$SimH)
+    assign("cap",     cap, envir = .OpiEnv$SimH)
+    assign("maxStim", maxStim, envir = .OpiEnv$SimH)
 
-    if (.SimHEnv$type == "N") {
-        assign("A", -0.066, envir=.SimHEnv)
-        assign("B", 2.81, envir=.SimHEnv)
-    } else if (.SimHEnv$type == "G") {
-        assign("A", -0.098 , envir=.SimHEnv)
-        assign("B", 3.62, envir=.SimHEnv)
-    } else if (.SimHEnv$type == "C") {
-        assign("A", -0.081, envir=.SimHEnv)
-        assign("B", 3.27, envir=.SimHEnv)
-    } else if (.SimHEnv$type == "X") {
-        assign("A" ,  A, envir=.SimHEnv)
-        assign("B",  B, envir=.SimHEnv)
+    if (.OpiEnv$SimH$type == "N") {
+        assign("A", -0.066, envir=.OpiEnv$SimH)
+        assign("B", 2.81, envir=.OpiEnv$SimH)
+    } else if (.OpiEnv$SimH$type == "G") {
+        assign("A", -0.098 , envir=.OpiEnv$SimH)
+        assign("B", 3.62, envir=.OpiEnv$SimH)
+    } else if (.OpiEnv$SimH$type == "C") {
+        assign("A", -0.081, envir=.OpiEnv$SimH)
+        assign("B", 3.27, envir=.OpiEnv$SimH)
+    } else if (.OpiEnv$SimH$type == "X") {
+        assign("A" ,  A, envir=.OpiEnv$SimH)
+        assign("B",  B, envir=.OpiEnv$SimH)
     }
 
     if (type == "X" && (is.na(A) || is.na(B)))
@@ -120,7 +120,7 @@ simH.present <- function(db, cap=6, fpr=0.03, fnr=0.01, tt=30, A, B) {
 # stim is list of type opiStaticStimulus
 #
 simH.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30) {
-    if (!exists("type", envir=.SimHEnv)) {
+    if (!exists("type", envir=.OpiEnv$SimH)) {
         return ( list(
             err = "opiInitialize(type,cap) was not called before opiPresent()",
             seen= NA,
@@ -140,7 +140,7 @@ simH.opiPresent.opiStaticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fnr
 
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 
-    return(simH.present(cdTodb(stim$level, .SimHEnv$maxStim), .SimHEnv$cap, fpr, fnr, tt, .SimHEnv$A, .SimHEnv$B))
+    return(simH.present(cdTodb(stim$level, .OpiEnv$SimH$maxStim), .OpiEnv$SimH$cap, fpr, fnr, tt, .OpiEnv$SimH$A, .OpiEnv$SimH$B))
 }
 
 ########################################## TO DO !
@@ -155,12 +155,12 @@ simH.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 # The location of a false positive is randomly drawn from any 
 # location prior to the "true positive" point.
 # Note FoS parameters and reaction times picked up 
-# from SimHEnv set in opiInitialize
+# from OpiEnv$SimH set in opiInitialize
 #
 # NOTE Only works for single path vectors!
 #
 # @param tt - a list of functions that give true static threshold in dB
-#             (relative to .SimHEnv$maxStim) as a function of distance along the path
+#             (relative to .OpiEnv$SimH$maxStim) as a function of distance along the path
 #             tt(x)==NA implies never seen
 # @param fpr - false positive rate in [0,1] (note for whole path)
 # @param fnr - false negative rate in [0,1] (note for whole path)
@@ -208,14 +208,14 @@ simH.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, fpr=0.03, fn
         if (is.na(tt))
             return(0)
 
-        #slope <- rnorm(1, mean=min(.SimHEnv$cap, exp(.SimHEnv$A*tt + .SimHEnv$B)), 0.25)
-        slope <- min(.SimHEnv$cap, exp(.SimHEnv$A*tt + .SimHEnv$B))
+        #slope <- rnorm(1, mean=min(.OpiEnv$SimH$cap, exp(.OpiEnv$SimH$A*tt + .OpiEnv$SimH$B)), 0.25)
+        slope <- min(.OpiEnv$SimH$cap, exp(.OpiEnv$SimH$A*tt + .OpiEnv$SimH$B))
         return(1 - pnorm(stim, tt, slope))
     }
 
     path_num <- 1   # for future when multi-paths are supported (bwahahahaha!)
 
-    stim_db <- cdTodb(stim$levels[path_num], .SimHEnv$maxStim)
+    stim_db <- cdTodb(stim$levels[path_num], .OpiEnv$SimH$maxStim)
     
     path_len <- eDistP(stim$path$x[path_num], stim$path$y[path_num],
                        stim$path$x[path_num+1], stim$path$y[path_num+1])

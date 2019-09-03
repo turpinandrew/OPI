@@ -31,10 +31,17 @@ Returns all constants in \code{.DayDreamEnv} as a list.
 }
 \value{
 Returns a list that contains \code{isSim} and implementation dependant data.
+
 \enumerate{
     \item \code{isSim} is \code{TRUE} if the device is a simulation, or \code{FALSE} if 
             the device is a physical machine.
 }
+
+\code{.OpiEnv$event_hook$resp} is set with the
+and the return value, and \code{.OpiEnv$event_hook$tstamp} a time stamp. 
+This is useful for user interfaces
+that wish to react (raise an event) when this value changes.
+
 
 \subsection{Octopus600}{
 Returns a list of 10 items:

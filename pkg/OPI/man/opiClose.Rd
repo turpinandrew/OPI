@@ -26,6 +26,12 @@ otherwise an implementation dependant error.
 time (same as \code{time_hw} in \code{opiPresent}), x (degrees relative to the centre of the image returned
 by \code{opiInitialise} - not the PRL), y (as for x), and one row per fixation. 
 }
+
+As a side effect, 
+\code{.OpiEnv$event_hook$resp} is set with the 
+and the return value, and \code{.OpiEnv$event_hook$tstamp} a time stamp. 
+This is useful for user interfaces
+that wish to react (raise an event) when this value changes.
 }
 \references{
 Please cite:
