@@ -119,4 +119,4 @@
 # OPI 2.9
  * Removed all individual environments for each perimeter and made one OPIEnv (not backwards compatible)
     * .Octopus900Env$x has become .OPIEnv$O900$x
- * Added hooks for Shiny (or other event driven packages) in OPIEnv
+ * Added gazeFeed to a folder for Octopus 900

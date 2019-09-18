@@ -37,7 +37,6 @@
 packageStartupMessage("OPI version 2.9")
 
 .OpiEnv <- new.env(size=20)
-assign("event_hook", list(stim=NA, resp=NA, tstamp=NA), envir=.OpiEnv)
 
 ################################################################################
 # A list of available OPI implementations for chooseOpi to choose from, and 
@@ -212,19 +211,11 @@ opiDistributor <- function(method, ...) {
         warning(paste(method, "Ignored argument ", argsNotPassed, "\n"))
 #print(paste("Passing args: ", argsToPass))
     result <- do.call(toCall, list(...)[argsToPass])
-    temp <- .OpiEnv$event_hook
-    temp$resp <- result
-    temp$tstamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%OS5")
-    assign("event_hook", temp, envir=.OpiEnv)
 
     return(result)
 }
 
 opiPresent        <- function(stim,nextStim=NULL,...) { 
-    temp <- .OpiEnv$event_hook
-    temp$stim <- stim
-    temp$tstamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%OS5")
-    assign("event_hook", temp, envir=.OpiEnv)
     opiDistributor("opiPresent", stim=stim, nextStim=nextStim, ...) 
 }
 

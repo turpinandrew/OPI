@@ -102,7 +102,7 @@ setupBackgroundConstants <- function() {
 #   serverPort               = port number on which server is listening
 #   eyeSuiteSettingsLocation = dir name containing EyeSuite settings
 #   eye                      = "right" or "left"
-#   gazeFeed                 = 0 (none), 1 (pupil xy)
+#   gazeFeed                 = NA or a folder name
 #   bigWheel                 = FALSE (standard machine), TRUE for modified apeture wheel
 #   pres_buzzer              = 0 (no buzzer),1,2, 3 (max volume)
 #   resp_buzzer              = 0 (no buzzer),1,2, 3 (max volume)
@@ -115,11 +115,9 @@ setupBackgroundConstants <- function() {
 #
 #######################################################################
 octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
-                                  eye=NA, gaze_feed=0, bigWheel=FALSE, 
+                                  eye=NA, gazeFeed=NA, bigWheel=FALSE, 
                                   pres_buzzer=0, resp_buzzer=0,
                                  zero_dB_is_10000_asb=TRUE) {
-    assign("gazeFeed", gaze_feed, envir=.OpiEnv$O900)
-
     if (!bigWheel) {
         assign("GOLDMANN", c(6.5, 13, 26, 52, 104) / 60, envir=.OpiEnv$O900)
     } else {
@@ -166,6 +164,7 @@ octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA,
     )
     assign("socket", socket, envir = .OpiEnv$O900)
     msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", pres_buzzer, " ", resp_buzzer, " ", as.integer(zero_dB_is_10000_asb))
+    msg <- paste0(msg, " ", ifelse(is.na(gazeFeed) || is.null(gazeFeed), "NA", gazeFeed))
     writeLines(msg, socket)
     res <- readLines(socket, n=1)
     
@@ -212,9 +211,9 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
         warning("opiPresent: no stim responseWindow specified. Assuming 1500ms.")
         stim$responseWindow <- 1500
     }
-    if (is.null(stim$color)) stim$color <- 0   # white I hope
+    if (is.null(stim$color)) stim$color <- .OpiEnv$O900$STIM_WHITE
 
-    if(min(abs(.OpiEnv$O900$GOLDMANN - stim$size), na.rm=TRUE) != 0)
+    if(min(abs(.OpiEnv$O900$GOLDMANN - stim$size), na.rm=TRUE) > 0.001)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
     if (F310)
@@ -244,25 +243,13 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
       err <- s[1]
     }
 
-
-    if (.OpiEnv$O900$gazeFeed == 0) {
-      return(list(
-        err=err,
-        seen=as.numeric(s[2]),
-        time=as.numeric(s[3])
-      ))
-    }#gazeFeed=0
-
-
-    if (.OpiEnv$O900$gazeFeed == 1) {
-      return(list(
-        err=err,
-        seen=as.numeric(s[2]),
-        time=as.numeric(s[3]),
-        pupilX=as.numeric(s[4]),
-        pupilY=as.numeric(s[5])
-      ))
-    }#gazeFeed=1
+    return(list(
+      err=err,
+      seen=as.numeric(s[2]),
+      time=as.numeric(s[3]),
+      pupilX=ifelse(length(s) > 3, as.numeric(s[4]), NA),
+      pupilY=ifelse(length(s) > 4, as.numeric(s[5]), NA)
+    ))
 }
 
 ###########################################################################
@@ -395,24 +382,14 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
       err <- s[1]
     }
 
-    if (.OpiEnv$O900$gazeFeed == 1) {
-      return(list(
-        err=err,
-        seen=as.numeric(s[2]),
-        time=as.numeric(s[3]),
-        x=as.numeric(s[4])/1000,
-        y=as.numeric(s[5])/1000,
-        pupilX=as.numeric(s[6]),
-        pupilY=as.numeric(s[7])
-      ))
-    }#gazeFeed=1
-
     return(list(
-        err =err, 
-        seen=as.numeric(s[2]),
-        time=as.numeric(s[3]),
-        x=as.numeric(s[4])/1000,     
-        y=as.numeric(s[5])/1000
+      err=err,
+      seen=as.numeric(s[2]),
+      time=as.numeric(s[3]),
+      x=as.numeric(s[4])/1000,
+      y=as.numeric(s[5])/1000,
+      pupilX=ifelse(length(s) > 5, as.numeric(s[6]), NA),
+      pupilY=ifelse(length(s) > 6, as.numeric(s[7]), NA)
     ))
 }
 

@@ -6,7 +6,7 @@ OPI_VERSION := $(shell cat OPI/DESCRIPTION | grep Version | sed 's/Version: //')
 OPI_R =	\
     dbTocd.r \
     fourTwo.r full_threshold.r full_threshold_state.r zest.r mocs.r \
-    imoClient.r k_test.r kowaAP7000Client.r octopus600.r octopus900Client.r \
+    imoClient.r kowaAP7000Client.r octopus600.r octopus900Client.r \
     opi.r \
     simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r
 

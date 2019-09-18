@@ -70,7 +70,7 @@ opiInitialise(...)
     \code{display} and \code{maxStim} is as for SimHenson.
 }
 \subsection{Octopus900}{
-    \code{opiInitialize(serverPort=50001,eyeSuiteSettingsLocation, eye, gazeFeed=0, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
+    \code{opiInitialize(serverPort=50001,eyeSuiteSettingsLocation, eye, gazeFeed=NA, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
 
     If the chosen OPI implementation is \code{Octopus900}, then you must 
     specify a directory and the eye to be tested.
@@ -82,13 +82,8 @@ opiInitialise(...)
 
     \code{eye} must be either "left" or "right".
 
-    \code{gazeFeed} is 0 for no gaze tracking infromation. 
-    If \code{gazeFeed} is 1, then the (x,y) coordinates of the pupil at the start of the stimulus presentation (or nearest frame to) is returned.
-    If \code{gazeFeed} is 2, then (supposedly)
-    a all frames containing the asterix are returned as part of the value from \code{\link{opiPresent}},
-    which are the frames captured while a static stimulus is displayed. 
-    If \code{gazeFeed} is greater than zero, 
-    a Java driven window appears containing the live feed from the Octopus 900 gaze camera.
+    \code{gazeFeed} is the name of an existing folder into which the video frames of eye tracker are recorded.
+                    Set to \code{NA} for no recording.
 
     \code{bigWheel} is \code{FALSE} for a standard Octopus 900 machine. Some research machines
     are fitted with an alternate aperture wheel that has 24 sizes, which are accessed
@@ -275,7 +270,6 @@ if (!is.null(opiInitialize(sd=2)))
     # Set up the Octopus 900
 chooseOpi("Octopus900")
 if (!is.null(opiInitialize(
-        eyeSuiteJarLocation="C:/Program Files (x86)/Haag-Streit/EyeSuite/", 
         eyeSuiteSettingsLocation="C:/ProgramData/Haag-Streit/EyeSuite/",
         eye="left")))
     stop("opiInitialize failed")
