@@ -121,11 +121,6 @@ same fixation location as in the setup.
 Returns NULL if succeeded, 
 otherwise an implementation dependant error as follows.
 
-\code{.OpiEnv$event_hook$resp} is set with the
-and the return value, and \code{.OpiEnv$event_hook$tstamp} a time stamp. 
-This is useful for user interfaces
-that wish to react (raise an event) when this value changes.
-
 \subsection{Octopus900}{ 
     -1 indicates \code{opiInitialize} has not been called.
 

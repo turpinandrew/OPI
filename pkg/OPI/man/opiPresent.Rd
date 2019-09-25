@@ -213,17 +213,8 @@ specific) of the presentation
 until the response from the subject if \code{seen} is \code{TRUE}. 
 If \code{seen} is \code{FALSE}, this
 value is undefined.
+For kinetic perimetry on the O900, this value is unknown...
 }
-%\item{frames}{Only returned for Octopus 900 if \code{gazeFeed} is 2. An array of integer 0..255 for gaze image. 
-%In version 1.5, only a single frame is returned.
-%See the parameter \code{gazeFeed} for \code{\link{opiInitialize}} to control what frames are returned.
-%}
-%\item{numFrames}{Only returned for Octopus 900. The number of frames in \code{frames}.
-%}
-%\item{width}{Only returned for Octopus 900. Width of frame in \code{frames}.
-%}
-%\item{height}{Only returned for Octopus 900. Height of frame in \code{frames}.
-%}
 \item{answer}{Only returned for \code{Octopus600}. Can be the following values:
   \itemize{
     \item 0 = stimulus not seen;
@@ -240,9 +231,9 @@ value is undefined.
     \item 514 = Fast Eye movements during stimulus presentation
   }
 }
-\item{pupilX}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic if gazeFeed==1. 
+\item{pupilX}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic. 
           x-coordinate of centre of pupil in pixels during presentation.}
-\item{pupilY}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic if gazeFeed==1. 
+\item{pupilY}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic. 
           y-coordinate of centre of pupil in pixels during presentation.}
 \item{purkinjeX}{Only returned for KowaAP7000 and an opiStaticStimulus. 
           x-coordinate of centre of Purkinje Image in pixels during presentation.}
@@ -269,14 +260,6 @@ expired (in ms).}
 by \code{opiInitialize}.}
 \item{loc_y}{Only returned for Compass. The y location in pixels of the presentation on the retinal image returned
 by \code{opiInitialize}.}
-
-As a side effect, \code{.OpiEnv$event_hook$stim},
-\code{.OpiEnv$event_hook$resp},
-\code{.OpiEnv$event_hook$tstamp} 
-are set with the \code{stim} parameter,
-the response list, and a time stamp respectively. 
-This is useful for user interfaces
-that wish to react (raise an event) when these values change.
 }
 \references{
 Please cite:
@@ -333,9 +316,6 @@ if (!is.null(opiInitialize(type="C", cap=6, rtData=RtSigmaUnits)))
 
 dist <- (10 - 30)/min(exp(-0.098 * 30 + 3.62), 6)
 result <- opiPresent(stim=makeStim(10,0), tt=30, fpr=0.15, fnr=0.01, dist=dist)
-
-print(.OpiEnv$event_hook$stim)
-print(.OpiEnv$event_hook$resp)
 
 if (!is.null(opiClose()))
     warning("opiClose() failed")

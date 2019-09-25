@@ -177,11 +177,6 @@ opiInitialise(...)
 Returns NULL if initialization succeeded, 
 otherwise an implementation dependant error.
 
-\code{.OpiEnv$event_hook$resp} is set with the
-and the return value, and \code{.OpiEnv$event_hook$tstamp} a time stamp. 
-This is useful for user interfaces
-that wish to react (raise an event) when this value changes.
-
 \subsection{Octopus900}{
 Returns NULL if successful, 1 if Octopus900 is already initialised by a previous call to 
 \code{opiInitialize}, and 2 if some error occured that prevented ininitialisation.
