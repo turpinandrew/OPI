@@ -27,6 +27,7 @@ time (same as \code{time_hw} in \code{opiPresent}), x (degrees relative to the c
 by \code{opiInitialise} - not the PRL), y (as for x), and one row per fixation. 
 }
 }
+
 \references{
 Please cite:
 A. Turpin, P.H. Artes and A.M. McKendrick

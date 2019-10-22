@@ -211,8 +211,7 @@ machine.}
 \item{time}{The time in milliseconds from the onset (or offset, machine
 specific) of the presentation
 until the response from the subject if \code{seen} is \code{TRUE}. 
-If \code{seen} is \code{FALSE}, this
-value is undefined.
+If \code{seen} is \code{FALSE}, this value is undefined.
 For kinetic perimetry on the O900, this value is unknown...
 }
 \item{answer}{Only returned for \code{Octopus600}. Can be the following values:
@@ -231,10 +230,8 @@ For kinetic perimetry on the O900, this value is unknown...
     \item 514 = Fast Eye movements during stimulus presentation
   }
 }
-\item{pupilX}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic. 
-          x-coordinate of centre of pupil in pixels during presentation.}
-\item{pupilY}{Only returned for KowaAP7000 and an opiStaticStimulus or O900 and staic/kinetic. 
-          y-coordinate of centre of pupil in pixels during presentation.}
+\item{pupilX}{Only returned for KowaAP7000 (in pixels) and an opiStaticStimulus or O900 (in degrees) and staic/kinetic if gazeFeed==1. x-coordinate of centre of pupil during presentation.}
+\item{pupilY}{Only returned for KowaAP7000 (in pixels) and an opiStaticStimulus or O900 (in degrees) and static/kinetic if gazeFeed==1. y-coordinate of centre of pupil during presentation.}
 \item{purkinjeX}{Only returned for KowaAP7000 and an opiStaticStimulus. 
           x-coordinate of centre of Purkinje Image in pixels during presentation.}
 \item{purkinjeY}{Only returned for KowaAP7000 and an opiStaticStimulus. 
@@ -260,6 +257,7 @@ expired (in ms).}
 by \code{opiInitialize}.}
 \item{loc_y}{Only returned for Compass. The y location in pixels of the presentation on the retinal image returned
 by \code{opiInitialize}.}
+
 }
 \references{
 Please cite:

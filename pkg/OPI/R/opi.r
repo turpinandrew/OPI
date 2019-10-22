@@ -153,7 +153,7 @@ opi.implementations <- list(
 #   FALSE    Otherwise
 ################################################################################
 chooseOpi <- function(opiImplementation) { 
-    possible <- unlist(lapply(opi.implementations, "[", "name"))
+    possible <- unlist(lapply(opi.implementations, "[", "name"), use.names = FALSE)
 
         #
         # If NULL, print the list of possible
@@ -161,8 +161,7 @@ chooseOpi <- function(opiImplementation) {
     if (missing(opiImplementation))
         opiImplementation <- NULL
     if (is.null(opiImplementation)) {
-        print(possible)
-        return(TRUE)
+        return(possible)
     }
 
         #
@@ -227,3 +226,7 @@ opiSetBackground  <- function(...) { opiDistributor("opiSetBackground", ...) }
 opiQueryDevice    <- function(...) { opiDistributor("opiQueryDevice", ...) }
 
 opiClose          <- function(...) { opiDistributor("opiClose", ...) }
+
+# IMF: get initialization parameters and presentation parameters
+opiGetParams <- function(method, ...)
+  return(as.list(formals(opi.implementations[[.OpiEnv$chooser]][[method]])))

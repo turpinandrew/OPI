@@ -26,7 +26,7 @@
 ###################################################################
 # .OpiEnv$DayDream$socket is the connection to the daydream
 # .OpiEnv$DayDream$LUT has 256 entries. LUT[x] is cd/m^2 value for grey level x
-# .OpiEnv$DayDream$degrees_to_pixels() function(x,y) in degrees to (x,y) 
+# .OpiEnv$DayDream$ppd default is 50.
 # .OpiEnv$DayDream$...    a variety of constants, etc
 ###################################################################
 if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
@@ -35,7 +35,7 @@ if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
     .OpiEnv$DayDream$endian <- "little"
 
     .OpiEnv$DayDream$LUT <- NULL
-    .OpiEnv$DayDream$degrees_to_pixels <- NULL
+    .OpiEnv$DayDream$ppd <- NULL
 
     .OpiEnv$DayDream$width <- NA        # of whole phone screen
     .OpiEnv$DayDream$height <- NA
@@ -61,21 +61,21 @@ if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
 #' @param ip   IP address on which server is listening.
 #' @param port Port number on which server is listening.
 #' @param lut  \code{lut[i]} is cd/m^2 for grey level i. \code{assert(length(lut) == 256)}
-#' @param degrees_to_pixels  \code{function(x,y)} where x and y are in degrees, 
-#'                           returns c(x,y) in pixels for one eye.
+#' @param ppd Points per degree. It is a scalar to multiply to x and y coordinates to convert
+#' from degrees to pixels. This assumes the viewing distance (z-coordinate) is 30cm.
 #'
 #' @return \code{list(err = NULL)} if succeed, will stop otherwise.
 #'
 #' @examples
-#' \dontrun{opiInitialise(ip="10.0.1.1", port=8912)}
+#' \dontrun{opiInitialize(ip="10.0.1.1", port=8912)}
 #'
-#' @rdname opiInitialise
+#' @rdname opiInitialize
 #######################################################################
 daydream.opiInitialize <- function(
         ip="127.0.0.1",
         port=50008, 
-        lut = rep(1000, 256),
-        degrees_to_pixels = function(x,y) return(50*c(x,y))
+        lut = seq(0, 400, length.out = 255), # for pixel 1 max brightness is 402
+        ppd = 11                             # for pixel 1 and daydream view: daydream view has 960 horizontal pixels per eye divided by a FoV of 90 degrees
     ) {
     cat("Looking for phone at ", ip, "\n")
     suppressWarnings(tryCatch(    
@@ -97,7 +97,7 @@ daydream.opiInitialize <- function(
 
     assign("socket", socket, envir = .OpiEnv$DayDream)
     assign("LUT", lut, envir = .OpiEnv$DayDream)
-    assign("degrees_to_pixels", degrees_to_pixels, envir = .OpiEnv$DayDream)
+    assign("ppd", ppd, envir = .OpiEnv$DayDream)
 
     writeLines("OPI_GET_RES", .OpiEnv$DayDream$socket)
     assign("width",        readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
@@ -125,21 +125,15 @@ find_pixel_value <- function(cdm2) {
 #
 # @return TRUE if succeeds, FALSE otherwise
 ###########################################################################
-load_image <- function(im) {
-    h <- dim(im)[1]
-    w <- dim(im)[2]     # assert(dim(im)[3] == 3)
+load_image <- function(im, w, h) {
 
     writeLines(paste("OPI_IMAGE", w, h), .OpiEnv$DayDream$socket)
     res <- readLines(.OpiEnv$DayDream$socket, n=1)
     if (res == "READY") {
-        for (iy in 1:h)
-            for (ix in 1:w)
-                for (i in 1:3)
-                    writeBin(as.integer(rep(im[iy,ix,i])), .OpiEnv$DayDream$socket, size=1, endian=.OpiEnv$DayDream$endian)
+        writeBin(as.raw(c(im)), .OpiEnv$DayDream$socket, size=1, endian=.OpiEnv$DayDream$endian)
     } else {
         return(FALSE)
     }
-
     res <- readLines(.OpiEnv$DayDream$socket, n=1)
     print(paste('Load image',res))
     return (res == "OK")
@@ -168,21 +162,22 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (is.null(stim$responseWindow)) return(list(err="No responseWindow in stimulus", seen=NA, time=NA))
     if (is.null(stim$eye)) return(list(err="No eye in stimulus", seen=NA, time=NA))
 
-        # make the stimulus
-    fg <- find_pixel_value(stim$level)
-    radius <- round(mean(.OpiEnv$DayDream$degrees_to_pixels(stim$size/2, stim$size/2)))
+    # make the stimulus (IMF by now it is just monochromatic white)
     cx <- round(.OpiEnv$DayDream$single_width / 2)
     cy <- round(.OpiEnv$DayDream$single_height / 2)
-    xy <- c(cx,cy) + .OpiEnv$DayDream$degrees_to_pixels(stim$x, -stim$y) 
+    xy <- c(cx,cy) + .OpiEnv$DayDream$ppd * c(stim$x, -stim$y) 
 
     bg <- ifelse(stim$eye == "L", .OpiEnv$DayDream$background_left, .OpiEnv$DayDream$background_right)
-    im <- array(bg, dim=c(2*radius, 2*radius, 3))
-    for (ix in -radius:radius)
-        for (iy in -radius:radius)
-            if (ix^2 + iy^2 <= radius)
-                im[radius+1+iy, radius+1+ix, ] <- fg
+    radius <- round(mean(.OpiEnv$DayDream$ppd * stim$size / 2 * c(1, 1)))
+    len <- 2 * radius + 1 # get length of the image
+    npix <- len^2         # get number of pixels
+    im <- matrix(bg, 3, npix)
 
-    if (load_image(im)) {
+    x <- 0:(npix - 1) %% len
+    y <- 0:(npix - 1) %/% len
+
+    im[,(x - radius)^2 + (y - radius)^2 <= radius^2] <- find_pixel_value(stim$level)
+    if (load_image(im, len, len)) {
         msg <- paste("OPI_MONO_PRESENT", stim$eye, xy[1], xy[2], stim$duration, stim$responseWindow, sep=" ")
         writeLines(msg, .OpiEnv$DayDream$socket)
 
@@ -243,7 +238,7 @@ daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 ###########################################################################
 daydream.opiSetBackground <- function(lum=NA, color=NA, 
         fixation="Cross", 
-        fixation_size=21,    # probably should be odd
+        fixation_size=11,    # probably should be odd # this is 1 degree for the dyadream view + pixel 1
         fixation_color=c(0,255,0), 
         eye="L") {
     if (is.na(lum)) {
@@ -252,28 +247,29 @@ daydream.opiSetBackground <- function(lum=NA, color=NA,
     }
     if (!is.na(color)) { warning('Color ignored in opiSetBackground.') }
 
-    g <- find_pixel_value(lum)
-    writeLines(paste("OPI_MONO_SET_BG", eye, g), .OpiEnv$DayDream$socket)
+    bg <- find_pixel_value(lum)
+    writeLines(paste("OPI_MONO_SET_BG", eye, bg), .OpiEnv$DayDream$socket)
     res <- readLines(.OpiEnv$DayDream$socket, n=1)
     if (res != "OK")
-        return(paste0("Cannot set background to ",g," in opiSetBackground"))
+        return(paste0("Cannot set background to ",bg," in opiSetBackground"))
 
     if (eye == "L")
-        .OpiEnv$DayDream$background_left <- g
+        .OpiEnv$DayDream$background_left <- bg
     else
-        .OpiEnv$DayDream$background_right <- g
+        .OpiEnv$DayDream$background_right <- bg
 
-    if (fixation == 'Cross') { 
-            # set fixation to a cross
-        m <- (fixation_size + 1) /2
-        im <- array(find_pixel_value(lum), dim=c(fixation_size, fixation_size, 3))
-        for (i in 1:fixation_size) {
-            im[m, i, ] <- fixation_color
-            im[i, m, ] <- fixation_color
-        }
-        if (!load_image(im))
+    # if even, add 1 to fixation size
+    if(fixation_size %% 2 == 0) fixation_size <- fixation_size + 1
+    if (fixation == 'Cross') {
+        # set fixation to a cross
+        m <- (fixation_size + 1) / 2
+        npix <- fixation_size^2
+        im <- matrix(bg, 3, npix)
+        x <- 0:npix %% fixation_size + 1
+        y <- 0:npix %/% fixation_size + 1
+        im[,which(x == m | y == m)] <- fixation_color
+        if (!load_image(im, fixation_size, fixation_size))
             return("Trouble loading fixation image in opiSetBackground.")
-
         cx <- round(.OpiEnv$DayDream$single_width / 2)
         cy <- round(.OpiEnv$DayDream$single_height / 2)
         cat("Fixation at: ", eye, " ", cx, " ", cy, "\n")
@@ -316,4 +312,3 @@ daydream.opiQueryDevice <- function() {
     names(lst) <- vars
     return(lst)
 }
-

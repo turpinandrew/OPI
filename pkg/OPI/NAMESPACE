@@ -26,7 +26,10 @@ export(fourTwo.final)
 
 export(chooseOpi)
 export(chooseOPI)
+export(opiGetParams)
+
 export(dbTocd, cdTodb)
+export(degTopix, pixTodeg)
 
 export(opiPresent)
 export(opiSetBackground)
@@ -34,9 +37,6 @@ export(opiQueryDevice)
 export(opiInitialize)
 export(opiInitialise)
 export(opiClose)
-
-export(degToPix)
-export(pixToDeg)
 
 S3method(simH.opiPresent, opiStaticStimulus)
 S3method(simH.opiPresent, opiKineticStimulus)

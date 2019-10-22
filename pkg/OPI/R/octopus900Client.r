@@ -114,10 +114,11 @@ setupBackgroundConstants <- function() {
 # @return 2 if failed to make ready
 #
 #######################################################################
-octo900.opiInitialize <- function(serverPort=50001,eyeSuiteSettingsLocation=NA, 
+octo900.opiInitialize <- function(serverPort=50001,
+                                  eyeSuiteSettingsLocation="C:/ProgramData/Haag-Streit/EyeSuite/", 
                                   eye=NA, gazeFeed=NA, bigWheel=FALSE, 
                                   pres_buzzer=0, resp_buzzer=0,
-                                 zero_dB_is_10000_asb=TRUE) {
+                                  zero_dB_is_10000_asb=TRUE) {
     if (!bigWheel) {
         assign("GOLDMANN", c(6.5, 13, 26, 52, 104) / 60, envir=.OpiEnv$O900)
     } else {
@@ -213,13 +214,13 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     }
     if (is.null(stim$color)) stim$color <- .OpiEnv$O900$STIM_WHITE
 
-    if(min(abs(.OpiEnv$O900$GOLDMANN - stim$size), na.rm=TRUE) > 0.001)
+    if(min(abs(.OpiEnv$O900$GOLDMANN - stim$size), na.rm=TRUE) > 0.05)
         warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
 
     if (F310)
-        msg <- "OPI_PRESENT_STATIC_F310 "
+        msg <- "OPI_PRESENT_STATIC_F310"
     else
-        msg <- "OPI_PRESENT_STATIC "
+        msg <- "OPI_PRESENT_STATIC"
     
     msg <- paste(msg, stim$x * 10.0, stim$y * 10.0, cdTodb(stim$level, .OpiEnv$O900$zero_db_in_asb/pi) * 10.0)
     msg <- paste(msg, (which.min(abs(.OpiEnv$O900$GOLDMANN - stim$size))))

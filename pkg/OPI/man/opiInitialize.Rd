@@ -5,8 +5,7 @@
 Initialize OPI.
 }
 \description{
-Generic function for initialization of the chosen OPI implementation that is set with
-\code{chooseOpi()}.
+Generic function for initialization of the chosen OPI implementation that is set with \code{chooseOpi()}.
 }
 \usage{
 opiInitialize(...)
@@ -158,17 +157,15 @@ opiInitialise(...)
     Warning: this returns a list, not a single error code.
 }
 \subsection{DayDream}{
-    \code{opiInitialize(ip="127.0.0.1", port=50008, lut= rep(1000, 256), degrees_to_pixels= function(x,y) return(50*c(x,y)))}
+    \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 255), ppd = 11)}
 
     If the chosen OPI implementation is \code{Daydream}, then you must 
     specify the IP address of the Android phone that is in the Daydream,
     and the port on which the server running on the phone is listening.
 
     \itemize{
-    \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the cd/\eqn{\mbox{m}^2}{m^2}
-            value for grey level i.
-    \item\code{degrees_to_pixels} is a function that takes in \code{x} and \code{y} in degrees and returns 
-            a vector of the (x,y) coordinates in pixels for one eye. This assumes the viewing distance (z-coordinate) is 30cm.
+    \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is \code{seq(0, 4000, length.out = 255)}
+    \item\code{ppd} points per degree. It is a scalar to multiply to x and y coordinates to convert from degrees to pixels. This assumes the viewing distance (z-coordinate) is 30cm.
     }
 }
 }

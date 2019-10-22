@@ -105,7 +105,7 @@ same fixation location as in the setup.
 }
 
 \subsection{Daydream}{
-    \code{opiSetBackground(lum=NA, color=NA, fixation="Cross", fixation_size=21, fixation_color=c(0,128,0), eye="L")}
+    \code{opiSetBackground(lum=NA, color=NA, fixation="Cross", fixation_size=11, fixation_color=c(0,128,0), eye="L")}
 
     \itemize{
     \item{\code{lum}} in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey value in \code{lut} from \code{opiInitialize}.
