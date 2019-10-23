@@ -17,14 +17,35 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
 
-    # Convert dB to cd/m^2
-    # Default is HFA units (maxStim = 10000 apostilbs)
-    # maxStim is in cd/m^2
+#' @rdname dbTocd
+#' @title Convert dB to cd/\eqn{\mbox{m}^2}{m^2}
+#' @description Given a value in dB, return the cd/\eqn{\mbox{m}^2}{m^2}
+#' equivalent. Default is to use HFA units, so maximum stimulus is 10000
+#' apostilbs
+#' @param db Value to convert to cd
+#' @param maxStim Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}
+#' @return \code{dbTocd} returns cd/\eqn{\mbox{m}^2}{m^2} value
+#' @examples
+#' # decibels to candela
+#' cd <- dbTocd(0)   # 10000/pi
+#' cd <- dbTocd(10)  # 1000/pi
+#' cd <- dbTocd(20)  # 100/pi
+#' cd <- dbTocd(30)  # 10/pi
+#' cd <- dbTocd(40)  # 1/pi
+#' @export
 dbTocd <- function(db, maxStim=10000/pi) { maxStim * 10^(-db/10) }
 
-    # Convert cd/m^2 to dB
-    # default is HFA units (maxStim = 10000 apostilbs)
-    # maxStim is in cd/m^2
+#' @rdname dbTocd
+#' @param cd Value to convert to dB in cd/\eqn{\mbox{m}^2}{m^2}
+#' @return \code{cdTodb} returns a dB value.
+#' @examples
+#' # candela to decibels
+#' dB <- cdTodb(10000/pi)  # 0 dB
+#' dB <- cdTodb(1000/pi)   # 10 dB
+#' dB <- cdTodb(100/pi)    # 20 dB
+#' dB <- cdTodb(10/pi)     # 30 dB
+#' dB <- cdTodb(1/pi)      # 40 dB
+#' dB <- cdTodb(0.1/pi)    # 50 dB
+#' @export
 cdTodb <- function(cd, maxStim=10000/pi) { -10*log10(cd/maxStim) }

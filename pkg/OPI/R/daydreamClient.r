@@ -49,28 +49,6 @@ if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
     .OpiEnv$DayDream$NOT_SEEN <- 0  
 }
 
-#######################################################################
-#' Prepare to send commands to Daydream.
-#'
-#' As per the OPI standard, `opiInitialise` sets up the environment 
-#' and opens a socket to Daydream.
-#'
-#' For this function to work correctly, parameters must 
-#' be named (as in all OPI functions).
-#'
-#' @param ip   IP address on which server is listening.
-#' @param port Port number on which server is listening.
-#' @param lut  \code{lut[i]} is cd/m^2 for grey level i. \code{assert(length(lut) == 256)}
-#' @param ppd Points per degree. It is a scalar to multiply to x and y coordinates to convert
-#' from degrees to pixels. This assumes the viewing distance (z-coordinate) is 30cm.
-#'
-#' @return \code{list(err = NULL)} if succeed, will stop otherwise.
-#'
-#' @examples
-#' \dontrun{opiInitialize(ip="10.0.1.1", port=8912)}
-#'
-#' @rdname opiInitialize
-#######################################################################
 daydream.opiInitialize <- function(
         ip="127.0.0.1",
         port=50008, 

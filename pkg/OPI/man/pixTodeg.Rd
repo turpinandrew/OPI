@@ -17,18 +17,15 @@ degTopix(xy, machine = "compass")
 \value{
 xy converted to degrees of visual field with the usual conventions or \code{NA} if machine is unknown
 
-xy converted to pixels (top-left is (0,0)) for the machine or \code{NA} if machine is unknown
+xy converted to pixels (top-left is (0,0)) for the machine or
+\code{NA} if machine is unknown
 }
 \description{
 Convert pixels to degrees for machine 'machine'
-
-Convert degrees to pixels for machine 'machine'
 }
 \examples{
-pixTodeg(c(1000, 200), machine="compass")  # c(1.290323, 24.516129) degrees
+pixTodeg(c(1000, 200), machine="compass") # c(1.290323, 24.516129) degrees
 pixTodeg(c(1920/2, 1920/2)) # c(0,0) degrees
-
 degTopix(c(0, 0), machine="compass")  # c(960, 960) pixels
 degTopix(c(-15, 2)) # c(495, 898) pixels
-
 }

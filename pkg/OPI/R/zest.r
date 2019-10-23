@@ -36,27 +36,266 @@ ZEST.entropy <- function(state) {
     return(-sum(state$pdf[z] * log2(state$pdf[z])))
 }
 
-
-##############################################
-# Initialise state list
+################################################################################
+# ZEST for a single location. 
+#
+# Input parameters
 #   domain        List of dB values over which pdf is kept
 #   prior         Probability distribution over domain.
 #   likelihood    matrix where likelihood[s,t] is likelihood of seeing s given t is true thresh (Pr(s|t)
 #                 where s and t are indexs into domain
 #   stopType      N | S | H
 #   stopValue     Value for num prs (N), stdev (S) of Entropy (H)
-#   minStimulus   Lowest value to present
-#   maxStimulus   Highest value to present
-#   minNotSeenLimit Will terminate if minLimit value not seen this many times
-#   maxSeenLimit    Will terminate if maxLimit value seen this many times
+#   minNotSeenLimit Will terminate if lowest domain value not seen this many times
+#   maxSeenLimit    Will terminate if highest domain value seen this many times
 #   maxPresentations Maximum number of presentations
+#   verbose       1 if you want pdfs returned, 2 is 1+print, 0 for none
 #   makeStim      A helper function to create the required
-#                 OPI data type for passing to opiPresent
+#                 OPI data type for passing to opiPresent. 
+#                 Can include checkFixationOK function in the returned stim.
 #   stimChoice    "mean", "median", "mode"
 #   ...           Parameters for opiPresent
-##############################################
-ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)), 
-            likelihood=sapply(domain, function(tt) { 0.03 + (1-0.03-0.03)*(1-pnorm(domain, tt, 1)) }),
+# Returns a list containing
+#   npres    Total number of presentations
+#   respSeq  Response sequence stored as a matrix: row 1 = dB, row 2 = response 1/0
+#   pdfs     Sequence of pdfs used (if verbose)
+#
+# Note 
+#   1) stims are rounded to nearest domain entry 
+#   2) opiPresent called infinitely until no error
+################################################################################
+#' @rdname ZEST
+#' @title ZEST
+#' @description An implementation of the Bayesian test procedures of King-Smith et al.
+#' and Watson and Pelli. Note that we use the term \code{pdf} throughout as in the
+#' original paper, even though they are discrete probability functions in this
+#' implementation.
+#' @param domain Vector of values over which pdf is kept.
+#' @param prior Starting probability distribution over domain. Same length as \code{domain}.
+#' @param likelihood Matrix where \code{likelihood[s,t]} is likelihood of seeing \code{s}
+#'   given \code{t} is the true threshold. That is, Pr(s|t) where \code{s} and \code{t} are
+#'   indexes into \code{domain}.
+#' @param stopType \code{N}, for number of presentations; \code{S}, for standard deviation
+#'   of the pdf; and \code{H}, for the entropy  of the pdf.
+#' @param stopValue Value for number of presentations (\code{stopType=N}), standard deviation
+#'   (\code{stopType=S)} or Entropy (\code{stopType=H}).
+#' @param minStimulus The smallest stimuli that will be presented. Could be different from
+#'   \code{domain[1]}.
+#' @param maxStimulus The largest stimuli that will be presented. Could be different from
+#'   \code{tail(domain,1)}.
+#' @param minNotSeenLimit Will terminate if \code{minStimulus} value is not seen this many times.
+#' @param maxSeenLimit Will terminate if \code{maxStimulus} value is seen this many times.
+#' @param maxPresentations Maximum number of presentations regarless of \code{stopType}.
+#' @param minInterStimInterval If both \code{minInterStimInterval} and \code{maxInterStimInterval}
+#'   are not \code{NA}, then between each stimuli there is a random wait period drawn uniformly
+#'   between \code{minInterStimInterval} and \code{maxInterStimInterval}.
+#' @param maxInterStimInterval \code{minInterStimInterval}.
+#' @param verbose \code{verbose=0} does nothing, \code{verbose=1} stores pdfs for returning,
+#'   and \code{verbose=2} stores pdfs and also prints each presentaion.
+#' @param makeStim A function that takes a dB value and numPresentations and returns an OPI datatype
+#' ready for passing to opiPresent. See examples.
+#' @param stimChoice A true ZEST procedure uses the \code{"mean"} of the current pdf as the stimulus,
+#' but \code{"median"} and \code{"mode"} (as used in a QUEST procedure) are provided for your
+#' enjoyment.
+#' @param ... Extra parameters to pass to the opiPresent function
+#' @details     This is an implementation of King-Smith et al.'s ZEST procedure and Watson and Pelli's
+#' QUEST procedure. All presentaions are rounded to an element of the supplied domain.
+#'
+#' Note this function will repeatedly call \code{opiPresent} for a stimulus until \code{opiPresent}
+#' returns \code{NULL} (ie no error occured).
+#'
+#' The \code{checkFixationOK} function is called (if present in stim made from \code{makeStim}) 
+#' after each presentation, and if it returns FALSE, the pdf for that location is not changed
+#' (ie the presentation is ignored), but the stim, number of presentations etc is recorded in
+#' the state.
+#'
+#' If more than one ZEST is to be interleaved (for example, testing multiple locations), then the
+#' \code{ZEST.start}, \code{ZEST.step}, \code{ZEST.stop} and \code{ZEST.final} calls can maintain
+#' the state of the ZEST after each presentation, and should be used. If only a single ZEST is
+#' required, then the simpler \code{ZEST} can be used, which is a wrapper for the four functions
+#' that maintain state. See examples below.
+#' @return
+#' \subsection{Single location}{
+#'   \code{ZEST} returns a list containing
+#'   \itemize{
+#'     \item{npres:}{ Total number of presentations used.}
+#'     \item{respSeq:}{Response sequence stored as a matrix: row 1 is dB values of stimuli, row 2
+#'       is 1/0 for seen/not-seen, row 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not
+#'       present in stim objects returned from \code{makeStim}).}
+#'     \item{pdfs:}{ If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each
+#'       presentation, otherwise NULL.}
+#'     \item{final}{ The mean/median/mode of the final pdf, depending on \code{stimChoice}, which is
+#'       the determined threshold.}
+#'     \item{opiResp}{A list of responses received from each successful call to \code{opiPresent}
+#'       within \code{ZEST}.}
+#'   }
+#' }
+#' \subsection{Multilple locations}{
+#'   \code{ZEST.start} returns a list that can be passed to \code{ZEST.step}, \code{ZEST.stop}, and
+#'   \code{ZEST.final}. It represents the state of a ZEST at a single location at a point in time
+#'   and contains the following.
+#'   \itemize{
+#'     \item{name:}{ \code{ZEST}}
+#'     \item{}{ A copy of all of the parameters supplied to ZEST.start: \code{domain},
+#'       \code{likelihood}, \code{stopType}, \code{stopValue}, \code{minStimulus}, \code{maxStimulus},
+#'       \code{maxSeenLimit}, \code{minNotSeenLimit}, \code{maxPresentations}, \code{makeStim},
+#'       \code{stimChoice}, \code{currSeenLimit}, \code{currNotSeenLimit}, and \code{opiParams}.}
+#'     \item{pdf:}{ Current pdf: vector of probabilities the same length as \code{domain}.}
+#'     \item{numPresentations:}{ The number of times \code{ZEST.step} has been called on this state.}
+#'     \item{stimuli:}{ A vector containing the stimuli used at each call of \code{ZEST.step}.}
+#'     \item{responses:}{ A vector containing the responses received at each call of
+#'       \code{ZEST.step}.}
+#'     \item{responseTimes:}{ A vector containing the response times received at each call of
+#'       \code{ZEST.step}.}
+#'     \item{fixated:}{ A vector containing TRUE/FALSE if fixation was OK according to
+#'       \code{checkFixationOK} for each call of \code{ZEST.step} (defaults to TRUE if
+#'       \code{checkFixationOK} not present).}
+#'     \item{opiResp}{A list of responses received from each call to \code{opiPresent} within \code{ZEST.step}.}
+#'   }
+#'   \code{ZEST.step} returns a list containing
+#'   \itemize{
+#'     \item{state:}{ The new state after presenting a stimuli and getting a response.}
+#'     \item{resp:}{ The return from the \code{opiPresent} call that was made.}
+#'   }
+#'   \code{ZEST.stop} returns \code{TRUE} if the ZEST has reached its stopping criteria, and
+#'     \code{FALSE} otherwise.
+#'   \code{ZEST.final} returns an estimate of threshold based on state. If \code{state$stimChoice}
+#'   is \code{mean} then the mean is returned. If \code{state$stimChoice} is \code{mode} then the
+#'   mode is returned. If \code{state$stimChoice} is \code{median} then the median is returned.
+#' }
+#' @references
+#' P.E. King-Smith, S.S. Grigsny, A.J. Vingrys, S.C. Benes, and A. Supowit. "Efficient and Unbiased
+#' Modifications of the QUEST Threshold Method: Theory, Simulations, Experimental Evaluation and
+#' Practical Implementation", Vision Research 34(7) 1994. Pages 885-912.
+#'
+#' A.B. Watson and D.G. Pelli. "QUEST: A Bayesian adaptive psychophysical method", Perception and
+#' Psychophysics 33 1983. Pages 113-l20.
+#'
+#' A. Turpin, P.H. Artes and A.M. McKendrick "The Open Perimetry Interface: An enabling tool for
+#' clinical visual psychophysics", Journal of Vision 12(11) 2012.
+#' @seealso \code{\link{dbTocd}}, \code{\link{opiPresent}}
+#' @examples
+#' chooseOpi("SimHenson")
+#' if(!is.null(opiInitialize(type="C", cap=6)))
+#'   stop("opiInitialize failed")
+#'
+#' ##############################################
+#' # This section is for single location ZESTs
+#' ##############################################
+#' # Stimulus is Size III white-on-white as in the HFA
+#' makeStim <- function(db, n) { 
+#'   s <- list(x=9, y=9, level=dbTocd(db), size=0.43, color="white",
+#'             duration=200, responseWindow=1500, checkFixationOK=NULL)
+#'   class(s) <- "opiStaticStimulus"
+#'   return(s)
+#' }
+#'
+#' repp <- function(...) sapply(1:50, function(i) ZEST(makeStim=makeStim, ...))
+#' a <- repp(stopType="H", stopValue=  3, verbose=0, tt=30, fpr=0.03)
+#' b <- repp(stopType="S", stopValue=1.5, verbose=0, tt=30, fpr=0.03)
+#' c <- repp(stopType="S", stopValue=2.0, verbose=0, tt=30, fpr=0.03)
+#' d <- repp(stopType="N", stopValue= 50, verbose=0, tt=30, fpr=0.03)
+#' e <- repp(prior=dnorm(0:40,m=0,s=5), tt=30, fpr=0.03)
+#' f <- repp(prior=dnorm(0:40,m=10,s=5), tt=30, fpr=0.03)
+#' g <- repp(prior=dnorm(0:40,m=20,s=5), tt=30, fpr=0.03)
+#' h <- repp(prior=dnorm(0:40,m=30,s=5), tt=30, fpr=0.03)
+#'
+#' layout(matrix(1:2,1,2))
+#' boxplot(lapply(list(a,b,c,d,e,f,g,h), function(x) unlist(x["final",])))
+#' boxplot(lapply(list(a,b,c,d,e,f,g,h), function(x) unlist(x["npres",])))
+#'
+#' ##############################################
+#' # This section is for multiple ZESTs
+#' ##############################################
+#' makeStimHelper <- function(db,n, x, y) {  # returns a function of (db,n)
+#'   ff <- function(db, n) db+n
+#'   body(ff) <- substitute({
+#'     s <- list(x=x, y=y, level=dbTocd(db), size=0.43, color="white",
+#'               duration=200, responseWindow=1500, checkFixationOK=NULL)
+#'     class(s) <- "opiStaticStimulus"
+#'     return(s)
+#'   }, list(x=x,y=y))
+#'   return(ff)
+#' }
+#'
+#' # List of (x, y, true threshold) triples
+#' locations <- list(c(9,9,30), c(-9,-9,32), c(9,-9,31), c(-9,9,33))
+#'
+#' # Setup starting states for each location
+#' states <- lapply(locations, function(loc) {
+#'   ZEST.start(
+#'     domain=-5:45,
+#'     minStimulus=0,
+#'     maxStimulus=40,
+#'     makeStim=makeStimHelper(db,n,loc[1],loc[2]),
+#'     stopType="S", stopValue= 1.5, tt=loc[3], fpr=0.03, fnr=0.01)})
+#'
+#' # Loop through until all states are "stop"
+#' while(!all(st <- unlist(lapply(states, ZEST.stop)))) {
+#'   i <- which(!st)                         # choose a random,
+#'   i <- i[runif(1, min=1, max=length(i))]  # unstopped state 
+#'   r <- ZEST.step(states[[i]])             # step it
+#'   states[[i]] <- r$state                  # update the states
+#' }
+#'
+#' finals <- lapply(states, ZEST.final)    # get final estimates of threshold
+#' for(i in 1:length(locations)) {
+#'   #cat(sprintf("Location (%+2d,%+2d) ",locations[[i]][1], locations[[i]][2]))
+#'   #cat(sprintf("has threshold %4.2f\n", finals[[i]]))
+#' }
+#'
+#' if (!is.null(opiClose()))
+#'   warning("opiClose() failed")
+#' @export
+ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
+                 likelihood=sapply(domain, function(tt) 0.03 + (1-0.03-0.03)*(1-pnorm(domain, tt, 1))),
+                 stopType="S",
+                 stopValue=1.5,
+                 minStimulus=head(domain,1),
+                 maxStimulus=tail(domain,1),
+                 maxSeenLimit=2,
+                 minNotSeenLimit=2,
+                 maxPresentations=100,
+                 minInterStimInterval=NA,
+                 maxInterStimInterval=NA,
+                 verbose=0, makeStim,
+                 stimChoice="mean",
+                 ...) {
+    state <- ZEST.start(domain, prior, likelihood, stopType, stopValue, 
+                        minStimulus, maxStimulus, 
+                        maxSeenLimit,minNotSeenLimit,maxPresentations,
+                        makeStim,stimChoice, ...)
+    
+    pdfs <- NULL
+    while(!ZEST.stop(state)) {
+        r <- ZEST.step(state)
+        state <- r$state
+        if (verbose == 2) {
+            cat(sprintf("Presentation %2d: ", state$numPresentations))
+            cat(sprintf("stim= %5s repsonse=%s ", tail(state$stimuli,1), tail(state$responses,1)))
+            cat(sprintf("fixation= %1.0g ", tail(state$fixated,1)))
+            cat(sprintf("stdev= %8.4g H= %8.4g\n", ZEST.stdev(state), ZEST.entropy(state)))
+        }
+        if (verbose > 0)
+            pdfs <- c(pdfs, list(state$pdf))
+        
+        if (!is.na(minInterStimInterval) && !is.na(maxInterStimInterval))
+            Sys.sleep(runif(1, min=minInterStimInterval, max=maxInterStimInterval)/1000)
+    }
+    
+    return(list(
+        npres=tail(state$numPresentations,1),        # number of presentations
+        respSeq=mapply(c, state$stimuli, state$responses, state$fixated), # reposnse sequence (list of triples)
+        pdfs=pdfs,                                   # list of pdfs used (if verbose > 0)
+        final=ZEST.final(state),                     # final threshold estimate
+        opiResp=state$opiResp                        # list of all responses from opiPresent
+    ))
+}#ZEST
+
+#' @rdname ZEST
+#' @export
+ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
+            likelihood=sapply(domain, function(tt) 0.03 + (1-0.03-0.03)*(1-pnorm(domain, tt, 1))),
             stopType="S",
             stopValue=1.5,
             minStimulus=head(domain, 1),
@@ -64,7 +303,7 @@ ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
             maxSeenLimit=2,
             minNotSeenLimit=2,
             maxPresentations=100,
-            makeStim, 
+            makeStim,
             stimChoice="mean",
             ...) {
     ##########################
@@ -109,21 +348,10 @@ ZEST.start <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
             ))
 }# ZEST.start
 
-################################################################################
-# Present current stim and update state after response.
-#
-# Input parameters
-#   State list as returned by ZEST.start
-#   nextStim - suitable for passing to opiPresent, can be NULL
-# Returns a list containing
-#   state = updated state list
-#   resp  = response to the presentation (as returned by opiPresent)
-#
-# Note 
-#   1) stims are rounded to nearest domain entry 
-#   2) opiPresent called infinitely until no error
-#   3) will call checkFixationOK() from stim if it exists
-################################################################################
+#' @rdname ZEST
+#' @param state Current state of the ZEST returned by \code{ZEST.start} and \code{ZEST.step}.
+#' @param nextStim A valid object for \code{opiPresent} to use as its \code{nextStim}.
+#' @export
 ZEST.step <- function(state, nextStim=NULL) {
 
     if (state$stimChoice == "mean") {
@@ -172,14 +400,8 @@ ZEST.step <- function(state, nextStim=NULL) {
     return(list(state=state, resp=opiResp))
 }#ZEST.step()
 
-################################################################################
-# Return TRUE if ZEST should stop, FALSE otherwise
-#
-# Input parameters
-#   State list as returned by ZEST.start/step
-# Returns 
-#   TRUE or FALSE
-################################################################################
+#' @rdname ZEST
+#' @export
 ZEST.stop <- function(state) {
     keepGoing <- (
         (state$numPresentations < state$maxPresentations) &&
@@ -194,16 +416,8 @@ ZEST.stop <- function(state) {
     return (!keepGoing)
 }#ZEST.stop
 
-################################################################################
-# Given a state, return an estimate of threshold
-#
-# Input parameters
-#   State list as returned by ZEST.start/step
-# Returns 
-#   Mean   of pdf if state$stimChoice == "mean"
-#   Mode   of pdf if state$stimChoice == "mode"
-#   Median of pdf if state$stimChoice == "median"
-################################################################################
+#' @rdname ZEST
+#' @export
 ZEST.final <- function(state) {
     if (state$stimChoice == "mean") {
         final <- sum(state$pdf*state$domain)
@@ -215,79 +429,6 @@ ZEST.final <- function(state) {
 
     return(final)
 }#ZEST.final
-
-################################################################################
-# ZEST for a single location. 
-#
-# Input parameters
-#   domain        List of dB values over which pdf is kept
-#   prior         Probability distribution over domain.
-#   likelihood    matrix where likelihood[s,t] is likelihood of seeing s given t is true thresh (Pr(s|t)
-#                 where s and t are indexs into domain
-#   stopType      N | S | H
-#   stopValue     Value for num prs (N), stdev (S) of Entropy (H)
-#   minNotSeenLimit Will terminate if lowest domain value not seen this many times
-#   maxSeenLimit    Will terminate if highest domain value seen this many times
-#   maxPresentations Maximum number of presentations
-#   verbose       1 if you want pdfs returned, 2 is 1+print, 0 for none
-#   makeStim      A helper function to create the required
-#                 OPI data type for passing to opiPresent. 
-#                 Can include checkFixationOK function in the returned stim.
-#   stimChoice    "mean", "median", "mode"
-#   ...           Parameters for opiPresent
-# Returns a list containing
-#   npres    Total number of presentations
-#   respSeq  Response sequence stored as a matrix: row 1 = dB, row 2 = response 1/0
-#   pdfs     Sequence of pdfs used (if verbose)
-#
-# Note 
-#   1) stims are rounded to nearest domain entry 
-#   2) opiPresent called infinitely until no error
-################################################################################
-ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)), 
-            likelihood=sapply(domain, function(tt) { 0.03 + (1-0.03-0.03)*(1-pnorm(domain, tt, 1)) }),
-            stopType="S",
-            stopValue=1.5,
-            minStimulus=head(domain,1),
-            maxStimulus=tail(domain,1),
-            maxSeenLimit=2,
-            minNotSeenLimit=2,
-            maxPresentations=100,
-            minInterStimInterval=NA,
-            maxInterStimInterval=NA,
-            verbose=0, makeStim, 
-            stimChoice="mean",
-            ...) {
-    state <- ZEST.start(domain, prior, likelihood, stopType, stopValue, 
-                        minStimulus, maxStimulus, 
-                        maxSeenLimit,minNotSeenLimit,maxPresentations,
-                        makeStim,stimChoice, ...)
-
-    pdfs <- NULL
-    while(!ZEST.stop(state)) {
-        r <- ZEST.step(state)
-        state <- r$state
-        if (verbose == 2) {
-            cat(sprintf("Presentation %2d: ", state$numPresentations))
-            cat(sprintf("stim= %5s repsonse=%s ", tail(state$stimuli,1), tail(state$responses,1)))
-            cat(sprintf("fixation= %1.0g ", tail(state$fixated,1)))
-            cat(sprintf("stdev= %8.4g H= %8.4g\n", ZEST.stdev(state), ZEST.entropy(state)))
-        }
-        if (verbose > 0)
-            pdfs <- c(pdfs, list(state$pdf))
-
-        if (!is.na(minInterStimInterval) && !is.na(maxInterStimInterval))
-            Sys.sleep(runif(1, min=minInterStimInterval, max=maxInterStimInterval)/1000)
-    }
-
-    return(list(
-        npres=tail(state$numPresentations,1),        # number of presentations
-        respSeq=mapply(c, state$stimuli, state$responses, state$fixated), # reposnse sequence (list of triples)
-        pdfs=pdfs,                                   # list of pdfs used (if verbose > 0)
-        final=ZEST.final(state),                     # final threshold estimate
-        opiResp=state$opiResp                        # list of all responses from opiPresent
-    ))
-}#ZEST
 
 ############################################################
 # Tests
@@ -404,5 +545,3 @@ ZEST <- function(domain=0:40, prior=rep(1/length(domain),length(domain)),
 #layout(matrix(1:2,1,2))
 #boxplot(lapply(list(a,b,c,d), function(x) unlist(x["final",])))
 #boxplot(lapply(list(a,b,c,d), function(x) unlist(x["npres",])))
-#
-#
