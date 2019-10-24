@@ -25,19 +25,37 @@
 
 ###################################################################
 # .OpiEnv$Imo$socket is the connection to the imo
-# .OpiEnv$Imo$...    a variety of constants 
+# .OpiEnv$Imo$...    a variety of constants and functions
 ###################################################################
 if (exists(".OpiEnv") && !exists("Imo", where=.OpiEnv)) {
     assign("Imo", new.env(25), envir=.OpiEnv)
 
     .OpiEnv$Imo$checkOK <- function(txt, stop_if_bad=TRUE) {
-        res <- readBin(.OpiEnv$Imo$socket, what="integer", size=1, n=1)
-        if (res != 0) {
+        res <- readChar(.OpiEnv$Imo$socket, nchars=1)
+        if (res != "0") {
             if (stop_if_bad)
                 stop(paste(txt, "did not return OK from imo"))
             else
                 warning(paste(txt, "did not return OK from imo"))
         }
+    }
+
+    .OpiEnv$Imo$send_FCN <- function(i) {
+        s <- as.character(i)
+        if (length(s) > 8)
+            stop(paste('send_FCN error in imo:', i, 'too large'))
+
+        s <- paste0(length(s), s)
+        writeChar(s, .OpiEnv$Imo$socket, nchars=length(s), eos=NULL)
+    }
+
+    .OpiEnv$Imo$read_FCN <- function(i) {
+        n <- readChar(.OpiEnv$Imo$socket, nchars=1)
+        if (n > 8)
+            stop(paste('read_FCN error in imo:', n, 'too large'))
+
+        s <- readChar(.OpiEnv$Imo$socket, nchars=n)
+        return(as.numeric(s))
     }
 }
 
@@ -134,33 +152,41 @@ imo.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     .OpiEnv$Imo$checkOK("LOAD", stop_if_bad=TRUE)
 
     writeChar("PRES", .OpiEnv$Imo$socket, nchars=4, eos=NULL)
-    writeBin(as.integer(1), .OpiEnv$Imo$socket, size=4, endian="big")
 
-    writeBin(as.integer(0),   .OpiEnv$Imo$socket, size=4, endian="big")  # image number 0
-    writeBin(as.integer(2),   .OpiEnv$Imo$socket, size=4, endian="big")  # both eyes
-    writeBin(as.integer(stim$duration), .OpiEnv$Imo$socket, size=4, endian="big")  # pres time
+    .OpiEnv$Imo$send_FCN(1)
 
-    writeBin(as.integer(0),                   .OpiEnv$Imo$socket, size=4, endian="big")  # cycle
-    writeBin(as.integer(stim$responseWindow), .OpiEnv$Imo$socket, size=4, endian="big")  # wait
+    .OpiEnv$Imo$send_FCN(0) # image number 0
+    writeChar("2", .OpiEnv$Imo$socket, nchars=1, eos=NULL) # both eyes
+    .OpiEnv$Imo$send_FCN(as.integer(stim$duration))  # pres time
 
-    if (any(names(stim) == "tracking")) 
-        writeBin(as.integer(stim$tracking), .OpiEnv$Imo$socket, size=4, endian="big")  # tracking
-    else
-        writeBin(as.integer(1), .OpiEnv$Imo$socket, size=4, endian="big")  # tracking
+    .OpiEnv$Imo$send_FCN(0) # cycle
+    .OpiEnv$Imo$send_FCN(as.integer(stim$responseWindow))  # wait
+
+    if (any(names(stim) == "tracking")) {
+        if (as.integer(stim$tracking) == 1) {
+            writeChar("1", .OpiEnv$Imo$socket, nchars=1, eos=NULL)
+        } else {
+            writeChar("0", .OpiEnv$Imo$socket, nchars=1, eos=NULL)
+        }
+    } else {
+        writeChar("1", .OpiEnv$Imo$socket, nchars=1, eos=NULL)
+    }
 
     .OpiEnv$Imo$checkOK("PRES", stop_if_bad=TRUE)
 
-    p    <- readBin(.OpiEnv$Imo$socket, what="integer", size=4, n=1)
-    time <- readBin(.OpiEnv$Imo$socket, what="integer", size=4, n=1)
-    n    <- readBin(.OpiEnv$Imo$socket, what="integer", size=4, n=1)
+    F <- .OpiEnv$Imp$read_FCN
+
+    p    <- readChar(.OpiEnv$Imo$socket, nchars=1)
+    time <- F()
+    n    <- F()
 
     pupil <- ellipse <- times <- NULL
     for (i in 1:n) {
-        d <- readBin(.OpiEnv$Imo$socket, what="double", size=4, n=7)
-        if (d[1] == 1) {
-            pupil   <- c(pupil  , list(list(dx=d[2], dy=d[3])))
-            ellipse <- c(ellipse, list(list(d1=d[4], d2=d[5], rho=d[6])))
-            times   <- c(times  , d[7])
+        d <- readChar(.OpiEnv$Imo$socket, nchars=1)
+        if (d == "1") {
+            pupil   <- c(pupil  , list(list(dx=F(), dy=F())))
+            ellipse <- c(ellipse, list(list(d1=F(), d2=F(), rho=F())))
+            times   <- c(times  , F())
         } else {
             pupil   <- c(pupil  , list(list(dx=NA, dy=NA)))
             ellipse <- c(ellipse, list(list(d1=NA, d2=NA, rho=NA)))
@@ -170,7 +196,7 @@ imo.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 
     return(list(
       err=NULL,
-      seen=ifelse(p == 1, TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
+      seen=ifelse(p == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
       time=time,
       pupilDxDy=pupil, 
       pupilEllipse=ellipse, 
@@ -182,6 +208,8 @@ imo.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
 # Present kinetic stim, return values 
 ########################################## 
 imo.opiPresent.opiKineticStimulus <- function(stim, ...) {
+    stop("imo.opiPresent.opiKineticStimulus needs rewriting for string protocol 23 Oct 2019")
+
     if (is.null(stim)) {
         warning("opiPresent: NULL stimulus")
         return(list(err="NULL stimulus not supported", seen=NA, x=NA, y=NA))
@@ -250,11 +278,10 @@ imo.opiPresent.opiKineticStimulus <- function(stim, ...) {
 }
 
 ###########################################################################
-# Not supported on AP 7000
+# Not supported yet
 ###########################################################################
 imo.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
-    opiClose()
-    stop("opiPresent: Kowa AP 7000 does not support temporal stimuli")
+    stop("opiPresent: Imo does not support temporal stimuli yet")
 }#opiPresent.opiTemporalStimulus()
 
 ###########################################################################
@@ -272,6 +299,7 @@ imo.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #'   DETAILS
 #' }
 imo.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
+    stop("imo.opiSetBackground needs rewriting for string protocol 23 Oct 2019")
     if (!is.na(fixation)) {
         .OpiEnv$Imo$minCheck(fixation, 0, "Fixation")
         .OpiEnv$Imo$maxCheck(fixation, 3, "Fixation")
@@ -339,22 +367,7 @@ imo.opiClose <- function() {
 #'   DETAILS
 #' }
 imo.opiQueryDevice <- function() {
-    cat("Defined constants and functions\n")
-    cat("-------------------------------\n")
-    ls(envir=.OpiEnv$Imo)
-
-    writeLines("OPI-GET-PUPILPOS\r", .OpiEnv$Imo$socket)
-    res <- readLines(.OpiEnv$Imo$socket, n=1)
-    s <- strsplit(res, " ", fixed=TRUE)[[1]]
-
-    if (s[1] != "OK")
-        warning("opiQueryDevice failed")
-
-    return(list(
-        isSim=FALSE,
-        pupilX=strtoi(s[2]), 
-        pupilY=strtoi(s[3]),       # in pixels
-        purkinjeX=strtoi(s[4]), 
-        purkinjeY=strtoi(s[5])       # in pixels
-    ))
+    #cat("Defined constants and functions\n")
+    #cat("-------------------------------\n")
+    return(ls(envir=.OpiEnv$Imo))
 }
