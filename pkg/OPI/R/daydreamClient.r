@@ -180,8 +180,8 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     xy <- c(cx,cy) + .OpiEnv$DayDream$ppd * c(stim$x, -stim$y) 
 
     bg <- ifelse(stim$eye == "L", .OpiEnv$DayDream$background_left, .OpiEnv$DayDream$background_right)
-    radius <- round(mean(.OpiEnv$DayDream$ppd * stim$size / 2 * c(1, 1)))
-    len <- 2 * radius + 1 # get length of the image
+    radius <- mean(.OpiEnv$DayDream$ppd * stim$size / 2 * c(1, 1))
+    len <- round(2 * radius) # get length of the image
     npix <- len^2         # get number of pixels
     im <- matrix(bg, 3, npix)
 
