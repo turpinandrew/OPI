@@ -73,6 +73,45 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 #       prl c(x,y) of PRL
 #       image retinal image as a jpeg in raw bytes
 #######################################################################
+#' @rdname opiInitialize
+#' @param ip ip address on which server is listening for "Compass", "Daydream",
+#'   "imo", "KowaAP7000"
+#' @param port port number on which server is listening for "Compass", "Daydream",
+#'   "imo", "KowaAP7000"
+#' @details
+#' \subsection{Compass}{
+#'   \code{opiInitialize(ip, port)}
+#'   
+#'   If the chosen OPI implementation is \code{Compass}, then you must specify
+#'   the IP address and port of the Compass server.
+#'   
+#'   \itemize{
+#'     \item\code{ip} is the IP address of the Compass server as a string.
+#'     \item\code{port} is the TCP/IP port of the Compass server as a number.
+#'   }
+#'   Warning: this returns a list, not a single error code.
+#' }
+#' @return
+#' \subsection{Compass}{
+#'   Returns a list with elements:
+#'   \itemize{
+#'     \item{err} NULL if successful, not otherwise.
+#'     \item{prl} a pair giving the (x,y) in degrees of the Preferred Retinal
+#'       Locus detected in the initial alignment.
+#'     \item{onh} a pair giving the (x,y) in degrees of the ONH as selected by
+#'     the user.
+#'     \item{image} raw bytes being the JPEG compressed infra-red image acquired
+#'     during alignment.
+#'   }
+#' }
+#' @examples
+#' \dontrun{
+#'   # Set up the imo
+#'   chooseOpi("Compass")
+#'   result <- opiInitialize(ip="192.168.1.7", port=44965)
+#'   if (is.null(result$err))
+#'     print(result$prl)
+#' }
 compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     cat("Looking for server... ")
     suppressWarnings(tryCatch(    
@@ -130,6 +169,17 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
 #    loc_x           : pixels integer, location in image of presentation
 #    loc_y           : pixels integer, location in image of presentation
 ###########################################################################
+#' @rdname opiPresent
+#' @details
+#' \subsection{Compass}{
+#'   \code{opiPresent(stim, nextStim=NULL)}
+#'   
+#'   If the chosen OPI implementation is \code{Compass}, then \code{nextStim}
+#'   is ignored. Note that the dB level is rounded to the nearest integer.
+#'   
+#'   If tracking is on, then this will block until the tracking is obtained,
+#'   and the stimulus presented.
+#' }
 compass.opiPresent <- function(stim, nextStim=NULL) { UseMethod("compass.opiPresent") }
 setGeneric("compass.opiPresent")
 
@@ -207,9 +257,29 @@ compass.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     return(list(err="Compass does not support temporal stimuli (yet)", seen=FALSE, time=0))
 }#opiPresent.opiTemporalStimulus()
 
-###########################################################################
-# Used to turn tracking on or off or alter fixation.
-###########################################################################
+#' @rdname opiSetBackground
+#' @param tracking_on Tracking on or off for "Compass"
+#' @details
+#' \subsection{Compass}{
+#'   \code{opiSetBackground(fixation=NA, tracking_on=NA)}
+#'   \itemize{
+#'     \item{\code{fixation}=c(x,y,t)} where
+#'     \itemize{
+#'       \item{\code{x}} is one of -20, -6, -3, 0, 3, 6, 20 degrees.
+#'       \item{\code{y}} is 0 degrees.
+#'       \item{\code{t}} is 0 for a spot fixation marker at \code{c(x,y)}, or 1 for a
+#'         square centred on one of \code{(-3,0)}, \code{(0,0)}, \code{(+3,0)}.
+#'     }
+#'     \item{\code{tracking_on}} is either 0 (tracking off) or 1 (tracking on).
+#'   }
+#'   Note: tracking will be relative to the PRL established with the fixation
+#'   marker used at setup (call to OPI-OPEN), so when tracking is on you should
+#'   use the same fixation location as in the setup.
+#' }
+#' @return
+#' \subsection{Compass}{ 
+#'   DETAILS
+#' }
 compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=NA) {
     if (!is.na(lum) || !is.na(color))
         warning("opiSetBackground: Compass does not support setting background color or luminance.")
@@ -267,6 +337,15 @@ compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=
 #       col-2 x in degrees 
 #       col-3 y in degrees 
 ###########################################################################
+#' @rdname opiClose
+#' @return
+#' \subsection{Compass}{
+#'   Returns a list of \code{err}, which is an error code, and \code{fixations},
+#'   which is a matrix with three columns: time (same as \code{time_hw}
+#'   in \code{opiPresent}), x (degrees relative to the centre of the image
+#'   returned by \code{opiInitialise} - not the PRL), y (as for x), and one row
+#'   per fixation.
+#' }
 compass.opiClose <- function() {
     writeLines("OPI-CLOSE", .OpiEnv$Compass$socket)
 
@@ -293,6 +372,14 @@ compass.opiClose <- function() {
 ###########################################################################
 # Lists defined constants
 ###########################################################################
+#' @rdname opiQueryDevice
+#' @details
+#' \subsection{Compass}{
+#'   DETAILS
+#' }
+#' \subsection{Compass}{
+#'   DETAILS
+#' }
 compass.opiQueryDevice <- function() {
     return(list(default="Nothing to report", isSim=FALSE))
 }

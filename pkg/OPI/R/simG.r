@@ -22,8 +22,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
+#' @rdname opiClose
+#' @return
+#' \subsection{SimGaussian}{
+#'   DETAILS
+#' }
+#' @examples
+#' chooseOpi("SimGaussian")
+#' if (!is.null(opiInitialize(sd=2)))
+#'   stop("opiInitialize failed")
+#' if (!is.null(opiClose()))
+#'   stop("opiClose failed, which is very surprising!")
 simG.opiClose         <- function() { return(NULL) }
+
+#' @rdname opiQueryDevice
+#' @examples
+#' chooseOpi("SimGaussian")
+#' if (!is.null(opiInitialize(sd=2)))
+#'   stop("opiInitialize failed")
+#' print(opiQueryDevice())
 simG.opiQueryDevice   <- function() { return (list(type="SimGaussian", isSim=TRUE)) }
 
 if (exists(".OpiEnv") && !exists("SimG", where=.OpiEnv))
@@ -36,6 +53,24 @@ if (exists(".OpiEnv") && !exists("SimG", where=.OpiEnv))
 #
 # Return NULL if succesful, string error message otherwise  
 ################################################################################
+#' @rdname opiInitialize
+#' @param sd standard deviation for the Gaussian
+#' @details
+#' \subsection{SimGaussian}{
+#'   \code{opiInitialize(sd, display=NULL, maxStim=10000/pi)}
+#'   
+#'   If the chosen OPI implementation is \code{SimGaussian}, then \code{sd} is the
+#'   standard deviation value that the simulator will use for the slope/spread of
+#'   the psychometric function.
+#'   
+#'   \code{display} and \code{maxStim} is as for SimHenson.
+#' }
+#' @examples
+#' # Set up a simulation using a psychometric function that is
+#' # a cumulative gaussian of standard deviation 2
+#' chooseOpi("SimGaussian")
+#' if (!is.null(opiInitialize(sd=2)))
+#'   stop("opiInitialize failed")
 simG.opiInitialize <- function(sd, display=NULL, maxStim=10000/pi) {
     if (!is.numeric(sd) || (sd < 0)) {
         msg <- paste("Invalid standard deviation in opiInitialize for SimGaussian:",sd)
@@ -55,11 +90,39 @@ simG.opiInitialize <- function(sd, display=NULL, maxStim=10000/pi) {
 ################################################################################
 # Set background of plot area to col, color of gird lines to gridCol
 ################################################################################
+#' @rdname opiSetBackground
+#' @details
+#' \subsection{SimGaussian}{
+#'   \code{opiSetBackground(col, gridCol)}
+#'   
+#'   \code{col} is the background color of the plot area used for displaying
+#'   stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
+#'   will only be displayed if \code{opiInitialize} is called with a valid display
+#'   argument.
+#' }
+#' @examples
+#' chooseOpi("SimGaussian")
+#' if (!is.null(opiInitialize(sd=2, display=c(-30,30,-30,30))))
+#'   stop("opiInitialize failed")
+#' if (!is.null(opiSetBackground(col="white",gridCol="grey")))
+#'   stop("opiSetBackground failed, which is very surprising!")
 simG.opiSetBackground <- function(col, gridCol) { 
     simDisplay.setBackground(col, gridCol)
     return(NULL) 
 }
-################################################################################
+
+#' @rdname opiPresent
+#' @details
+#' \subsection{SimGaussian}{
+#'   \code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30)}
+#'   
+#'   If the chosen OPI implementation is \code{SimGaussian}, then the response
+#'   to a stimuli is determined by sampling from a Frequency-of-Seeing (FoS)
+#'   curve (also known as the psychometric function) with formula
+#'   \code{fpr+(1-fpr-fnr)*(1-pnorm(x, tt, simG.global.sd))}, where \code{x}
+#'   is the stimulus value in Humphrey dB, and \code{simG.global.sd} is
+#'   set with \code{opiInitialize}.
+#' }
 simG.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30) { UseMethod("simG.opiPresent") }
 setGeneric("simG.opiPresent")
 

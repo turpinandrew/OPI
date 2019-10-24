@@ -42,13 +42,24 @@ simYes.opiInitialize <- function(display=NULL) {
 #   NULL - succsess
 #   -1   - opiInitialize not called
 ################################################################################
+#' @rdname opiSetBackground
+#' @details
+#' \subsection{SimYes}{
+#'   DETAILS
+#' }
 simYes.opiSetBackground <- function(col, gridCol) { 
     return (simDisplay.setBackground(col, gridCol))
 }
 
-################################################################################
-#
-################################################################################
+#' @rdname opiPresent
+#' @details
+#' \subsection{SimYes}{
+#'   \code{opiPresent(stim, nextStim=NULL)}
+#'   
+#'   If the chosen OPI implementation is \code{SimYes}, then the response to a
+#'   stimuli is always yes, hence \code{\link{opiPresent}} always returns
+#'   \code{err=NULL}, \code{seen=TRUE}, and \code{time=0}.
+#' }
 simYes.opiPresent <- function(stim) {
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 

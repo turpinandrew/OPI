@@ -104,8 +104,8 @@ setupBackgroundConstants <- function() {
 #   eye                      = "right" or "left"
 #   gazeFeed                 = NA or a folder name
 #   bigWheel                 = FALSE (standard machine), TRUE for modified apeture wheel
-#   pres_buzzer              = 0 (no buzzer),1,2, 3 (max volume)
-#   resp_buzzer              = 0 (no buzzer),1,2, 3 (max volume)
+#   pres_buzzer              = 0 (no buzzer),1, 2, 3 (max volume)
+#   resp_buzzer              = 0 (no buzzer),1, 2, 3 (max volume)
 #
 #   Both input dirs should INCLUDE THE TRAILING SLASH.
 #
@@ -114,6 +114,66 @@ setupBackgroundConstants <- function() {
 # @return 2 if failed to make ready
 #
 #######################################################################
+#' @rdname opiInitialize
+#' @param serverPort port number on which server is listening for "Octopus900"
+#' @param eyeSuiteSettingsLocation dir name containing EyeSuite settings for "Octopus900"
+#' @param eye eye; "right" or "left" for "Octopus900", "Octopus600"
+#' @param gazeFeed NA or a folder name for "Octopus900"
+#' @param bigWheel FALSE (standard machine), TRUE for modified apeture wheel for "Octopus900"
+#' @param pres_buzzer 0 (no buzzer),1, 2, 3 (max volume) for "Octopus900"
+#' @param resp_buzzer 0 (no buzzer),1, 2, 3 (max volume) for "Octopus900"
+#' @param zero_dB_is_10000_asb Is 0 dB 10000 apostibl (TRUE) or or 4000 (FALSE) for "Octopus900"
+#' @details
+#' \subsection{Octopus900}{
+#'   \code{opiInitialize(serverPort=50001,eyeSuiteSettingsLocation, eye, gazeFeed=NA, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
+#'   
+#'   If the chosen OPI implementation is \code{Octopus900}, then you must specify
+#'   a directory and the eye to be tested.
+#'   
+#'   \code{serverPort} is the TCP/IP port on which the server is listening (on
+#'   localhost).
+#'   
+#'   \code{eyeSuiteSettingsLocation} is the folder name containing the EyeSuite
+#'   setting files, and should include the trailing slash.
+#'   
+#'   \code{eye} must be either "left" or "right".
+#'   
+#'   \code{gazeFeed} is the name of an existing folder into which the video frames
+#'   of eye tracker are recorded. Set to \code{NA} for no recording.
+#'   
+#'   \code{bigWheel} is \code{FALSE} for a standard Octopus 900 machine. Some
+#'   research machines are fitted with an alternate aperture wheel that has 24
+#'   sizes, which are accessed with \code{bigWheel} is \code{TRUE}. The mapping
+#'   from size to 'hole on wheel' is hard coded; see code for details.
+#'   
+#'   If \code{pres_buzzer} is greater than zero, a buzzer will sound with each
+#'   stimuli presented.
+#'   
+#'   If \code{resp_buzzer} is greater than zero, a buzzer will sound with each
+#'   button press (resposne). The volume can be one of 0 (no buzzer), 1, 2, or 3
+#'   (max volume). If both buzzers are more than zero, the maximum of the two will
+#'   be used as the volume.
+#'   
+#'   If \code{zero_dB_is_10000_asb} is \code{TRUE} then 0 dB is taken as 10000
+#'   apostilbs, otherwise 0 dB is taken as 4000 apostilbs.
+#' }
+#' @return
+#' \subsection{Octopus900}{
+#'   Returns NULL if successful, 1 if Octopus900 is already initialised by a
+#'   previous call to \code{opiInitialize}, and 2 if some error occured that
+#'   prevented ininitialisation. The default background and stimulus setup is
+#'   to white-on-white perimetry. Use \code{opiSetBackground} to change the
+#'   background and stimulus colors.
+#' }
+#' @examples
+#' \dontrun{
+#'   # Set up the Octopus 900
+#'   chooseOpi("Octopus900")
+#'   if (!is.null(opiInitialize(
+#'        eyeSuiteSettingsLocation="C:/ProgramData/Haag-Streit/EyeSuite/",
+#'        eye="left")))
+#'     stop("opiInitialize failed")
+#' }
 octo900.opiInitialize <- function(serverPort=50001,
                                   eyeSuiteSettingsLocation="C:/ProgramData/Haag-Streit/EyeSuite/", 
                                   eye=NA, gazeFeed=NA, bigWheel=FALSE, 
@@ -256,9 +316,30 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
 ###########################################################################
 # Set up generic calls based on type of stim
 ###########################################################################
+#' @rdname opiPresent
+#' @details
+#' \subsection{Octopus900}{
+#'   \code{opiPresent(stim, nextStim=NULL)}
+#'   
+#'   DETAILS HERE
+#' }
 octo900.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresent") }
 setGeneric("octo900.opiPresent")
 
+#' @rdname opiPresent
+#' @details
+#' \subsection{Octopus900F310}{
+#'   \code{opiPresent(stim, nextStim=NULL)}
+#'   
+#'   This functions as for the Octopus900, but responses are taken from the F310
+#'   Controller.
+#'   
+#'   If the L button is pressed, \code{seen} is set to 1.
+#'   
+#'   If the R button is pressed, \code{seen} is set to 2.
+#'   
+#'   If no button is pressed within \code{responseWindow}, then \code{seen} is set to 0.
+#' }
 octo900.opiPresentF310 <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresentF310") }
 setGeneric("octo900.opiPresentF310")
 
@@ -408,6 +489,74 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 # @return -3 trouble setting fixation
 # @return -4 all input parameters NA
 ###########################################################################
+#' @rdname opiSetBackground
+#' @param lum Luminance level in cd/m^2 for "Octopus900", "KowaAP7000", "imo", "Daydream",
+#' "Compass"
+#' @param color Stimulus color for "Octopus900", "KowaAP7000", "imo", "Daydream", "Compass"
+#' @param fixation fixation target for "Octopus900", "KowaAP7000", "imo", "Daydream", "Compass"
+#' @param fixIntensity fixation point intensity for "Octopus900", "Octopus600"
+#' @details
+#' \subsection{Octopus900}{
+#'   \code{opiSetBackground(lum=NA, color=NA, fixation=NA, fixIntensity=NA)} 
+#' 
+#'   Allowable \code{lum} and \code{color} are defined in the .OpiEnv environment.
+#' 
+#'   \itemize{
+#'     \item\code{lum} is intensity of the background and can be one of
+#'     \itemize{
+#'       \item \code{.OpiEnv$O900$BG_OFF}, which turns background off.
+#'       \item \code{.OpiEnv$O900$BG_1}, background of 1.27 cd/\eqn{\mbox{m}^2}{m^2}.
+#'       \item \code{.OpiEnv$O900$BG_10}, background of 10 cd/\eqn{\mbox{m}^2}{m^2}.
+#'       \item \code{.OpiEnv$O900$BG_100}, background of 100 cd/\eqn{\mbox{m}^2}{m^2}.
+#'     }
+#'     \item\code{color} can be one of the following choices.
+#'     \itemize{
+#'       \item\code{.OpiEnv$O900$MET_COL_WW} for white-on-white
+#'       \item\code{.OpiEnv$O900$MET_COL_RW} for red-on-white
+#'       \item\code{.OpiEnv$O900$MET_COL_BW} for blue-on-white
+#'       \item\code{.OpiEnv$O900$MET_COL_WY} for white-on-yellow
+#'       \item\code{.OpiEnv$O900$MET_COL_RY} for red-on-yellow
+#'       \item\code{.OpiEnv$O900$MET_COL_BY} for blue-on-yellow
+#'     }
+#'     \item\code{fixation} is one of 
+#'     \itemize{
+#'       \item\code{.OpiEnv$O900$FIX_CENTRE} or \code{.OpiEnv$O900$FIX_CENTER}
+#'       \item\code{.OpiEnv$O900$FIX_CROSS}
+#'       \item\code{.OpiEnv$O900$FIX_RING}
+#'     }
+#'     \item\code{fixIntensity} is a percentage between 0 and 100. 0 is off, 100
+#'       the brightest.
+#'   }
+#'   Note if you specify \code{fixation} you also have to specify \code{fixIntensity}.
+#' }
+#' @return
+#' \subsection{Octopus900}{ 
+#'   -1 indicates \code{opiInitialize} has not been called.
+#'   
+#'   -2 indicates could not set the background color.
+#'   
+#'   -3 indicates could not set the fixation marker.
+#'   
+#'   -4 indicates that all input parameters were NA.
+#' }
+#' @examples
+#' \dontrun{
+#'   chooseOpi("Octopus900")
+#'   oi <- opiInitialize(eyeSuiteJarLocation="c:/EyeSuite/",
+#'                       eyeSuiteSettingsLocation="c:/Documents and Settings/All Users/Haag-Streit/",
+#'                       eye="left")
+#'   if(!is.null(oi))
+#'     stop("opiInitialize failed")
+#'   if(!is.null(opiSetBackground(fixation=.OpiEnv$O900$FIX_CENTRE)))
+#'     stop("opiSetBackground failed")
+#'   if(!is.null(opiSetBackground(fixation=.OpiEnv$O900$FIX_RING, fixIntensity=0)))
+#'     stop("opiSetBackground failed")
+#'   if(!is.null(opiSetBackground(color=.OpiEnv$O900$MET_COL_BY)))
+#'     stop("opiSetBackground failed")
+#'   if(!is.null(opiSetBackground(lum=.OpiEnv$O900$BG_100, color=.OpiEnv$O900$MET_COL_RW)))
+#'     stop("opiSetBackground failed")
+#'   opiClose()
+#' }
 octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity=NA) {
 
     if (all(is.na(c(lum, color, fixation, fixIntensity)))) {
@@ -443,6 +592,11 @@ octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity
 ###########################################################################
 # return NULL on success (in fact, always!)
 ###########################################################################
+#' @rdname opiClose
+#' @return
+#' \subsection{Octopus900}{
+#'   DETAILS
+#' }
 octo900.opiClose <- function() {
     writeLines("OPI_CLOSE", .OpiEnv$O900$socket)
     close(.OpiEnv$O900$socket)
@@ -452,6 +606,14 @@ octo900.opiClose <- function() {
 ###########################################################################
 # Lists defined constants
 ###########################################################################
+#' @rdname opiQueryDevice
+#' @title Query device using OPI
+#' \subsection{Octopus900}{
+#'   DETAILS
+#' }
+#' \subsection{Octopus900}{
+#'   DETAILS
+#' }
 octo900.opiQueryDevice <- function() {
     cat("Defined constants\n")
     cat("-----------------\n")

@@ -49,6 +49,26 @@ if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
     .OpiEnv$DayDream$NOT_SEEN <- 0  
 }
 
+#' @rdname opiInitialize
+#' @param lut Look up table mapping pixel values to cd/m2 for "Daydream"
+#' @param ppd pixels per degree
+#' @details
+#' \subsection{Daydream}{
+#'   \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 255), ppd = 11)}
+#'   
+#'   If the chosen OPI implementation is \code{Daydream}, then you must specify
+#'   the IP address of the Android phone that is in the Daydream, and the port on
+#'   which the server running on the phone is listening.
+#'   
+#'   \itemize{
+#'     \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is \code{seq(0, 4000, length.out = 255)}
+#'     \item\code{ppd} points per degree. It is a scalar to multiply to x and y coordinates to convert from degrees to pixels. This assumes the viewing distance (z-coordinate) is 30cm.
+#'   }
+#' }
+#' @return
+#' \subsection{Daydream}{
+#'   DETAILS
+#' }
 daydream.opiInitialize <- function(
         ip="127.0.0.1",
         port=50008, 
@@ -126,6 +146,20 @@ load_image <- function(im, w, h) {
 #    seen            : 0 for not seen, 1 for seen (button pressed in response window)
 #    time            : in ms (integer) (does this include/exclude the 200ms presentation time?) -1 for not seen.
 ###########################################################################
+#' @rdname opiPresent
+#' @details
+#' \subsection{Daydream}{
+#'   If the chosen OPI implementation is \code{Daydream}, then \code{nextStim}
+#'   is ignored.
+#'   
+#'   Note that the dB level is rounded to the nearest cd/\eqn{\mbox{m}^2}{m^2}
+#'   that is in the \code{lut} specified in \code{opiInitialise}.
+#'   
+#'   Currently uses the most simple algorithm for drawing a 'circle'
+#'   (ie not Bresenham's).
+#'   
+#'   Currently only implemented for \code{opiStaticStimulus}.
+#' }
 daydream.opiPresent <- function(stim, nextStim=NULL) { UseMethod("daydream.opiPresent") }
 setGeneric("daydream.opiPresent")
 
@@ -214,8 +248,28 @@ daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 # @return string on error
 # @return NULL if everything works
 ###########################################################################
-daydream.opiSetBackground <- function(lum=NA, color=NA, 
-        fixation="Cross", 
+#' @rdname opiSetBackground
+#' @param fixation_size fixation size for "Daydream"
+#' @param fixation_color fixation color for "Daydream"
+#' @param eye eye for "Daydream"
+#' @details
+#' \subsection{Daydream}{
+#'   \code{opiSetBackground(lum=NA, color=NA, fixation="Cross", fixation_size=11, fixation_color=c(0,128,0), eye="L")}
+#'   \itemize{
+#'     \item{\code{lum}} in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey value in \code{lut} from \code{opiInitialize}.
+#'     \item{\code{color}} is ignored.
+#'     \item{\code{fixation}} can only be \code{'Cross'} at the moment.
+#'     \item{\code{fixation_size}} is the number of pixels one cross-hair is in
+#'       length.
+#'     \item{\code{fixation_color}} RGB value of coor of fixation cross. Values
+#'       in range [0,255].
+#'   }
+#' }
+#' @return
+#' \subsection{Daydream}{ 
+#'   DETAILS
+#' }
+daydream.opiSetBackground <- function(lum=NA, color=NA, fixation="Cross", 
         fixation_size=11,    # probably should be odd # this is 1 degree for the dyadream view + pixel 1
         fixation_color=c(0,255,0), 
         eye="L") {
@@ -268,6 +322,11 @@ daydream.opiSetBackground <- function(lum=NA, color=NA,
 ####       col-2 x in degrees 
 ####       col-3 y in degrees 
 ##############################################################################
+#' @rdname opiClose
+#' @return
+#' \subsection{Daydream}{
+#'   DETAILS
+#' }
 daydream.opiClose <- function() {
     writeLines("OPI_CLOSE", .OpiEnv$DayDream$socket)
 
@@ -284,6 +343,15 @@ daydream.opiClose <- function() {
 ##############################################################################
 #### Lists defined constants
 ##############################################################################
+#' @rdname opiQueryDevice
+#' @title Query device using OPI
+#' @details
+#' \subsection{Daydream}{
+#'   Returns all constants in \code{.OpiEnv$DayDream} as a list.
+#' }
+#' \subsection{Daydream}{
+#'   DETAILS
+#' }
 daydream.opiQueryDevice <- function() {
     vars <- ls(.OpiEnv$DayDream)
     lst <- lapply(vars, function(i) .OpiEnv$DayDream[[i]])

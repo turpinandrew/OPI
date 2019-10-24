@@ -78,6 +78,40 @@ sendCommand <- function(socket, id, ...) {
 # @return ...
 #
 #######################################################################
+#' @rdname opiInitialize
+#' @param ipAddress IP address of Octopus 600 machine for "Octopus600"
+#' @param pupilTracking pupil tracking  for "Octopus600"
+#' @param pulsar DETAILS for "Octopus600"
+#' @param eyeControl DETAILS for "Octopus600"
+#' @details
+#' \subsection{Octopus600}{
+#'   \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
+#'   
+#'   If the chosen OPI implementation is \code{Octopus600}, then you must specify
+#'   the IP address of the Octopus 600 and the eye to test.
+#'   
+#'   \code{ipAddress} is the IP address of the Octopus 600 as a string.
+#'   
+#'   \code{eye} must be either "left" or "right".
+#'   
+#'   \code{pupilTracking} is TRUE to turn on IR illumination and set pupil
+#'   black level (which happens at the first stimulus presentation).
+#'   
+#'   \code{pulsar} is TRUE for pulsar stimulus, FALSE for size III white-on-white.
+#'   
+#'   \code{eyeControl}
+#'   \itemize{ 
+#'     \item 0 is off
+#'     \item 1 is eye blink
+#'     \item 2 is eye blink, forehead rest, fixation control
+#'     \item 3 is eye blink, forehead rest, fixation control, fast eye movements
+#'   }
+#' }
+#' @return
+#' \subsection{Octopus600}{
+#'   Returns NULL if successful, or an Octopus 600 error code. The default
+#'   background and stimulus setup is to white-on-white perimetry.
+#' }
 octo600.opiInitialize <- function(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0) {
   
   if (missing(ipAddress))
@@ -136,16 +170,16 @@ octo600.opiInitialize <- function(ipAddress, eye, pupilTracking=FALSE, pulsar=FA
 	return(NULL)
 }
 
-###########################################################################
-# INPUT: 
-#   As per OPI spec
-#   stim$color must be same as that initialised by opiSetBackground or opiInitialize
-#
-# Return a list of 
-#	err  = string message
-#	seen = 1 if seen, 0 otherwise
-#	time = reaction time
-###########################################################################
+#' @rdname opiPresent
+#' @details
+#' \subsection{Octopus600}{
+#'   \code{opiPresent(stim, nextStim=NULL)}
+#'   
+#'   If the chosen OPI implementation is \code{Octopus600}, then nextStim is
+#'   ignored. If \code{eyeControl} is non-zero, as set in \code{opiInitialize},
+#'   answer codes describing patient state may arise (see \code{answer} field
+#'   in the Value section).
+#' }
 octo600.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo600.opiPresent") }
 setGeneric("octo600.opiPresent")
 
@@ -219,6 +253,18 @@ octo600.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, ...) {
 # @return -2 trouble setting backgound color
 # @return -3 trouble setting fixation
 ###########################################################################
+#' @rdname opiSetBackground
+#' @param bgColor Background color for "Octopus600"
+#' @param fixType fixation time for "Octopus600"
+#' @param fixColor fixation color for "Octopus600"
+#' @details
+#' \subsection{Octopus600}{ 
+#'   This function has no effect.
+#' }
+#' @return
+#' \subsection{Octopus600}{ 
+#'   DETAILS
+#' }
 octo600.opiSetBackground <- function(bgColor=NA, fixType=NA, fixColor=NA, fixIntensity=255) {
   
   if (!is.element(fixType, 1:4))
@@ -248,6 +294,11 @@ octo600.opiSetBackground <- function(bgColor=NA, fixType=NA, fixColor=NA, fixInt
 ###########################################################################
 # return NULL on success (in fact, always!)
 ###########################################################################
+#' @rdname opiClose
+#' @return
+#' \subsection{Octopus600}{
+#'   DETAILS
+#' }
 octo600.opiClose <- function() {
     close(.OpiEnv$O600$socket)
     return(NULL)
@@ -256,6 +307,29 @@ octo600.opiClose <- function() {
 ###########################################################################
 # Call opiPresent with a NULL stimulus
 ###########################################################################
+#' @rdname opiQueryDevice
+#' @title Query device using OPI
+#' @details
+#' \subsection{Octopus600}{
+#'   If the chosen OPI is \code{Octopus600}, then this function returns
+#'   information about the patient. See the Value section for details.
+#' }
+#' @return
+#' \subsection{Octopus600}{
+#'   Returns a list of 10 items:
+#'   \enumerate{
+#'     \item answerButton [0 = not pressed, 1 = pressed ]
+#'     \item headSensor [0 = no forehead detected, 1 = forehead detected ]
+#'     \item eyeLidClosureLeft [0 = eye is open, 1 = eye is closed ]
+#'     \item eyeLidClosureRight [0 = eye is open, 1 = eye is closed ]
+#'     \item fixationLostLeft [1 = eye pos lost, 0 = eye pos ok)
+#'     \item fixationLostRight [1 = eye pos lost, 0 = eye pos ok)
+#'     \item pupilPositionXLeft [in px]
+#'     \item pupilPositionYLeft [in px]
+#'     \item pupilPositionXRight [in px]
+#'     \item pupilPositionYRight [in px]
+#'   }
+#' }
 octo600.opiQueryDevice <- function() {
   res <- sendCommand(.OpiEnv$O600$socket, 3004)
   

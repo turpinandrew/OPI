@@ -71,11 +71,33 @@ if (exists(".OpiEnv") && !exists("KowaAP7000", where=.OpiEnv)) {
 # INPUT: 
 #   ip                       = ip address on which server is listening
 #   port                     = port number on which server is listening
-#   mode                     = .OpiEnv$KowaAP7000$MODE_WoW or .OpiEnv$KowaAP7000$MODE_BoY
 #
 # @return NULL if succeed
 # @return 1    server not found/ready at the ip+port provided
 #######################################################################
+#' @rdname opiInitialize
+#' @details
+#' \subsection{KowaAP7000}{
+#'   \code{opiInitialize(ip, port)}
+#'   
+#'   If the chosen OPI implementation is \code{KowaAP7000}, then you must specify
+#'   the IP address and port of the AP-7000 server.
+#'   
+#'   \itemize{
+#'     \item\code{ipAddress} is the IP address of the AP-7000 server as a string.
+#'     \item\code{port} is the TCP/IP port of the AP-7000 server as a number.
+#'   }
+#' }
+#' @return
+#' \subsection{Kowa AP-7000}{
+#'   Always returns NULL.
+#' }
+#' @examples
+#' \dontrun{
+#'   # Set up the Kowa AP-7000
+#'   chooseOpi("KowaAP7000")
+#'   opiInitialize(ip="192.168.1.7", port=44965)
+#' }
 kowaAP7000.opiInitialize <- function(ip= "192.168.1.2", port=44965) {
     cat("Looking for server... ")
     suppressWarnings(tryCatch(    
@@ -106,17 +128,14 @@ kowaAP7000.opiInitialize <- function(ip= "192.168.1.2", port=44965) {
     return(NULL)
 }
 
-###########################################################################
-# INPUT: 
-#   As per OPI spec
-#
-# Return a list of 
-#	err  = string message
-#	seen = TRUE if seen, FALSE otherwise
-#	time = reaction time
-#   xs = list of x-coordinates of pupil position during presentation
-#   ys = list of y-coordinates of pupil position during presentation
-###########################################################################
+#' @rdname opiPresent
+#' @details
+#' \subsection{KowaAP7000}{
+#'   \code{opiPresent(stim, nextStim=NULL)}
+#' 
+#'   If the chosen OPI implementation is \code{KowaAP7000}, then \code{nextStim}
+#'   is ignored. 
+#' }
 kowaAP7000.opiPresent <- function(stim, nextStim=NULL) { UseMethod("kowaAP7000.opiPresent") }
 setGeneric("kowaAP7000.opiPresent")
 
@@ -261,6 +280,40 @@ kowaAP7000.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) 
 # color is one of .OpiEnv$KowaAP7000$BACKGROUND_WHITE or 
 #                 .OpiEnv$KowaAP7000$BACKGROUND_YELLOW
 ###########################################################################
+#' @rdname opiSetBackground
+#' @details
+#' \subsection{KowaAP7000}{ 
+#'   \code{opiSetBackground(lum, color, fixation)} 
+#' 
+#'   \code{lum} and \code{color} are dependant for the Kowa AP-7000. A white
+#'   background must be 10 cd/\eqn{\mbox{m}^2}{m^2}, and a yellow background must
+#'   be 100 cd/\eqn{\mbox{m}^2}{m^2}.
+#' 
+#'   If \code{lum} is 10 and \code{color} is not set, then
+#'   \code{.OpiEnv$KowaAP7000$BACKGROUND_WHITE} is assumed.
+#'   
+#'   If \code{lum} is 100 and \code{color} is not set,
+#'   then \code{.OpiEnv$KowaAP7000$BACKGROUND_YELLOW} is assumed.
+#'   
+#'   If both \code{lum} and \code{color} is set, then \code{lum} is ignored
+#'   (a warning will be generated
+#'   
+#'   if \code{lum} is incompatible with \code{color}).
+#'   
+#'   \code{fixation} is one of
+#'   \itemize{
+#'     \item \code{.OpiEnv$KowaAP7000$FIX_CENTER}, fixation marker in the centre.
+#'     \item \code{.OpiEnv$KowaAP7000$FIX_CENTRE}, fixation marker in the centre.
+#'     \item \code{.OpiEnv$KowaAP7000$FIX_AUX},    fixation marker is ???.
+#'     \item \code{.OpiEnv$KowaAP7000$FIX_MACULA}, fixation marker is a circle(?).
+#'     \item \code{.OpiEnv$KowaAP7000$FIX_AUX_LEFT}, fixation marker is as for AUX
+#'       but only lower left.
+#'   }
+#' }
+#' @return
+#' \subsection{KowaAP7000}{ 
+#'   DETAILS
+#' }
 kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     if (!is.na(fixation)) {
         .OpiEnv$KowaAP7000$minCheck(fixation, 0, "Fixation")
@@ -305,6 +358,11 @@ kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
 ###########################################################################
 # return NULL on success (in fact, always!)
 ###########################################################################
+#' @rdname opiClose
+#' @return
+#' \subsection{KowaAP7000}{
+#'   DETAILS
+#' }
 kowaAP7000.opiClose <- function() {
     writeLines("OPI-CLOSE\r", .OpiEnv$KowaAP7000$socket)
     .OpiEnv$KowaAP7000$checkOK("opiClose")
@@ -315,6 +373,23 @@ kowaAP7000.opiClose <- function() {
 ###########################################################################
 # Lists defined constants
 ###########################################################################
+#' @rdname opiQueryDevice
+#' @title Query device using OPI
+#' @details
+#' \subsection{KowaAP7000}{
+#'   If the chosen OPI is \code{KowaAP7000}, then this function returns the current
+#'   location of the pupil. See the Value section for details.
+#' }
+#' \subsection{KowaAP7000}{
+#'   Returns a list of 4 items:
+#'   \itemize{
+#'     \item \code{pupilX}, the x-coordinate of the pupil position in pixels.
+#'     \item \code{pupilY}, the y-coordinate of the pupil position in pixels.
+#'     \item \code{purkinjeX}, the x-coordinate of the purkinje position in pixels.
+#'     \item \code{purkinjeY}, the y-coordinate of the purkinje position in pixels.
+#'   }
+#'   It also prints a list of constants that OPI knows about for the AP-7000.
+#' }
 kowaAP7000.opiQueryDevice <- function() {
     cat("Defined constants and functions\n")
     cat("-------------------------------\n")

@@ -49,6 +49,29 @@ if (exists(".OpiEnv") && !exists("Imo", where=.OpiEnv)) {
 # @return NULL if succeed
 # @return 1    server not found/ready at the ip+port provided
 #######################################################################
+#' @rdname opiInitialize
+#' @details
+#' \subsection{imo}{
+#'   \code{opiInitialize(ip, port)}
+#'   
+#'   If the chosen OPI implementation is \code{imo}, then you must specify the IP
+#'   address and port of the imo server.
+#'   
+#'   \itemize{
+#'     \item \code{ip} is the IP address of the imo server as a string.
+#'     \item \code{port} is the TCP/IP port of the imo server as a number.
+#'   }
+#' }
+#' @return
+#' \subsection{imo}{
+#'   Always returns NULL. Will \code{stop} if there is an error.
+#' }
+#' @examples
+#' \dontrun{
+#'   # Set up the imo
+#'   chooseOpi("imo")
+#'   opiInitialize(ip="192.168.1.7", port=44965)
+#' }
 imo.opiInitialize <- function(ip= "localhost", port=9999) {
     cat("Looking for server... ")
 
@@ -77,6 +100,11 @@ imo.opiInitialize <- function(ip= "localhost", port=9999) {
 #   xs = list of x-coordinates of pupil position during presentation
 #   ys = list of y-coordinates of pupil position during presentation
 ###########################################################################
+#' @rdname opiPresent
+#' @details
+#' \subsection{imo}{
+#'   DETAILS HERE
+#' }
 imo.opiPresent <- function(stim, nextStim=NULL) { UseMethod("imo.opiPresent") }
 setGeneric("imo.opiPresent")
 
@@ -234,6 +262,15 @@ imo.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 # color is one of .OpiEnv$Imo$BACKGROUND_WHITE or 
 #                 .OpiEnv$Imo$BACKGROUND_YELLOW
 ###########################################################################
+#' @rdname opiSetBackground
+#' @details
+#' \subsection{imo}{
+#'   DETAILS
+#' }
+#' @return
+#' \subsection{imo}{ 
+#'   DETAILS
+#' }
 imo.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     if (!is.na(fixation)) {
         .OpiEnv$Imo$minCheck(fixation, 0, "Fixation")
@@ -278,6 +315,11 @@ imo.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
 ###########################################################################
 # return NULL on success (in fact, always!)
 ###########################################################################
+#' @rdname opiClose
+#' @return
+#' \subsection{imo}{
+#'   DETAILS
+#' }
 imo.opiClose <- function() {
     writeChar("STOP", .OpiEnv$Imo$socket, nchars=4, eos=NULL)
     .OpiEnv$Imo$checkOK("opiClose")
@@ -288,6 +330,14 @@ imo.opiClose <- function() {
 ###########################################################################
 # Lists defined constants
 ###########################################################################
+#' @rdname opiQueryDevice
+#' @title Query device using OPI
+#' \subsection{imo}{
+#'   DETAILS
+#' }
+#' \subsection{imo}{
+#'   DETAILS
+#' }
 imo.opiQueryDevice <- function() {
     cat("Defined constants and functions\n")
     cat("-------------------------------\n")

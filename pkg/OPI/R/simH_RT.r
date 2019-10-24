@@ -52,6 +52,35 @@ if (exists(".OpiEnv") && !exists("SimHRT", where=.OpiEnv))
 #
 # Return NULL if successful, string error message otherwise  
 ################################################################################
+#' @rdname opiInitialize
+#' @param rtData data.frame with colnames == "Rt", "Dist", "Person" for "SimHensonRT"
+#' @param rtFP response time for false positives ??? for "SimHensonRT"
+#' @details
+#' #' \subsection{SimHensonRT}{
+#'   \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData, rtFP=1:1600)}
+#'   
+#'   If the chosen OPI implementation is \code{SimHensonRT}, then the first six
+#'   parameters are as in \code{SimHenson}, and \code{rtData} is a data frame
+#'   with at least 2 columns: \code{"Rt"}, reponse time; and \code{"Dist"},
+#'   signifying that distance between assumed threshold and stimulus value in
+#'   your units.
+#'   
+#'   This package contains \code{RtSigmaUnits} or \code{RtDbUnits} that can be
+#'   loaded with the commands \code{data(RtSigmaUnits)} or \code{data(RtDbUnits)},
+#'   and are suitable to pass as values for \code{rtData}.
+#'   
+#'   \code{rtFp} gives the vector of values in milliseconds from which a response
+#'   time for a false positive response is randomly sampled.
+#' }
+#' @examples
+#' # Set up a simple simulation for white-on-white perimetry
+#' # and display the stimuli in a plot region and simulate response times
+#' chooseOpi("SimHensonRT")
+#' data(RtSigmaUnits)
+#' oi <- opiInitialize(type="C", cap=6,
+#'                     display=c(-30,30,-30,30), rtData=RtSigmaUnits, rtFP=1:100)
+#' if (!is.null(oi))
+#'   stop("opiInitialize failed")
 simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, maxStim=10000/pi, rtData, rtFP=1:1600) {
     if (!is.element(type,c("N","G","C", "X"))) {
         msg <- paste("Bad 'type' specified for SimHensonRT in opiInitialize():",type)
@@ -118,13 +147,46 @@ simH_RT.opiInitialize <- function(type="C", cap=6, A=NA, B=NA, display=NULL, max
 #   NULL - succsess
 #   -1   - opiInitialize not called
 ################################################################################
+#' @rdname opiSetBackground
+#' @details
+#' \subsection{SimHensonRT}{
+#'   \code{opiSetBackground(col, gridCol)}
+#'   
+#'   \code{col} is the background color of the plot area used for displaying
+#'   stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
+#'   will only be displayed if \code{opiInitialize} is called with a valid display
+#'   argument.
+#' }
 simH_RT.opiSetBackground <- function(col, gridCol) { 
     return (simDisplay.setBackground(col, gridCol))
 }
 
-################################################################################
-#
-################################################################################
+#' @rdname opiPresent
+#' @param notSeenToSeen SOMETHING for OPI implementation "SimHensonRT"
+#' @details
+#' \subsection{SimHensonRT}{
+#'   \code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt)}
+#' 
+#'   For static stimuli, this function is the same as for \code{SimHenson}, but
+#'   reaction times are determined by sampling from \code{rtData} as passed to
+#'   \code{opiInitialize}.  The \code{dist} parameter is the distance of the
+#'   stimulus level from the true threshold, and should be in the same units as
+#'   the \code{Dist} column of \code{rtData}. The default is just the straight
+#'   difference between the stimulus level and the true threshold, but you might
+#'   want it scaled somehow to match \code{rtData}.
+#' }
+#' @examples
+#' # Same but with simulated reaction times
+#' chooseOpi("SimHensonRT")
+#' data(RtSigmaUnits)
+#' if (!is.null(opiInitialize(type="C", cap=6, rtData=RtSigmaUnits)))
+#'   stop("opiInitialize failed")
+#'
+#' dist <- (10 - 30)/min(exp(-0.098 * 30 + 3.62), 6)
+#' result <- opiPresent(stim=makeStim(10,0), tt=30, fpr=0.15, fnr=0.01, dist=dist)
+#' 
+#' if (!is.null(opiClose()))
+#'   warning("opiClose() failed")
 simH_RT.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, notSeenToSeen=TRUE) { 
                             UseMethod("simH_RT.opiPresent") }
 setGeneric("simH_RT.opiPresent")
