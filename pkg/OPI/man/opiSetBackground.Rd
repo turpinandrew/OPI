@@ -23,7 +23,8 @@ compass.opiSetBackground(lum = NA, color = NA, fixation = NA,
   tracking_on = NA)
 
 daydream.opiSetBackground(lum = NA, color = NA, fixation = "Cross",
-  fixation_size = 11, fixation_color = c(0, 255, 0), eye = "L")
+  fix_cx = 0, fix_cy = 0, fix_sx = 1, fix_sy = 1,
+  fix_color = c(0, 255, 0), eye = "L")
 
 imo.opiSetBackground(lum = NA, color = NA, fixation = NA)
 
@@ -57,9 +58,19 @@ simYes.opiSetBackground(col, gridCol)
 
 \item{tracking_on}{Tracking on or off for "Compass"}
 
-\item{fixation_size}{fixation size for "Daydream"}
+\item{fix_cx}{fixation x position in degrees of visual angle for "Daydream".
+Default is 0}
 
-\item{fixation_color}{fixation color for "Daydream"}
+\item{fix_cy}{fixation y position in degrees of visual angle for "Daydream"
+Default is 0}
+
+\item{fix_sx}{fixation horizontal size in degrees of visual angle for "Daydream"
+Default is 1}
+
+\item{fix_sy}{fixation vertical size in degrees of visual angle for "Daydream"
+Default is 1}
+
+\item{fix_color}{fixation color for "Daydream"}
 
 \item{eye}{eye for "Daydream"}
 
@@ -137,9 +148,11 @@ implementation that is set with \code{chooseOpi()}
     \item{\code{lum}} in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey value in \code{lut} from \code{opiInitialize}.
     \item{\code{color}} is ignored.
     \item{\code{fixation}} can only be \code{'Cross'} at the moment.
-    \item{\code{fixation_size}} is the number of pixels one cross-hair is in
-      length.
-    \item{\code{fixation_color}} RGB value of coor of fixation cross. Values
+    \item{\code{fix_cx}, \code{fix_cy}} fixation (x, y) position in degrees
+      of visual angle
+    \item{\code{fix_sx}, \code{fix_sy}} dimensions of fixation target in
+      degrees of visual angle
+    \item{\code{fix_color}} RGB value of coor of fixation cross. Values
       in range [0,255].
   }
 }

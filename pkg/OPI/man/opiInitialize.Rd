@@ -23,7 +23,7 @@ opiInitialise(...)
 compass.opiInitialize(ip = "192.168.1.2", port = 44965)
 
 daydream.opiInitialize(ip = "127.0.0.1", port = 50008, lut = seq(0,
-  400, length.out = 255), ppd = 11)
+  400, length.out = 255), fovy = 90)
 
 imo.opiInitialize(ip = "localhost", port = 9999)
 
@@ -56,7 +56,8 @@ simH_RT.opiInitialize(type = "C", cap = 6, A = NA, B = NA,
 
 \item{lut}{Look up table mapping pixel values to cd/m2 for "Daydream"}
 
-\item{ppd}{pixels per degree}
+\item{fovy}{Field of view in degrees in the y-axis. It is different depending on the device.
+For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.}
 
 \item{ipAddress}{IP address of Octopus 600 machine for "Octopus600"}
 
@@ -164,15 +165,18 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{Daydream}{
-  \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 255), ppd = 11)}
+  \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 255), fovy = 90)}
   
   If the chosen OPI implementation is \code{Daydream}, then you must specify
   the IP address of the Android phone that is in the Daydream, and the port on
   which the server running on the phone is listening.
   
   \itemize{
-    \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is \code{seq(0, 4000, length.out = 255)}
-    \item\code{ppd} points per degree. It is a scalar to multiply to x and y coordinates to convert from degrees to pixels. This assumes the viewing distance (z-coordinate) is 30cm.
+    \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
+      cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
+      \code{seq(0, 4000, length.out = 255)}
+    \item\code{fovy} Field of view in degrees in the y-axis. It is different depending on the device.
+      For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
   }
 }
 
