@@ -79,10 +79,10 @@ sendCommand <- function(socket, id, ...) {
 #
 #######################################################################
 #' @rdname opiInitialize
-#' @param ipAddress IP address of Octopus 600 machine for "Octopus600"
-#' @param pupilTracking pupil tracking  for "Octopus600"
-#' @param pulsar DETAILS for "Octopus600"
-#' @param eyeControl DETAILS for "Octopus600"
+#' @param ipAddress IP address of Octopus 600 machine
+#' @param pupilTracking pupil tracking
+#' @param pulsar DETAILS
+#' @param eyeControl DETAILS
 #' @details
 #' \subsection{Octopus600}{
 #'   \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
@@ -254,9 +254,9 @@ octo600.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, ...) {
 # @return -3 trouble setting fixation
 ###########################################################################
 #' @rdname opiSetBackground
-#' @param bgColor Background color for "Octopus600"
-#' @param fixType fixation time for "Octopus600"
-#' @param fixColor fixation color for "Octopus600"
+#' @param bgColor Background color
+#' @param fixType fixation type
+#' @param fixColor fixation color
 #' @details
 #' \subsection{Octopus600}{ 
 #'   This function has no effect.

@@ -74,10 +74,8 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 #       image retinal image as a jpeg in raw bytes
 #######################################################################
 #' @rdname opiInitialize
-#' @param ip ip address on which server is listening for "Compass", "Daydream",
-#'   "imo", "KowaAP7000"
-#' @param port port number on which server is listening for "Compass", "Daydream",
-#'   "imo", "KowaAP7000"
+#' @param ip ip address on which server is listening
+#' @param port port number on which server is listening
 #' @details
 #' \subsection{Compass}{
 #'   \code{opiInitialize(ip, port)}
@@ -106,7 +104,7 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 #' }
 #' @examples
 #' \dontrun{
-#'   # Set up the imo
+#'   # Set up the Compass
 #'   chooseOpi("Compass")
 #'   result <- opiInitialize(ip="192.168.1.7", port=44965)
 #'   if (is.null(result$err))
@@ -258,7 +256,7 @@ compass.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 }#opiPresent.opiTemporalStimulus()
 
 #' @rdname opiSetBackground
-#' @param tracking_on Tracking on or off for "Compass"
+#' @param tracking_on Tracking on or off
 #' @details
 #' \subsection{Compass}{
 #'   \code{opiSetBackground(fixation=NA, tracking_on=NA)}

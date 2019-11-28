@@ -8,21 +8,42 @@
 \alias{ZEST.final}
 \title{ZEST}
 \usage{
-ZEST(domain = 0:40, prior = rep(1/length(domain), length(domain)),
-  likelihood = sapply(domain, function(tt) 0.03 + (1 - 0.03 - 0.03) * (1
-  - pnorm(domain, tt, 1))), stopType = "S", stopValue = 1.5,
-  minStimulus = head(domain, 1), maxStimulus = tail(domain, 1),
-  maxSeenLimit = 2, minNotSeenLimit = 2, maxPresentations = 100,
-  minInterStimInterval = NA, maxInterStimInterval = NA, verbose = 0,
-  makeStim, stimChoice = "mean", ...)
+ZEST(
+  domain = 0:40,
+  prior = rep(1/length(domain), length(domain)),
+  likelihood = sapply(domain, function(tt) 0.03 + (1 - 0.03 - 0.03) * (1 - pnorm(domain,
+    tt, 1))),
+  stopType = "S",
+  stopValue = 1.5,
+  minStimulus = head(domain, 1),
+  maxStimulus = tail(domain, 1),
+  maxSeenLimit = 2,
+  minNotSeenLimit = 2,
+  maxPresentations = 100,
+  minInterStimInterval = NA,
+  maxInterStimInterval = NA,
+  verbose = 0,
+  makeStim,
+  stimChoice = "mean",
+  ...
+)
 
-ZEST.start(domain = 0:40, prior = rep(1/length(domain),
-  length(domain)), likelihood = sapply(domain, function(tt) 0.03 + (1 -
-  0.03 - 0.03) * (1 - pnorm(domain, tt, 1))), stopType = "S",
-  stopValue = 1.5, minStimulus = head(domain, 1),
-  maxStimulus = tail(domain, 1), maxSeenLimit = 2,
-  minNotSeenLimit = 2, maxPresentations = 100, makeStim,
-  stimChoice = "mean", ...)
+ZEST.start(
+  domain = 0:40,
+  prior = rep(1/length(domain), length(domain)),
+  likelihood = sapply(domain, function(tt) 0.03 + (1 - 0.03 - 0.03) * (1 - pnorm(domain,
+    tt, 1))),
+  stopType = "S",
+  stopValue = 1.5,
+  minStimulus = head(domain, 1),
+  maxStimulus = tail(domain, 1),
+  maxSeenLimit = 2,
+  minNotSeenLimit = 2,
+  maxPresentations = 100,
+  makeStim,
+  stimChoice = "mean",
+  ...
+)
 
 ZEST.step(state, nextStim = NULL)
 
@@ -220,7 +241,7 @@ while(!all(st <- unlist(lapply(states, ZEST.stop)))) {
 finals <- lapply(states, ZEST.final)    # get final estimates of threshold
 for(i in 1:length(locations)) {
   #cat(sprintf("Location (\%+2d,\%+2d) ",locations[[i]][1], locations[[i]][2]))
-  #cat(sprintf("has threshold \%4.2f\\n", finals[[i]]))
+  #cat(sprintf("has threshold \%4.2f\n", finals[[i]]))
 }
 
 if (!is.null(opiClose()))

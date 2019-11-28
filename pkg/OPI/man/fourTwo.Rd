@@ -7,8 +7,7 @@
 \alias{fourTwo.final}
 \title{4-2 Staircase}
 \usage{
-fourTwo.start(est = 25, instRange = c(0, 40), verbose = FALSE,
-  makeStim, ...)
+fourTwo.start(est = 25, instRange = c(0, 40), verbose = FALSE, makeStim, ...)
 
 fourTwo.step(state, nextStim = NULL)
 
@@ -132,8 +131,8 @@ while(!all(st <- unlist(lapply(states, fourTwo.stop)))) {
 
 finals <- lapply(states, fourTwo.final)    # get final estimates of threshold
 for(i in 1:length(locations)) {
-  cat(sprintf("Location (\\\%+2d,\\\%+2d) ",locations[[i]][1], locations[[i]][2]))
-      cat(sprintf("has threshold \\\%4.2f\\n", finals[[i]]))
+  cat(sprintf("Location (\%+2d,\%+2d) ",locations[[i]][1], locations[[i]][2]))
+      cat(sprintf("has threshold \%4.2f\n", finals[[i]]))
 }
 
 if (!is.null(opiClose()))

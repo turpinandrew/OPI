@@ -186,8 +186,8 @@
 #' 
 #' finals <- lapply(states, FT.final)    # get final estimates of threshold
 #' for(i in 1:length(locations)) {
-#'   cat(sprintf("Location (\%+2d,\%+2d) ",locations[[i]][1], locations[[i]][2]))
-#'   cat(sprintf("has threshold \%4.2f\n", finals[[i]]))
+#'   cat(sprintf("Location (%+2d,%+2d) ",locations[[i]][1], locations[[i]][2]))
+#'   cat(sprintf("has threshold %4.2f\n", finals[[i]]))
 #' }
 #' 
 #' if(!is.null(opiClose()))

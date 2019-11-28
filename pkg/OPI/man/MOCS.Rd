@@ -4,11 +4,20 @@
 \alias{MOCS}
 \title{Method of Constant Stimuli (MOCS)}
 \usage{
-MOCS(params = NA, order = "random", responseWindowMeth = "constant",
-  responseFloor = 1500, responseHistory = 5,
+MOCS(
+  params = NA,
+  order = "random",
+  responseWindowMeth = "constant",
+  responseFloor = 1500,
+  responseHistory = 5,
   keyHandler = function(correct, ret) return(list(TRUE, 0, NULL)),
-  interStimMin = 200, interStimMax = 500, beep_function, makeStim,
-  stim_print, ...)
+  interStimMin = 200,
+  interStimMax = 500,
+  beep_function,
+  makeStim,
+  stim_print,
+  ...
+)
 }
 \arguments{
 \item{params}{A matrix where each row is \code{x y i n correct_n ll1 ll2 ... llm} where
