@@ -79,15 +79,17 @@ if (exists(".OpiEnv") && !exists("SimH", where=.OpiEnv))
 #' @examples
 #' # Set up a simple simulation for white-on-white perimetry
 #' chooseOpi("SimHenson")
-#' if (!is.null(opiInitialize(type="C", cap=6)))
+#' if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
 #'   stop("opiInitialize failed")
 #'
 #' # Set up a simple simulation for white-on-white perimetry
 #' # and display the stimuli in a plot region
 #' chooseOpi("SimHenson")
-#' if (!is.null(opiInitialize(type="C", cap=6, display=c(-30,30,-30,30))))
+#' if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
 #'   stop("opiInitialize failed")
-simH.opiInitialize <- function(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi) {
+simH.opiInitialize <- function(type = "C", A = -0.081, B = 3.27, cap = 6,
+                               display = c(-30, 30, -30, 30),
+                               maxStim = 10000 / pi) {
     if (!is.element(type,c("N","G","C","X"))) {
         msg <- paste("Bad 'type' specified for SimHenson in opiInitialize():",type)
         warning(msg)
@@ -216,7 +218,7 @@ simH.opiSetBackground <- function(col, gridCol) {
 #' }
 #' 
 #' chooseOpi("SimHenson")
-#' if (!is.null(opiInitialize(type="C", cap=6)))
+#' if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
 #'   stop("opiInitialize failed")
 #' 
 #' result <- opiPresent(stim=makeStim(10,0), tt=30, fpr=0.15, fnr=0.01)

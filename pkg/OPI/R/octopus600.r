@@ -112,12 +112,13 @@ sendCommand <- function(socket, id, ...) {
 #'   Returns NULL if successful, or an Octopus 600 error code. The default
 #'   background and stimulus setup is to white-on-white perimetry.
 #' }
-octo600.opiInitialize <- function(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0) {
-  
-  if (missing(ipAddress))
+octo600.opiInitialize <- function(ipAddress = "", eye = "",
+                                  pupilTracking = FALSE,
+                                  pulsar = FALSE, eyeControl = 0) {
+  if (nchar(ipAddress) == 0)
     stop("You must specify an IP address in opiInitialize()")
   
-  if (missing(eye) || (eye != "left" && eye != "right"))
+  if (eye != "left" && eye != "right")
     stop("You must set eye=left or eye=right in opiInitialize()")
   
   if (!is.element(eyeControl, 0:3))

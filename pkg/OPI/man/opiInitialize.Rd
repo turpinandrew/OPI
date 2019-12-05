@@ -40,8 +40,8 @@ imo.opiInitialize(
 kowaAP7000.opiInitialize(ip = "192.168.1.2", port = 44965)
 
 octo600.opiInitialize(
-  ipAddress,
-  eye,
+  ipAddress = "",
+  eye = "",
   pupilTracking = FALSE,
   pulsar = FALSE,
   eyeControl = 0
@@ -50,33 +50,33 @@ octo600.opiInitialize(
 octo900.opiInitialize(
   serverPort = 50001,
   eyeSuiteSettingsLocation = "C:/ProgramData/Haag-Streit/EyeSuite/",
-  eye = NA,
-  gazeFeed = NA,
+  eye = "",
+  gazeFeed = "",
   bigWheel = FALSE,
   pres_buzzer = 0,
   resp_buzzer = 0,
   zero_dB_is_10000_asb = TRUE
 )
 
-simG.opiInitialize(sd, display = NULL, maxStim = 10000/pi)
+simG.opiInitialize(sd = 2, display = c(-30, 30, -30, 30), maxStim = 10000/pi)
 
 simH.opiInitialize(
   type = "C",
-  A = NA,
-  B = NA,
+  A = -0.081,
+  B = 3.27,
   cap = 6,
-  display = NULL,
+  display = c(-30, 30, -30, 30),
   maxStim = 10000/pi
 )
 
 simH_RT.opiInitialize(
   type = "C",
   cap = 6,
-  A = NA,
-  B = NA,
-  display = NULL,
+  A = -0.081,
+  B = 3.27,
+  display = c(-30, 30, -30, 30),
   maxStim = 10000/pi,
-  rtData,
+  rtData = NULL,
   rtFP = 1:1600
 )
 }
@@ -308,7 +308,7 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{SimGaussian}{
-  \code{opiInitialize(sd, display=NULL, maxStim=10000/pi)}
+  \code{opiInitialize(sd, display=c(-30, 30, -30, 30), maxStim=10000/pi)}
   
   If the chosen OPI implementation is \code{SimGaussian}, then \code{sd} is the
   standard deviation value that the simulator will use for the slope/spread of
@@ -342,8 +342,8 @@ implementation that is set with \code{chooseOpi()}
   vice versa.
 }
 
-#' \subsection{SimHensonRT}{
-  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData, rtFP=1:1600)}
+\subsection{SimHensonRT}{
+  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=c(-30, 30, -30, 30), maxStim=10000/pi, rtData, rtFP=1:1600)}
   
   If the chosen OPI implementation is \code{SimHensonRT}, then the first six
   parameters are as in \code{SimHenson}, and \code{rtData} is a data frame
@@ -392,20 +392,20 @@ if (!is.null(opiInitialize(sd=2)))
   stop("opiInitialize failed")
 # Set up a simple simulation for white-on-white perimetry
 chooseOpi("SimHenson")
-if (!is.null(opiInitialize(type="C", cap=6)))
+if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
   stop("opiInitialize failed")
 
 # Set up a simple simulation for white-on-white perimetry
 # and display the stimuli in a plot region
 chooseOpi("SimHenson")
-if (!is.null(opiInitialize(type="C", cap=6, display=c(-30,30,-30,30))))
+if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
   stop("opiInitialize failed")
 # Set up a simple simulation for white-on-white perimetry
 # and display the stimuli in a plot region and simulate response times
 chooseOpi("SimHensonRT")
 data(RtSigmaUnits)
 oi <- opiInitialize(type="C", cap=6,
-                    display=c(-30,30,-30,30), rtData=RtSigmaUnits, rtFP=1:100)
+                    display=NULL, rtData=RtSigmaUnits, rtFP=1:100)
 if (!is.null(oi))
   stop("opiInitialize failed")
 }

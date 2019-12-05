@@ -98,7 +98,7 @@
 #'   return(s)
 #' }
 #' chooseOpi("SimHenson")
-#' if (!is.null(opiInitialize(type="C", cap=6)))
+#' if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
 #'   stop("opiInitialize failed")
 #'
 #' ##############################################

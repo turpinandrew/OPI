@@ -34,7 +34,7 @@ if (exists(".OpiEnv") && !exists("SimDisplay", where=.OpiEnv))
 #   0 success or display is NULL
 #   1 fail
 ###########################################################################
-simDisplay.setupDisplay <- function(dimensions) {
+simDisplay.setupDisplay <- function(dimensions = c(-30, 30, -30, 30)) {
     assign("display", NA, envir = .OpiEnv$SimDisplay)
     if (is.null(dimensions))     return(0)
     if (length(dimensions) != 4) return(1)

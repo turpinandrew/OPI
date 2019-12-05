@@ -174,11 +174,10 @@ setupBackgroundConstants <- function() {
 #'        eye="left")))
 #'     stop("opiInitialize failed")
 #' }
-octo900.opiInitialize <- function(serverPort=50001,
-                                  eyeSuiteSettingsLocation="C:/ProgramData/Haag-Streit/EyeSuite/", 
-                                  eye=NA, gazeFeed=NA, bigWheel=FALSE, 
-                                  pres_buzzer=0, resp_buzzer=0,
-                                  zero_dB_is_10000_asb=TRUE) {
+octo900.opiInitialize <- function(serverPort = 50001,
+                                  eyeSuiteSettingsLocation = "C:/ProgramData/Haag-Streit/EyeSuite/", 
+                                  eye = "", gazeFeed = "", bigWheel = FALSE, 
+                                  pres_buzzer = 0, resp_buzzer = 0, zero_dB_is_10000_asb = TRUE) {
   if (!bigWheel) {
     assign("GOLDMANN", c(6.5, 13, 26, 52, 104) / 60, envir=.OpiEnv$O900)
   } else {
@@ -214,7 +213,7 @@ octo900.opiInitialize <- function(serverPort=50001,
   
   if (is.na(eyeSuiteSettingsLocation))
     stop("You must specify the EyeSuite settings folder in your call to opiInitialize")
-  if (is.na(eye))
+  if (is.na(eye) || eye == "")
     stop("You must specify which eye ('left' or 'right') in your call to opiInitialize")
   if (eye != "left" && eye != "right")
     stop("The eye argument of opiInitialize must be 'left' or 'right'")
@@ -225,7 +224,7 @@ octo900.opiInitialize <- function(serverPort=50001,
   )
   assign("socket", socket, envir = .OpiEnv$O900)
   msg <- paste0("OPI_INITIALIZE \"",eyeSuiteSettingsLocation,"\"\ ",eye, " ", pres_buzzer, " ", resp_buzzer, " ", as.integer(zero_dB_is_10000_asb))
-  msg <- paste0(msg, " ", ifelse(is.na(gazeFeed) || is.null(gazeFeed), "NA", gazeFeed))
+  msg <- paste0(msg, " ", ifelse(is.na(gazeFeed) || is.null(gazeFeed) || gazeFeed == "", "NA", gazeFeed))
   writeLines(msg, socket)
   res <- readLines(socket, n=1)
   

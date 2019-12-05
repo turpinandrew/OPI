@@ -214,9 +214,9 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
             return(list(err="OPI present error back from daydream", seen=NA, time=NA))
         
         return(list(
-            err  =NULL,
-            seen =seen,    # assumes 1 or 0, not "true" or "false"
-            time =time
+            err  = NULL,
+            seen = seen,    # assumes 1 or 0, not "true" or "false"
+            time = time
         ))
     } else {
         return(list(err="OPI present could not load stimulus image", seen=NA, time=NA))

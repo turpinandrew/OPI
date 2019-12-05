@@ -57,7 +57,7 @@ if (exists(".OpiEnv") && !exists("SimG", where=.OpiEnv))
 #' @param sd standard deviation for the Gaussian
 #' @details
 #' \subsection{SimGaussian}{
-#'   \code{opiInitialize(sd, display=NULL, maxStim=10000/pi)}
+#'   \code{opiInitialize(sd, display=c(-30, 30, -30, 30), maxStim=10000/pi)}
 #'   
 #'   If the chosen OPI implementation is \code{SimGaussian}, then \code{sd} is the
 #'   standard deviation value that the simulator will use for the slope/spread of
@@ -71,7 +71,7 @@ if (exists(".OpiEnv") && !exists("SimG", where=.OpiEnv))
 #' chooseOpi("SimGaussian")
 #' if (!is.null(opiInitialize(sd=2)))
 #'   stop("opiInitialize failed")
-simG.opiInitialize <- function(sd, display=NULL, maxStim=10000/pi) {
+simG.opiInitialize <- function(sd = 2, display = c(-30, 30, -30, 30), maxStim = 10000 / pi) {
     if (!is.numeric(sd) || (sd < 0)) {
         msg <- paste("Invalid standard deviation in opiInitialize for SimGaussian:",sd)
         warning(msg)
@@ -102,7 +102,7 @@ simG.opiInitialize <- function(sd, display=NULL, maxStim=10000/pi) {
 #' }
 #' @examples
 #' chooseOpi("SimGaussian")
-#' if (!is.null(opiInitialize(sd=2, display=c(-30,30,-30,30))))
+#' if (!is.null(opiInitialize(sd=2, display = NULL)))
 #'   stop("opiInitialize failed")
 #' if (!is.null(opiSetBackground(col="white",gridCol="grey")))
 #'   stop("opiSetBackground failed, which is very surprising!")

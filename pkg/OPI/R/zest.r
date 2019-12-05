@@ -176,7 +176,7 @@ ZEST.entropy <- function(state) {
 #' @seealso \code{\link{dbTocd}}, \code{\link{opiPresent}}
 #' @examples
 #' chooseOpi("SimHenson")
-#' if(!is.null(opiInitialize(type="C", cap=6)))
+#' if(!is.null(opiInitialize(type="C", cap=6, display=NULL)))
 #'   stop("opiInitialize failed")
 #'
 #' ##############################################
