@@ -43,6 +43,11 @@ packageStartupMessage("OPI version 2.9.1")
 # A list of available OPI implementations for chooseOpi to choose from, and 
 # the opi* functions to index using .OpiEnv$chooser.
 ################################################################################
+#' @rdname opiDistributor
+#' @format \code{opi.implementations} is a \code{list} containing a catalog of
+#' all specific methods that are dependent on the OPI implementation selected
+#' with chooseOpi
+#' @export
 opi.implementations <- list(
     list(
         name="Compass",
@@ -234,13 +239,25 @@ chooseOPI <- chooseOpi
 ####################################################################################
 # Simply send the opi*() call to the right implementation
 ####################################################################################
-opiDistributor <- function(method, ...) {
+#' @rdname opiDistributor
+#' @title FOR INTERNAL USE ONLY
+#' @description The method \code{opiDistributor} searches for the specific
+#' method of a general OPI \code{operation}, which depends on the OPI
+#' implementation selected with \code{\link{chooseOpi}}. It returns an error if no
+#' OPI implementation has been selected yet. A catalog of all specific methods are
+#' listed in \code{opi.implementations}. 
+#' @param operation A general OPI operation of the following methods to: \code{opiInitialize},
+#'   \code{opiPresent} \code{opiClose}, \code{opiSetBackground},
+#'   \code{opiQueryDevice}
+#' @param ... other parameters to pass to the methods
+#' @export
+opiDistributor <- function(operation, ...) {
     if (!exists("chooser", where=.OpiEnv) || is.na(.OpiEnv$chooser)) {
         msg <- "You have not chosen a valid OPI implementation. Use chooseOpi()"
         warning(msg)
         return(msg)
     }
-    toCall <- opi.implementations[[.OpiEnv$chooser]][[method]]
+    toCall <- opi.implementations[[.OpiEnv$chooser]][[operation]]
     allowedArgs <- names(formals(toCall))
     haveArgs    <- names(list(...))
 #print(paste("Allowed args: ", allowedArgs))
@@ -249,7 +266,7 @@ opiDistributor <- function(method, ...) {
     argsNotPassed  <- setdiff(haveArgs, argsToPass)
 
     if (length(argsNotPassed) > 0)
-        warning(paste(method, "Ignored argument ", argsNotPassed, "\n"))
+        warning(paste(operation, "Ignored argument ", argsNotPassed, "\n"))
 #print(paste("Passing args: ", argsToPass))
     result <- do.call(toCall, list(...)[argsToPass])
 
