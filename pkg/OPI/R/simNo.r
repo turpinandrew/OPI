@@ -29,7 +29,7 @@ simNo.opiQueryDevice   <- function() { return (list(type="SimNo", isSim=TRUE)) }
 #
 # Return NULL if succesful, string error message otherwise  
 ################################################################################
-simNo.opiInitialize <- function(display = c(-30, 30, -30, 30)) {
+simNo.opiInitialize <- function(display = NA) {
     if(simDisplay.setupDisplay(display))
         warning("opiInitialize (SimNo): display parameter may not contain 4 numbers.")
     return(NULL)

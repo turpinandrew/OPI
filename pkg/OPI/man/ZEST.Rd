@@ -176,7 +176,7 @@ that maintain state. See examples below.
 }
 \examples{
 chooseOpi("SimHenson")
-if(!is.null(opiInitialize(type="C", cap=6, display=NULL)))
+if(!is.null(opiInitialize(type="C", cap=6)))
   stop("opiInitialize failed")
 
 ##############################################

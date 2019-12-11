@@ -57,7 +57,7 @@ if (exists(".OpiEnv") && !exists("SimHRT", where=.OpiEnv))
 #' @param rtFP response time for false positives ??? for "SimHensonRT"
 #' @details
 #' \subsection{SimHensonRT}{
-#'   \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=c(-30, 30, -30, 30), maxStim=10000/pi, rtData, rtFP=1:1600)}
+#'   \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NA, maxStim=10000/pi, rtData, rtFP=1:1600)}
 #'   
 #'   If the chosen OPI implementation is \code{SimHensonRT}, then the first six
 #'   parameters are as in \code{SimHenson}, and \code{rtData} is a data frame
@@ -77,12 +77,11 @@ if (exists(".OpiEnv") && !exists("SimHRT", where=.OpiEnv))
 #' # and display the stimuli in a plot region and simulate response times
 #' chooseOpi("SimHensonRT")
 #' data(RtSigmaUnits)
-#' oi <- opiInitialize(type="C", cap=6,
-#'                     display=NULL, rtData=RtSigmaUnits, rtFP=1:100)
+#' oi <- opiInitialize(type="C", cap=6, display=NA, rtData=RtSigmaUnits, rtFP=1:100)
 #' if (!is.null(oi))
 #'   stop("opiInitialize failed")
 simH_RT.opiInitialize <- function(type = "C", cap = 6, A = -0.081, B = 3.27,
-                                  display = c(-30, 30, -30, 30),
+                                  display = NA,
                                   maxStim = 10000 / pi,
                                   rtData = NULL, rtFP = 1:1600) {
     if (!is.element(type,c("N","G","C", "X"))) {
@@ -182,7 +181,7 @@ simH_RT.opiSetBackground <- function(col, gridCol) {
 #' # Same but with simulated reaction times
 #' chooseOpi("SimHensonRT")
 #' data(RtSigmaUnits)
-#' if (!is.null(opiInitialize(type="C", cap=6, display=NULL, rtData=RtSigmaUnits)))
+#' if (!is.null(opiInitialize(type="C", cap=6, rtData=RtSigmaUnits)))
 #'   stop("opiInitialize failed")
 #'
 #' dist <- (10 - 30)/min(exp(-0.098 * 30 + 3.62), 6)

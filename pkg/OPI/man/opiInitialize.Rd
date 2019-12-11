@@ -58,14 +58,14 @@ octo900.opiInitialize(
   zero_dB_is_10000_asb = TRUE
 )
 
-simG.opiInitialize(sd = 2, display = c(-30, 30, -30, 30), maxStim = 10000/pi)
+simG.opiInitialize(sd = 2, display = NA, maxStim = 10000/pi)
 
 simH.opiInitialize(
   type = "C",
   A = -0.081,
   B = 3.27,
   cap = 6,
-  display = c(-30, 30, -30, 30),
+  display = NA,
   maxStim = 10000/pi
 )
 
@@ -74,7 +74,7 @@ simH_RT.opiInitialize(
   cap = 6,
   A = -0.081,
   B = 3.27,
-  display = c(-30, 30, -30, 30),
+  display = NA,
   maxStim = 10000/pi,
   rtData = NULL,
   rtFP = 1:1600
@@ -308,7 +308,7 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{SimGaussian}{
-  \code{opiInitialize(sd, display=c(-30, 30, -30, 30), maxStim=10000/pi)}
+  \code{opiInitialize(sd, display=NA, maxStim=10000/pi)}
   
   If the chosen OPI implementation is \code{SimGaussian}, then \code{sd} is the
   standard deviation value that the simulator will use for the slope/spread of
@@ -318,7 +318,7 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{SimHenson}{
-  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi)}
+  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, maxStim=10000/pi)}
   
   If the chosen OPI implementation is \code{SimHenson}, then \code{type}
   can be one of: \code{"N"}, for normal patients; \code{"G"}, for POAG
@@ -343,7 +343,7 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{SimHensonRT}{
-  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=c(-30, 30, -30, 30), maxStim=10000/pi, rtData, rtFP=1:1600)}
+  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NA, maxStim=10000/pi, rtData, rtFP=1:1600)}
   
   If the chosen OPI implementation is \code{SimHensonRT}, then the first six
   parameters are as in \code{SimHenson}, and \code{rtData} is a data frame
@@ -392,20 +392,19 @@ if (!is.null(opiInitialize(sd=2)))
   stop("opiInitialize failed")
 # Set up a simple simulation for white-on-white perimetry
 chooseOpi("SimHenson")
-if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
+if (!is.null(opiInitialize(type="C", cap=6)))
   stop("opiInitialize failed")
 
 # Set up a simple simulation for white-on-white perimetry
 # and display the stimuli in a plot region
 chooseOpi("SimHenson")
-if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
+if (!is.null(opiInitialize(type="C", cap=6)))
   stop("opiInitialize failed")
 # Set up a simple simulation for white-on-white perimetry
 # and display the stimuli in a plot region and simulate response times
 chooseOpi("SimHensonRT")
 data(RtSigmaUnits)
-oi <- opiInitialize(type="C", cap=6,
-                    display=NULL, rtData=RtSigmaUnits, rtFP=1:100)
+oi <- opiInitialize(type="C", cap=6, display=NA, rtData=RtSigmaUnits, rtFP=1:100)
 if (!is.null(oi))
   stop("opiInitialize failed")
 }

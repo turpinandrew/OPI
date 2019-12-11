@@ -8,7 +8,7 @@ chooseOpi("SimHensonRT")
 
 rtData <- as.data.frame(cbind(Rt=rep(0, 100),Dist=rep(0, 100), Person=rep(0, 100)))
 
-e <- opiInitialize(type="C", A=NA, B=NA, cap=6, display=NULL, maxStim=10000/pi, rtData=rtData, rtFP=1:1600)
+e <- opiInitialize(type="C", A=NA, B=NA, cap=6, display=NA, maxStim=10000/pi, rtData=rtData, rtFP=1:1600)
 
 get_mean_dist<- function(speed)
 {

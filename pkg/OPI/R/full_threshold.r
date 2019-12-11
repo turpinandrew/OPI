@@ -148,7 +148,7 @@
 #'   return(s)
 #' }
 #' chooseOpi("SimHenson")
-#' if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
+#' if (!is.null(opiInitialize(type="C", cap=6)))
 #'   stop("opiInitialize failed")
 #'
 #' result <- FT(makeStim=makeStim, tt=30, fpr=0.15, fnr=0.01)

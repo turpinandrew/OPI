@@ -323,7 +323,7 @@ implementation that is set with \code{chooseOpi()}
   opiClose()
 }
 chooseOpi("SimGaussian")
-if (!is.null(opiInitialize(sd=2, display = NULL)))
+if (!is.null(opiInitialize(sd=2)))
   stop("opiInitialize failed")
 if (!is.null(opiSetBackground(col="white",gridCol="grey")))
   stop("opiSetBackground failed, which is very surprising!")

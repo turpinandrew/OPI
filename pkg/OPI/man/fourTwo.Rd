@@ -98,7 +98,7 @@ makeStim <- function(db, n) {
   return(s)
 }
 chooseOpi("SimHenson")
-if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
+if (!is.null(opiInitialize(type="C", cap=6)))
   stop("opiInitialize failed")
 
 ##############################################

@@ -346,7 +346,7 @@ makeStim <- function(db, n) {
 }
 
 chooseOpi("SimHenson")
-if (!is.null(opiInitialize(type="C", cap=6, display=NULL)))
+if (!is.null(opiInitialize(type="C", cap=6)))
   stop("opiInitialize failed")
 
 result <- opiPresent(stim=makeStim(10,0), tt=30, fpr=0.15, fnr=0.01)
@@ -359,7 +359,7 @@ if (!is.null(opiClose()))
 # Same but with simulated reaction times
 chooseOpi("SimHensonRT")
 data(RtSigmaUnits)
-if (!is.null(opiInitialize(type="C", cap=6, display=NULL, rtData=RtSigmaUnits)))
+if (!is.null(opiInitialize(type="C", cap=6, rtData=RtSigmaUnits)))
   stop("opiInitialize failed")
 
 dist <- (10 - 30)/min(exp(-0.098 * 30 + 3.62), 6)
