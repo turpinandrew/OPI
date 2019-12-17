@@ -84,7 +84,7 @@ load_image <- function(im, w, h) {
 #' For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
 #' @details
 #' \subsection{Daydream}{
-#'   \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 255), fovy = 90)}
+#'   \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 256), fovy = 90)}
 #'   
 #'   If the chosen OPI implementation is \code{Daydream}, then you must specify
 #'   the IP address of the Android phone that is in the Daydream, and the port on
@@ -93,7 +93,7 @@ load_image <- function(im, w, h) {
 #'   \itemize{
 #'     \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
 #'       cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
-#'       \code{seq(0, 4000, length.out = 255)}
+#'       \code{seq(0, 4000, length.out = 256)}
 #'     \item\code{fovy} Field of view in degrees in the y-axis. It is different depending on the device.
 #'       For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
 #'   }
@@ -105,7 +105,7 @@ load_image <- function(im, w, h) {
 daydream.opiInitialize <- function(
     ip="127.0.0.1",
     port=50008, 
-    lut = seq(0, 400, length.out = 255), # for pixel 1 max brightness is 402
+    lut = seq(0, 400, length.out = 256), # for pixel 1 max brightness is 400
     fovy = 90
 ) {
     cat("Looking for phone at ", ip, "\n")
