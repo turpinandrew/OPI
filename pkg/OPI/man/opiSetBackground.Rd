@@ -22,7 +22,7 @@ opiSetBackground(...)
 compass.opiSetBackground(lum = NA, color = NA, fixation = NA, tracking_on = NA)
 
 daydream.opiSetBackground(
-  lum = NA,
+  lum = 100,
   color = NA,
   fixation = "Cross",
   fix_cx = 0,

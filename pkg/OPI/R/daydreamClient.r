@@ -55,7 +55,8 @@ if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
 # for cd/m^2 param cdm2
 ###########################################################################
 find_pixel_value <- function(cdm2) {
-  return (which.min(abs(.OpiEnv$DayDream$LUT - cdm2) - 1))
+  # It is 8 bit depth, so it must return a value from 0 to 255
+  return (which.min(abs(.OpiEnv$DayDream$LUT - cdm2)) - 1)
 }
 
 ###########################################################################
@@ -139,7 +140,8 @@ daydream.opiInitialize <- function(
     assign("single_width", readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
     assign("single_height",readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
     readBin(.OpiEnv$DayDream$socket, "integer", size=1, endian=.OpiEnv$DayDream$endian) # the \n
-    
+    # set background
+    opiSetBackground()
     print(paste("Phone res", .OpiEnv$DayDream$width, .OpiEnv$DayDream$height, .OpiEnv$DayDream$single_width, .OpiEnv$DayDream$single_height))
     return(list(err=NULL))
 }
@@ -265,7 +267,7 @@ daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #' \subsection{Daydream}{ 
 #'   DETAILS
 #' }
-daydream.opiSetBackground <- function(lum=NA, color=NA, fixation="Cross",
+daydream.opiSetBackground <- function(lum=100, color=NA, fixation="Cross",
                                       fix_cx=0, fix_cy=0, fix_sx=1, fix_sy=1,
                                       fix_color=c(0,255,0),
                                       eye="L") {
