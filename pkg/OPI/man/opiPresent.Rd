@@ -198,7 +198,7 @@ a call to \code{\link{opiPresent}}.
 \subsection{Display}{
   Present a circle of radius \code{stim$size} and color \code{stim$color} 
   at \code{(stim$x, stim$y)} for \code{stim$duration} ms and wait for a keyboard 
-  response for \code{stim$responseWindow} ms.
+  or mouse response for \code{stim$responseWindow} ms.
   
   \code{stim$size}, \code{sitm$x} and \code{stim$y} are in the same units 
   as \code{xlim} and \code{ylim} as specified in \code{\link{opiInitialise}}.

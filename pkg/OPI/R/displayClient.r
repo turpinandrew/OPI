@@ -41,6 +41,7 @@ if (exists(".OpiEnv") && !exists("Display", where=.OpiEnv)) {
     .OpiEnv$Display$xlim <- NA
     .OpiEnv$Display$backgroundColor <- NA
     .OpiEnv$Display$devNumber <- NA
+    .OpiEnv$Display$oldDevice <- NA
 
     .OpiEnv$Display$FIX_CIRCLE <- 2
     .OpiEnv$Display$FIX_CROSS <- 1
@@ -110,6 +111,8 @@ display.opiInitialize <- function( xlim=c(-30, 30), ylim=c(-25,25), bg=grey(0.5)
     assign("xlim", xlim, envir = .OpiEnv$Display)
     assign("ylim", ylim, envir = .OpiEnv$Display)
     assign("bg", bg, envir = .OpiEnv$Display)
+
+    assign("oldDevice", options()$device, envir = .OpiEnv$Display)
     
     options(device="X11")
     dev.new()
@@ -127,7 +130,7 @@ display.opiInitialize <- function( xlim=c(-30, 30), ylim=c(-25,25), bg=grey(0.5)
 #' \subsection{Display}{
 #'   Present a circle of radius \code{stim$size} and color \code{stim$color} 
 #'   at \code{(stim$x, stim$y)} for \code{stim$duration} ms and wait for a keyboard 
-#'   response for \code{stim$responseWindow} ms.
+#'   or mouse response for \code{stim$responseWindow} ms.
 #'   
 #'   \code{stim$size}, \code{sitm$x} and \code{stim$y} are in the same units 
 #'   as \code{xlim} and \code{ylim} as specified in \code{\link{opiInitialise}}.
@@ -170,6 +173,7 @@ display.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     pres_done <- FALSE
 
     hKey <- function(k) key <<- Sys.time()
+    hMouse <- function(b,x,y) key <<- Sys.time()
     hIdle <- function() {
         if (!pres_done && as.numeric(Sys.time() - pres_start_time) >= stim$duration/1000 ) {
             pres_done <<- TRUE
@@ -184,7 +188,7 @@ display.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     symbols(stim$x, stim$y, circles=stim$size, add=TRUE, fg=NA, bg=stim$color, inches=FALSE)
     pres_start_time <- Sys.time()
 
-    getGraphicsEvent("", onKeybd = hKey, onIdle= hIdle)
+    getGraphicsEvent("", onKeybd = hKey, onMouseDown = hMouse, onIdle= hIdle)
 
     if (!is.na(key)) {  # might have to finish the presentation
         while (as.numeric(Sys.time() - pres_start_time) < stim$duration/1000 )
@@ -284,6 +288,10 @@ display.opiSetBackground <- function(lum=NA, color=grey(0.7), fix_type=.OpiEnv$D
 #' }
 display.opiClose <- function() {
     dev.off(.OpiEnv$Display$devNumber)
+
+    if (!is.na(.OpiEnv$Display$oldDevice))
+        options(device=.OpiEnv$Display$oldDevice)
+
     return(list(err=NULL))
 }
 
