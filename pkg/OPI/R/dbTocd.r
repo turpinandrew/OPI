@@ -48,4 +48,7 @@ dbTocd <- function(db, maxStim=10000/pi) { maxStim * 10^(-db/10) }
 #' dB <- cdTodb(1/pi)      # 40 dB
 #' dB <- cdTodb(0.1/pi)    # 50 dB
 #' @export
-cdTodb <- function(cd, maxStim=10000/pi) { -10*log10(cd/maxStim) }
+cdTodb <- function(cd, maxStim=10000/pi) { 
+    stopifnot(cd > 0)
+    -10*log10(cd/maxStim) 
+}

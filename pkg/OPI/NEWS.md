@@ -120,3 +120,5 @@
  * Removed all individual environments for each perimeter and made one OPIEnv (not backwards compatible)
     * .Octopus900Env$x has become .OPIEnv$O900$x
  * Added gazeFeed to a folder for Octopus 900
+ * Added Display as an OPI client.
+ * Fixed cdTodb to stop if given <= 0 input

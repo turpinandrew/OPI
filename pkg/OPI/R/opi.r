@@ -144,12 +144,20 @@ opi.implementations <- list(
         opiSetBackground = "daydream.opiSetBackground",
         opiQueryDevice   = "daydream.opiQueryDevice",
         opiPresent       = "daydream.opiPresent"
+    ),
+    list(
+        name="Display",
+        opiInitialize    = "display.opiInitialize",
+        opiClose         = "display.opiClose",
+        opiSetBackground = "display.opiSetBackground",
+        opiQueryDevice   = "display.opiQueryDevice",
+        opiPresent       = "display.opiPresent"
     )
 )
 
 ################################################################################
 # Input parameters
-#   opiImplementation  Either "Octopus900", "HEP", "SimHenson", "SimGaussian"
+#   opiImplementation  Either "Octopus900", "HEP", "SimHenson", "SimGaussian", ... 
 #                      If NULL, prints a list of possible values. Returns TRUE.
 # Side effect
 #   Sets .OpiEnv$chooser
@@ -176,8 +184,11 @@ opi.implementations <- list(
 #'   \item\code{"Octopus900F310"} for interfacing with the Octopus 900 using Logitech
 #'   F310 controller.
 #'   \item\code{"Octopus600"} for interfacing with the Octopus 600.
-#'   \item\code{"HEP"}        not working so well in new HEPs.
+#'   \item\code{"HEP"}        not working so well in HEPs.
 #'   \item\code{"KowaAP7000"} for interfacing with Kowa AP-7000.
+#'   \item\code{"Imo"} for interfacing with CrewT's Imo head mounted perimeter.
+#'   \item\code{"DayDream"} for interfacing with an Android phone in a Google Daydream
+#'   \item\code{"Display"} for interfacing with a shiny plot area on the current machine.
 #'   \item\code{NULL}         print a list of available OPI implementations.
 #' }
 #' @return Returns TRUE if successful, FALSE otherwise.

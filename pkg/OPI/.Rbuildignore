@@ -4,3 +4,5 @@ R/.DS_Store
 .DS_Store
 R/k_notes.txt
 R/k_test.r
+^.*\.Rproj$
+^\.Rproj\.user$
