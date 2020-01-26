@@ -301,13 +301,14 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
   } else {
     err <- s[1]
   }
-  
+  pupilX <- ifelse(length(s) > 3, s[4], NA)
+  pupilY <- ifelse(length(s) > 4, s[5], NA)
   return(list(
     err=err,
     seen=as.numeric(s[2]),
     time=as.numeric(s[3]),
-    pupilX=ifelse(length(s) > 3, as.numeric(s[4]), NA),
-    pupilY=ifelse(length(s) > 4, as.numeric(s[5]), NA)
+    pupilX=as.numeric(sub(",", ".", pupilX)),
+    pupilY=as.numeric(sub(",", ".", pupilY))
   ))
 }
 
