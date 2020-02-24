@@ -332,7 +332,7 @@ daydream.opiClose <- function() {
     if (res != "OK")
         return(list(err="Trouble closing daydream connection."))
     else
-        return(list(err=NULL))
+        return(NULL)
 }
 
 ##############################################################################
