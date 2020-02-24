@@ -297,7 +297,8 @@ daydream.opiSetBackground <- function(lum=100, color=NA, fixation="Cross",
         im <- matrix(bg, 3, npix)
         x <- 0:npix %% imsize + 1
         y <- 0:npix %/% imsize + 1
-        im[,which(x == m | y == m)] <- fix_color
+        # thickness of 5 lines
+        im[,which((x >= m - 2 & x <= m + 2) | (y >= m - 2 & y <= m + 2))] <- fix_color
         if (!load_image(im, imsize, imsize))
             return("Trouble loading fixation image in opiSetBackground.")
         writeLines(paste("OPI_MONO_BG_ADD", eye, fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
