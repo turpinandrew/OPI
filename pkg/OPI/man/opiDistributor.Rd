@@ -5,9 +5,11 @@
 \alias{opi.implementations}
 \alias{opiDistributor}
 \title{FOR INTERNAL USE ONLY}
-\format{\code{opi.implementations} is a \code{list} containing a catalog of
+\format{
+\code{opi.implementations} is a \code{list} containing a catalog of
 all specific methods that are dependent on the OPI implementation selected
-with chooseOpi}
+with chooseOpi
+}
 \usage{
 opi.implementations
 

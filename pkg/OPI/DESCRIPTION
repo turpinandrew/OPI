@@ -18,5 +18,5 @@ URL: http://people.eng.unimelb.edu.au/aturpin/opi/index.html
 Depends: methods
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Collate: OPI-package.r opi.r compassClient.r displayClient.r daydreamClient.r dbTocd.r fourTwo.r full_threshold.r imoClient.r kowaAP7000Client.r mocs.r octopus600.r octopus900Client.r pix2deg.r simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r zest.r data-RtDbUnits.r data-RtSigmaUnits.r opiKineticStimulus.r opiStaticStimulus.r opiTemporalStimulus.r

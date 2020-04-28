@@ -5,7 +5,9 @@
 \alias{RtSigmaUnits}
 \title{Response times to white-on-white Goldmann Size III targets for 12 subjects
 in sigma units}
-\format{An object of class \code{data.frame} with 30620 rows and 3 columns.}
+\format{
+An object of class \code{data.frame} with 30620 rows and 3 columns.
+}
 \usage{
 RtSigmaUnits
 }

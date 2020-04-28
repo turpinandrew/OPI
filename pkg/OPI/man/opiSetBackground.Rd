@@ -34,15 +34,15 @@ display.opiSetBackground(
 )
 
 daydream.opiSetBackground(
-  lum = 100,
-  color = NA,
+  eye,
+  lum = 10,
+  color = "white",
   fixation = "Cross",
   fix_cx = 0,
   fix_cy = 0,
-  fix_sx = 1,
-  fix_sy = 1,
-  fix_color = c(0, 255, 0),
-  eye = "L"
+  fix_sx = 2,
+  fix_sy = 2,
+  fix_color = "green"
 )
 
 imo.opiSetBackground(
@@ -207,17 +207,22 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{Daydream}{
-  \code{opiSetBackground(lum=NA, color=NA, fixation="Cross", fixation_size=11, fixation_color=c(0,128,0), eye="L")}
+  \code{opiSetBackground(lum=10, color="white", fixation="Cross", fix_cx=0, fix_cy=0, fix_sx=2, fix_sy=2, fix_lum=10, fix_color="green", eye="L")}
   \itemize{
-    \item{\code{lum}} in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey value in \code{lut} from \code{opiInitialize}.
-    \item{\code{color}} is ignored.
+    \item{\code{lum}} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey
+      value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
+    \item{\code{color}} color of the background. It can be \code{'white'} (default) or
+      \code{'green'}.
     \item{\code{fixation}} can only be \code{'Cross'} at the moment.
     \item{\code{fix_cx}, \code{fix_cy}} fixation (x, y) position in degrees
       of visual angle
     \item{\code{fix_sx}, \code{fix_sy}} dimensions of fixation target in
       degrees of visual angle
-    \item{\code{fix_color}} RGB value of coor of fixation cross. Values
-      in range [0,255].
+    \item{\code{fix_lum}} luminance of the fixation target in cd/\eqn{\mbox{m}^2}{m^2} is set to
+      nearest grey value in \code{lut} from \code{opiInitialize}. Default
+      is 15 cd/\eqn{\mbox{m}^2}{m^2}
+    \item{\code{fix_color}} color of the fixation target. It can be \code{'white'} or
+      \code{'green'}  (default).
   }
 }
 

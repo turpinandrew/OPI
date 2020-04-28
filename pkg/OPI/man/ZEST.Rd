@@ -11,8 +11,8 @@
 ZEST(
   domain = 0:40,
   prior = rep(1/length(domain), length(domain)),
-  likelihood = sapply(domain, function(tt) 0.03 + (1 - 0.03 - 0.03) * (1 - pnorm(domain,
-    tt, 1))),
+  likelihood = sapply(domain, function(tt) 0.03 + (1 - 0.03 - 0.03) * (1 -
+    pnorm(domain, tt, 1))),
   stopType = "S",
   stopValue = 1.5,
   minStimulus = head(domain, 1),
@@ -31,8 +31,8 @@ ZEST(
 ZEST.start(
   domain = 0:40,
   prior = rep(1/length(domain), length(domain)),
-  likelihood = sapply(domain, function(tt) 0.03 + (1 - 0.03 - 0.03) * (1 - pnorm(domain,
-    tt, 1))),
+  likelihood = sapply(domain, function(tt) 0.03 + (1 - 0.03 - 0.03) * (1 -
+    pnorm(domain, tt, 1))),
   stopType = "S",
   stopValue = 1.5,
   minStimulus = head(domain, 1),

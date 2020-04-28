@@ -174,7 +174,7 @@ implementation-dependent error.
 }
 
 \subsection{Daydream}{
-  DETAILS
+  Always returns NULL.
 }
 
 \subsection{imo}{
@@ -232,6 +232,8 @@ implementation that is set with \code{chooseOpi()}
   which the server running on the phone is listening.
   
   \itemize{
+    \item\code{ip} is the IP address of the Daydream server as a string
+    \item\code{port} is the TCP/IP port of the Daydream server as a number
     \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
       cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
       \code{seq(0, 4000, length.out = 256)}
