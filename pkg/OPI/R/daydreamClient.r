@@ -77,7 +77,6 @@ load_image <- function(im, w, h) {
     return(FALSE)
   }
   res <- readLines(.OpiEnv$DayDream$socket, n=1)
-  print(paste("Load image", res))
   return (res == "OK")
 }
 
@@ -206,10 +205,8 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
         seen <- readBin(.OpiEnv$DayDream$socket, "integer", size=1)
         time <- readBin(.OpiEnv$DayDream$socket, "double", size=4, endian=.OpiEnv$DayDream$endian)
         readBin(.OpiEnv$DayDream$socket, "integer", size=1, endian=.OpiEnv$DayDream$endian) # the \n
-        
-        cat("seen: "); print(seen)
-        cat("time: "); print(time)
-        seen <- seen == '1'
+        # seen or not seen? if 1, then seen is TRUE, otherwise is FALSE
+        seen <- seen == "1"
         
         if (!seen && time == 0)
             return(list(err="Background image not set", seen=NA, time=NA))
