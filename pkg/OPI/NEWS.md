@@ -122,3 +122,4 @@
  * Added gazeFeed to a folder for Octopus 900
  * Added Display as an OPI client.
  * Fixed cdTodb to stop if given <= 0 input
+ * Fixed some color="white" examples. (Color is machine specific)

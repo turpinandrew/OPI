@@ -270,7 +270,13 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
     warning("opiPresent: no stim responseWindow specified. Assuming 1500ms.")
     stim$responseWindow <- 1500
   }
+
   if (is.null(stim$color)) stim$color <- .OpiEnv$O900$STIM_WHITE
+
+  if (!(stim$color %in% c(.OpiEnv$O900$STIM_WHITE, .OpiEnv$O900$STIM_BLUE, .OpiEnv$O900$STIM_RED))) {
+    warning("opiPresent: bad stim color. assuming .OpiEnv$O900$STIM_WHITE")
+    stim$color <- .OpiEnv$O900$STIM_WHITE
+  }
   
   if(min(abs(.OpiEnv$O900$GOLDMANN - stim$size), na.rm=TRUE) > 0.05)
     warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
@@ -381,6 +387,9 @@ octo900.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
     warning("opiPresent: no stim responseWindow specified. Assuming 1500ms.")
     stim$responseWindow <- 1500
   }
+
+  if (!is.null(stim$color)) 
+    warning("opiPresent opiTemporalStimulus: stim color ignored.")
   
   if(min(abs(.OpiEnv$O900$GOLDMANN - stim$size)) != 0)
     warning("opiPresent: Rounding stimulus size to nearest Goldmann size")
@@ -426,6 +435,9 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
   if (is.null(stim$sizes)) stop("opiPresent: no sizes values given in kinetic stim")
   if (is.null(stim$levels)) stop("opiPresent: no levels values given in kinetic stim")
   if (is.null(stim$speeds)) stop("opiPresent: no speeds values given in kinetic stim")
+
+  if (!is.null(stim$color)) 
+    warning("opiPresent opiKineticStimulus: stim color ignored.")
   
   # convert sizes to GOLDMANN
   stim$sizes <- sapply(stim$sizes, function(s) {
