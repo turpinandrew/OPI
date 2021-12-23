@@ -207,7 +207,7 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{Daydream}{
-  \code{opiSetBackground(lum=10, color="white", fixation="Cross", fix_cx=0, fix_cy=0, fix_sx=2, fix_sy=2, fix_lum=10, fix_color="green", eye="L")}
+  \code{opiSetBackground(eye, lum=10, color="white", fixation="Cross", fix_cx=0, fix_cy=0, fix_sx=2, fix_sy=2, fix_lum=10, fix_color="green")}
   \itemize{
     \item{\code{lum}} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey
       value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
