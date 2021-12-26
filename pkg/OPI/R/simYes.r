@@ -60,7 +60,7 @@ simYes.opiSetBackground <- function(col, gridCol) {
 #'   stimuli is always yes, hence \code{\link{opiPresent}} always returns
 #'   \code{err=NULL}, \code{seen=TRUE}, and \code{time=0}.
 #' }
-simYes.opiPresent <- function(stim) {
+simYes.opiPresent <- function(stim, nextStim=NULL) {
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 
     return ( list(

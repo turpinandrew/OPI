@@ -60,9 +60,9 @@ simH_RT.opiPresent(
   notSeenToSeen = TRUE
 )
 
-simNo.opiPresent(stim)
+simNo.opiPresent(stim, nextStim = NULL)
 
-simYes.opiPresent(stim)
+simYes.opiPresent(stim, nextStim = NULL)
 }
 \arguments{
 \item{stim}{A list of class \code{\link{opiStaticStimulus}},

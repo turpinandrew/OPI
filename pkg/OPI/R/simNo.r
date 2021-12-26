@@ -60,7 +60,7 @@ simNo.opiSetBackground <- function(col, gridCol) {
 #'   stimuli is always no, hence \code{\link{opiPresent}} always returns
 #'   \code{err=NULL}, \code{seen=FALSE}, and \code{time=0}.
 #' }
-simNo.opiPresent <- function(stim) {
+simNo.opiPresent <- function(stim, nextStim=NULL) {
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 
     return ( list(
