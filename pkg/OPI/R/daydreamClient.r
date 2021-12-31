@@ -113,7 +113,7 @@ daydream.opiInitialize <- function(
     fovy = 90
 ) {
     cat("Looking for phone at ", ip, "\n")
-    suppressWarnings(tryCatch(    
+    suppressWarnings(tryCatch(
         v <- socketConnection(host = ip, port,
                               blocking = TRUE, open = "w+b",
                               timeout = 10)
@@ -287,20 +287,34 @@ daydream.opiSetBackground <- function(eye, lum=10, color="white", fixation="Cros
     }
     # get pixel value of background from luminance in cd/m2
     bg <- find_pixel_value(lum)
-    writeLines(paste("OPI_MONO_SET_BG", eye, bg), .OpiEnv$DayDream$socket)
-    res <- readLines(.OpiEnv$DayDream$socket, n=1)
-    if (res != "OK")
+    if(eye != "B") {  # one eye
+      writeLines(paste("OPI_MONO_SET_BG", eye, bg), .OpiEnv$DayDream$socket)
+      res <- readLines(.OpiEnv$DayDream$socket, n=1)
+      if (res != "OK")
         return(paste0("Cannot set background to ",bg," in opiSetBackground"))
+    } else {  # both eyes
+      writeLines(paste("OPI_MONO_SET_BG", "L", bg), .OpiEnv$DayDream$socket)
+      res <- readLines(.OpiEnv$DayDream$socket, n=1)
+      if (res != "OK")
+        return(paste0("Cannot set background to ",bg," in opiSetBackground"))
+      writeLines(paste("OPI_MONO_SET_BG", "R", bg), .OpiEnv$DayDream$socket)
+      res <- readLines(.OpiEnv$DayDream$socket, n=1)
+      if (res != "OK")
+        return(paste0("Cannot set background to ",bg," in opiSetBackground"))
+    }
     # add background information
-    .OpiEnv$DayDream$background_color   <- color
-    .OpiEnv$DayDream$fix_color          <- fix_color
-    if (eye == "L") {
+    .OpiEnv$DayDream$background_color <- color
+    .OpiEnv$DayDream$fix_color        <- fix_color
+    if(eye == "L") {
       .OpiEnv$DayDream$background_left  <- bg
       .OpiEnv$DayDream$background_right <- 0
-    } else {
+    } else if(eye == "R") {
       .OpiEnv$DayDream$background_left  <- 0
+      .OpiEnv$DayDream$background_right <- bg  
+    } else {
+      .OpiEnv$DayDream$background_left  <- bg
       .OpiEnv$DayDream$background_right <- bg
-    }   
+    }
     # if even, add 1 to fixation size
     imsize <- 51
     m <- (imsize + 1) / 2
@@ -325,10 +339,22 @@ daydream.opiSetBackground <- function(eye, lum=10, color="white", fixation="Cros
     im[,idx] <- col
     if (!load_image(im, imsize, imsize))
       return("Trouble loading fixation image in opiSetBackground.")
-    writeLines(paste("OPI_MONO_BG_ADD", eye, fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
-    res <- readLines(.OpiEnv$DayDream$socket, n=1)
-    if (res != "OK")
-      return("Trouble adding fixation to background in opiSetBackground")
+    if(eye != "B") { # one eye
+      writeLines(paste("OPI_MONO_BG_ADD", eye, fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
+      res <- readLines(.OpiEnv$DayDream$socket, n=1)
+      if (res != "OK")
+        return("Trouble adding fixation to background in opiSetBackground")
+      
+    } else { # both eyes
+      writeLines(paste("OPI_MONO_BG_ADD", "L", fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
+      res <- readLines(.OpiEnv$DayDream$socket, n=1)
+      if (res != "OK")
+        return("Trouble adding fixation to background in opiSetBackground")
+      writeLines(paste("OPI_MONO_BG_ADD", "R", fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
+      res <- readLines(.OpiEnv$DayDream$socket, n=1)
+      if (res != "OK")
+        return("Trouble adding fixation to background in opiSetBackground")
+    }
     return(NULL)
 }
 
