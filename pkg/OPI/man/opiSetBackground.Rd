@@ -23,26 +23,26 @@ opiSetBackground(...)
 compass.opiSetBackground(lum = NA, color = NA, fixation = NA, tracking_on = NA)
 
 display.opiSetBackground(
-  lum = NA,
-  color = grey(0.7),
-  fix_type = .OpiEnv$Display$FIX_CROSS,
-  fix_cx = 0,
-  fix_cy = 0,
-  fix_sx = 1,
-  fix_sy = 1,
-  fix_color = "green"
+  lum = .OpiEnv$Display$background_lum,
+  color = .OpiEnv$Display$background_color,
+  fixation = .OpiEnv$Display$fixation,
+  fix_cx = .OpiEnv$Display$fix_cx,
+  fix_cy = .OpiEnv$Display$fix_cy,
+  fix_sx = .OpiEnv$Display$fix_sx,
+  fix_sy = .OpiEnv$Display$fix_sy,
+  fix_color = .OpiEnv$Display$fix_color
 )
 
 daydream.opiSetBackground(
   eye,
-  lum = 10,
-  color = "white",
-  fixation = "Cross",
-  fix_cx = 0,
-  fix_cy = 0,
-  fix_sx = 2,
-  fix_sy = 2,
-  fix_color = "green"
+  lum = .OpiEnv$DayDream$background_lum,
+  color = .OpiEnv$DayDream$background_color,
+  fixation = .OpiEnv$DayDream$fixation,
+  fix_cx = .OpiEnv$DayDream$fix_cx,
+  fix_cy = .OpiEnv$DayDream$fix_cy,
+  fix_sx = .OpiEnv$DayDream$fix_sx,
+  fix_sy = .OpiEnv$DayDream$fix_sy,
+  fix_color = .OpiEnv$DayDream$fix_color
 )
 
 imo.opiSetBackground(
@@ -94,9 +94,6 @@ simYes.opiSetBackground(col, gridCol)
 \item{fixation}{fixation target}
 
 \item{tracking_on}{Tracking on or off}
-
-\item{fix_type}{One of \code{.OpiEnv$Display$FIX_NONE}, \code{.OpiEnv$Display$FIX_CROSS}, 
-or \code{.OpiEnv$Display$FIX_CIRCLE},}
 
 \item{fix_cx}{fixation x position in degrees of visual angle. Default is 0}
 
@@ -203,7 +200,7 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{Display}{
-  \code{opiSetBackground(lum=NA, color=grey(0.7), fix_type=.OpiEnv$Display$FIX_CROSS, fix_cx=0, fix_cy=0,fix_sx=1, fix_sy=1, fix_color="green")}
+  \code{opiSetBackground(TODO)}
 }
 
 \subsection{Daydream}{
@@ -336,10 +333,14 @@ implementation that is set with \code{chooseOpi()}
 \dontrun{
   # Set up a Display and wait for a key press in it.
   chooseOpi("Display")
-  if (!is.null(opiInitialize()))
+  if (!is.null(opiInitialize(width = 1680, height = 1050, ppi = 128, viewdist = 25)))
     stop("opiInitialize failed")
 
-  opiSetBackground(color=grey(0.8), fix_type=.OpiEnv$Display$FIX_CIRCLE, fix_sx=2)
+  opiSetBackground()
+  opiSetBackground(lum = 100, color = "white", fixation = "Circle")
+  opiSetBackground(lum = 100, color = "white", fixation = "Cross", fix_color = "red",
+                   fix_cx = 2, fix_cy = 5, fix_sx = 1, fix_sy = 2)
+  opiClose()
 }
 \dontrun{
   chooseOpi("Octopus900")

@@ -23,7 +23,13 @@ opiInitialise(...)
 
 compass.opiInitialize(ip = "192.168.1.2", port = 44965)
 
-display.opiInitialize(xlim = c(-30, 30), ylim = c(-25, 25), bg = grey(0.5))
+display.opiInitialize(
+  width,
+  height,
+  ppi,
+  viewdist,
+  lut = seq(0, 400, length.out = 256)
+)
 
 daydream.opiInitialize(
   ip = "127.0.0.1",
@@ -90,11 +96,13 @@ simH_RT.opiInitialize(
 
 \item{port}{port number on which server is listening}
 
-\item{xlim}{Limits of x coordinates of stimuli and bounds of display area}
+\item{width}{Width of the screen in pixels}
 
-\item{ylim}{Limits of y coordinates of stimuli and bounds of display area}
+\item{height}{Height of the screen in pixels}
 
-\item{bg}{Background color of display}
+\item{ppi}{Pixels per inch of the display}
+
+\item{viewdist}{Viewing distance in cm}
 
 \item{lut}{Look up table mapping pixel values to cd/m2}
 
@@ -217,11 +225,21 @@ implementation that is set with \code{chooseOpi()}
 }
 
 \subsection{Display}{
-  \code{opiInitialize(xlim=c(-30, 30), ylim=c(-25,25), bg=grey(0.5))}
+  \code{opiInitialize((width, height, ppi, viewdist, lut = .OpiEnv$Display$LUT)
+  )}
   
   If the chosen OPI implementation is \code{Display}, then you can specify
   the limits of the plot area and the background color of the plot area.
   Note that this assumes \code{link{X11()}} is available on the platform.
+
+  We need to know the physical dimensions of the screen and the window
+  generated in order to calculate stimulus position and size in degrees
+  of visual angle. The physical dimensions in inches are calculated from
+  width, height, and ppi. The pixel size pix per degree is then obtained
+  using viewdist. A gamma function for the screen should be obtained and
+  its lut passed to convert from luminance in cd/m2 to 8-bit pixel value
+  (256 levels).
+
 }
 
 \subsection{Daydream}{
@@ -393,13 +411,12 @@ implementation that is set with \code{chooseOpi()}
 \dontrun{
   # Set up a Display and wait for a key press in it.
   chooseOpi("Display")
-  if (!is.null(opiInitialize()))
+  if (!is.null(opiInitialize(width = 1680, height = 1050, ppi = 128, viewdist = 25)))
     stop("opiInitialize failed")
 
-  text(0,0, "Press a key when resized to your liking")
-  getGraphicsEvent("Waiting for key press", onKeybd = function(key) return(TRUE))
+  opiSetBackground(lum = 100, color = "white", fixation = "Circle")
 
-  opiSetBackground(color=grey(0.8), fix_type=.OpiEnv$Display$FIX_CIRCLE)
+  opiClose()
 }
 \dontrun{
   # Set up the imo

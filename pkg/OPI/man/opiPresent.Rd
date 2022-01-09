@@ -357,15 +357,21 @@ a call to \code{\link{opiPresent}}.
 }
 \examples{
 \dontrun{
-    # Display a spot
-  chooseOpi("Display")
-  opiInitialise()
-  text(0,0, "Press a key when ready")
-  getGraphicsEvent("Waiting for key press", onKeybd = function(key) return(TRUE))
+# Display a spot
+ chooseOpi("Display")
+ if(!is.null(opiInitialize(width = 1680, height = 1050, ppi = 128, viewdist = 25)))
+   stop("opiInitialize failed")
+ opiSetBackground(lum = 50, color = "white", fixation = "Cross")
 
-  s <- list(x=10, y=10, size=2, color="red", duration=200, responseWindow=1500)
-  class(s) <- "opiStaticStimulus"
-  opiPresent(s)
+ makeStim <- function(db) {
+   s <- list(x = 9, y = 9, level = dbTocd(db, 400), size = 1.72, color = "white",
+             duration = 1000, responseWindow = 1000)
+   class(s) <- "opiStaticStimulus"
+   return(s)
+ }
+ result <- opiPresent(makeStim(0))
+
+ opiClose()
 }
 # Stimulus is Size III white-on-white as in the HFA
 makeStim <- function(db, n) {

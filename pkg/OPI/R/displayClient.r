@@ -19,76 +19,105 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Modified
-#
-
-#' @importFrom grDevices dev.new dev.off dev.set getGraphicsEvent
-#' @importFrom graphics lines polygon symbols
-NULL
-
 
 ###################################################################
-# .OpiEnv$DayDream$socket is the connection to the daydream
-# .OpiEnv$DayDream$LUT has 256 entries. LUT[x] is cd/m^2 value for grey level x
-# .OpiEnv$DayDream$fovy default is 90
-# .OpiEnv$DayDream$...    constants and setting variables
+# .OpiEnv$Display$width window width in pixels
+# .OpiEnv$Display$height window height in pixels
+# .OpiEnv$Display$pixsize viewing distance in cm
+# .OpiEnv$Display$LUT has 256 entries. LUT[x] is cd/m^2 value for grey level x
 ###################################################################
 if (exists(".OpiEnv") && !exists("Display", where=.OpiEnv)) {
-  assign("Display", new.env(10), envir=.OpiEnv)
-  
-    .OpiEnv$Display$ylim <- NA
-    .OpiEnv$Display$xlim <- NA
-    .OpiEnv$Display$backgroundColor <- NA
-    .OpiEnv$Display$devNumber <- NA
-    .OpiEnv$Display$oldDevice <- NA
-
-    .OpiEnv$Display$FIX_CIRCLE <- 2
-    .OpiEnv$Display$FIX_CROSS <- 1
-    .OpiEnv$Display$FIX_NONE <- 0
-
-    .OpiEnv$Display$fix_cx  <- 0
-    .OpiEnv$Display$fix_cy  <- 0
-    .OpiEnv$Display$fix_sx  <- 1
-    .OpiEnv$Display$fix_sy  <- 1
-    .OpiEnv$Display$fix_color <- c(0,255,0)
-    .OpiEnv$Display$fix_type <- .OpiEnv$Display$FIX_NONE
+  assign("Display", new.env(25), envir=.OpiEnv)
+  # device management
+  .OpiEnv$Display$oldDevice <- NA
+  .OpiEnv$Display$devNumber <- NA
+  # window properties
+  .OpiEnv$Display$widthin  <- NA # in inches
+  .OpiEnv$Display$heightin <- NA # in inches
+  .OpiEnv$Display$widthpx  <- NA # in pixels
+  .OpiEnv$Display$heightpx <- NA # in pixels
+  .OpiEnv$Display$LUT      <- NA # look up table
+  # x and y limits of the display in degrees
+  .OpiEnv$Display$pixsize <- NA # ppi
+  .OpiEnv$Display$xlimsc  <- NA
+  .OpiEnv$Display$ylimsc  <- NA
+  # x and y limits of the window in degrees
+  .OpiEnv$Display$xlim    <- NA
+  .OpiEnv$Display$ylim    <- NA
+  # background data and defaults
+  .OpiEnv$Display$background_lum   <- NA
+  .OpiEnv$Display$background_color <- NA
+  .OpiEnv$Display$fixation         <- NA
+  .OpiEnv$Display$fix_cx           <- NA
+  .OpiEnv$Display$fix_cy           <- NA
+  .OpiEnv$Display$fix_sx           <- NA
+  .OpiEnv$Display$fix_sy           <- NA
+  .OpiEnv$Display$fix_color        <- NA
 }
 
-drawBackground <- function() {
-    p <- par('usr')
-    polygon(c(p[1], p[1], p[2], p[2]), c(p[3], p[4], p[4], p[3]), 
-        border=NA, col=.OpiEnv$Display$bg)
+###########################################################################
+# Find the closest pixel value (index into .OpiEnv$Display$LUT less 1)
+# for cd/m^2 param cdm2
+###########################################################################
+# We force the screen to act as an 8-bit device, so it must return a value
+# from 0 to 255
+find_pixel_value_display <- function(cdm2)
+  return(which.min(abs(.OpiEnv$Display$LUT - cdm2)) - 1)
 
-    if (.OpiEnv$Display$fix_type == .OpiEnv$Display$FIX_CROSS) {
-        lines(.OpiEnv$Display$fix_cx + c(-.OpiEnv$Display$fix_sx, .OpiEnv$Display$fix_sx),
-            c(.OpiEnv$Display$fix_cy,.OpiEnv$Display$fix_cy),
-            col=.OpiEnv$Display$fix_color
-        )
-        lines(c(.OpiEnv$Display$fix_cx,.OpiEnv$Display$fix_cx),
-            .OpiEnv$Display$fix_cy + c(-.OpiEnv$Display$fix_sy, .OpiEnv$Display$fix_sy),
-            col=.OpiEnv$Display$fix_color
-        )
-    } else if (.OpiEnv$Display$fix_type == .OpiEnv$Display$FIX_CIRCLE) {
-        symbols(.OpiEnv$Display$fix_cx,
-                .OpiEnv$Display$fix_cy,     
-                circles=.OpiEnv$Display$fix_sx, 
-                add=TRUE, fg=.OpiEnv$Display$fix_color, 
-                bg=NA, inches=FALSE)
-    } 
+drawBackground <- function() {
+  # get pixel level
+  bg <- find_pixel_value_display(.OpiEnv$Display$background_lum)
+  
+  if(.OpiEnv$Display$background_color == "black") {
+    vals <- c(0, 0, 0)
+  } else if (.OpiEnv$Display$background_color == "red") {
+    vals <- bg * c(1, 0, 0)
+  } else if (.OpiEnv$Display$background_color == "green") {
+    vals <- bg * c(0, 1, 0)
+  } else if (.OpiEnv$Display$background_color == "blue") {
+    vals <- bg * c(0, 0, 1)
+  } else vals <- bg * c(1, 1, 1) # anything else, means white
+  bg <- rgb(vals[1], vals[2], vals[3], maxColorValue = 255)
+  
+  p <- par("usr")
+  rect(p[1], p[3], p[2], p[4], border = NA, col = bg)
+  if(.OpiEnv$Display$fixation == "Cross") {
+    lines(.OpiEnv$Display$fix_cx + c(-.OpiEnv$Display$fix_sx, .OpiEnv$Display$fix_sx) / 2,
+          c(.OpiEnv$Display$fix_cy, .OpiEnv$Display$fix_cy),
+          lwd = 3, col = .OpiEnv$Display$fix_color)
+    lines(c(.OpiEnv$Display$fix_cx,.OpiEnv$Display$fix_cx),
+          .OpiEnv$Display$fix_cy + c(-.OpiEnv$Display$fix_sy, .OpiEnv$Display$fix_sy) / 2,
+          lwd = 3, col = .OpiEnv$Display$fix_color)
+  } else if (.OpiEnv$Display$fixation == "Circle") {
+    symbols(.OpiEnv$Display$fix_cx, .OpiEnv$Display$fix_cy,
+                circles = .OpiEnv$Display$fix_sx / 2,
+                add = TRUE, fg = .OpiEnv$Display$fix_color, 
+                lwd = 3, bg = NA, inches = FALSE)
+  }
 }
 
 #' @rdname opiInitialize
-#' @param xlim Limits of x coordinates of stimuli and bounds of display area
-#' @param ylim Limits of y coordinates of stimuli and bounds of display area
-#' @param bg   Background color of display
+#' @param width    Width of the screen in pixels
+#' @param height   Height of the screen in pixels
+#' @param ppi      Pixels per inch of the display
+#' @param viewdist Viewing distance in cm
 #' @details
 #' \subsection{Display}{
-#'   \code{opiInitialize(xlim=c(-30, 30), ylim=c(-25,25), bg=grey(0.5))}
+#'   \code{opiInitialize((width, height, ppi, viewdist, lut = .OpiEnv$Display$LUT)
+#'   )}
 #'   
 #'   If the chosen OPI implementation is \code{Display}, then you can specify
 #'   the limits of the plot area and the background color of the plot area.
 #'   Note that this assumes \code{link{X11()}} is available on the platform.
+#'
+#'   We need to know the physical dimensions of the screen and the window
+#'   generated in order to calculate stimulus position and size in degrees
+#'   of visual angle. The physical dimensions in inches are calculated from
+#'   width, height, and ppi. The pixel size pix per degree is then obtained
+#'   using viewdist. A gamma function for the screen should be obtained and
+#'   its lut passed to convert from luminance in cd/m2 to 8-bit pixel value
+#'   (256 levels).
+#'
 #' }
 #' @return
 #' \subsection{Display}{
@@ -98,31 +127,69 @@ drawBackground <- function() {
 #' \dontrun{
 #'   # Set up a Display and wait for a key press in it.
 #'   chooseOpi("Display")
-#'   if (!is.null(opiInitialize()))
+#'   if (!is.null(opiInitialize(width = 1680, height = 1050, ppi = 128, viewdist = 25)))
 #'     stop("opiInitialize failed")
 #'
-#'   text(0,0, "Press a key when resized to your liking")
-#'   getGraphicsEvent("Waiting for key press", onKeybd = function(key) return(TRUE))
-#' 
-#'   opiSetBackground(color=grey(0.8), fix_type=.OpiEnv$Display$FIX_CIRCLE)
+#'   opiSetBackground(lum = 100, color = "white", fixation = "Circle")
+#'
+#'   opiClose()
 #' }
-display.opiInitialize <- function( xlim=c(-30, 30), ylim=c(-25,25), bg=grey(0.5)) {
-
-    assign("xlim", xlim, envir = .OpiEnv$Display)
-    assign("ylim", ylim, envir = .OpiEnv$Display)
-    assign("bg", bg, envir = .OpiEnv$Display)
-
-    assign("oldDevice", options()$device, envir = .OpiEnv$Display)
-    
-    options(device="X11")
-    dev.new()
-    assign("devNumber", dev.cur(), envir = .OpiEnv$Display)
-    
-    par(mar=c(0,0,0,0))
-    plot(0:0, xlim=xlim, ylim=ylim, axes=FALSE, xlab="", ylab="")
-    drawBackground()
-
-    return(list(err=NULL))
+display.opiInitialize <- function(width, height, ppi, viewdist, lut = seq(0, 400, length.out = 256)) {
+  cmPerInch <- 2.54 # to obtain screen dimensions in cm
+  # set defaults
+  .OpiEnv$Display$LUT              <- lut # look up table
+  .OpiEnv$Display$background_lum   <- 10
+  .OpiEnv$Display$background_color <- "black"
+  .OpiEnv$Display$fixation         <- "None"
+  .OpiEnv$Display$fix_cx           <- 0
+  .OpiEnv$Display$fix_cy           <- 0
+  .OpiEnv$Display$fix_sx           <- 1
+  .OpiEnv$Display$fix_sy           <- 1
+  .OpiEnv$Display$fix_color        <- "green"
+  # select X11 window manage and open a new device
+  .OpiEnv$Display$oldDevice <- options("device") # store device number
+  options(device = "X11")
+  dev.new(title = " ")
+  .OpiEnv$Display$devNumber <- dev.cur() # store device number
+  par(mar = c(0, 0, 0, 0))
+  .OpiEnv$Display$width   <- width
+  .OpiEnv$Display$height  <- height
+  .OpiEnv$Display$ppi     <- ppi
+  .OpiEnv$Display$LUT     <- lut
+  widthcm   <- cmPerInch * width / ppi
+  heightcm  <- cmPerInch * height / ppi
+  widthdeg  <- 180 / pi * atan(widthcm / 2 / viewdist)
+  heightdeg <- 180 / pi * atan(heightcm / 2 / viewdist)
+  # in case we obtain different pixel sizes vertically and horizontally, average then
+  pixsize <- (width / widthdeg + height / heightdeg) / 2
+  .OpiEnv$Display$pixsize <- pixsize
+  # get the maximum visual field that can be tested with the screen
+  .OpiEnv$Display$xlimsc  <- width / pixsize * c(-1, 1)
+  .OpiEnv$Display$ylimsc  <- height / pixsize * c(-1, 1)
+  # allow to resize the screen
+  plot(0:0, typ = "n", xaxt = "n", yaxt = "n", ann = FALSE)
+  par(usr = c(-1, 1, -1, 1)) # use some arbitrary user coordinate extremes
+  opiSetBackground(fixation = "None")
+  text(0, 0, "Press a key when resized to your liking", col = "white", cex = 2)
+  getGraphicsEvent("Waiting for key press", onKeybd = function(key) return(TRUE))
+  # check the visual field that can be tested in the current screen. This is key as
+  # graph control will depend on these limits
+  if(is.null(dev.list())) { # if window closed, return NULL and no harm done
+    options(device = .OpiEnv$Display$oldDevice)
+    return(NULL)
+  }
+  # else, ensure we are on the right device
+  dev.set(.OpiEnv$Display$devNumber)
+  dims <- dev.size("px")
+  xlim <- dims[1] / pixsize * c(-1, 1) # x limits in degrees
+  ylim <- dims[2] / pixsize * c(-1, 1) # y limits in degrees
+  .OpiEnv$Display$xlim <- xlim
+  .OpiEnv$Display$ylim <- ylim
+  .OpiEnv$Display$fixation <- "Cross"
+  par(usr = c(xlim, ylim)) # change the extremes of the user coordinates
+  opiSetBackground(fixation = "None")
+  print("DO NOT resize the screen again or degrees of visual angle will be all wrong")
+  return(NULL)
 }
 
 #' @rdname opiPresent
@@ -144,63 +211,82 @@ display.opiInitialize <- function( xlim=c(-30, 30), ylim=c(-25,25), bg=grey(0.5)
 #' }
 #' @examples
 #' \dontrun{
-#'     # Display a spot
-#'   chooseOpi("Display")
-#'   opiInitialise()
-#'   text(0,0, "Press a key when ready")
-#'   getGraphicsEvent("Waiting for key press", onKeybd = function(key) return(TRUE))
+#' # Display a spot
+#'  chooseOpi("Display")
+#'  if(!is.null(opiInitialize(width = 1680, height = 1050, ppi = 128, viewdist = 25)))
+#'    stop("opiInitialize failed")
+#'  opiSetBackground(lum = 50, color = "white", fixation = "Cross")
 #'
-#'   s <- list(x=10, y=10, size=2, color="red", duration=200, responseWindow=1500)
-#'   class(s) <- "opiStaticStimulus"
-#'   opiPresent(s)
-#' }
-display.opiPresent <- function(stim, nextStim=NULL) { UseMethod("display.opiPresent") }
+#'  makeStim <- function(db) {
+#'    s <- list(x = 9, y = 9, level = dbTocd(db, 400), size = 1.72, color = "white",
+#'              duration = 1000, responseWindow = 1000)
+#'    class(s) <- "opiStaticStimulus"
+#'    return(s)
+#'  }
+#'  result <- opiPresent(makeStim(0))
+#'
+#'  opiClose()
+#'}
+display.opiPresent <- function(stim, nextStim = NULL) { UseMethod("display.opiPresent") }
 setGeneric("display.opiPresent")
 
 display.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
-    if (is.null(stim)) return(list(err = "No stimulus"))
+  if(is.null(stim)) return(list(err = "No stimulus"))
 
-    if (is.null(stim$x)) return(list(err="No x coordinate in stimulus", seen=NA, time=NA))
-    if (is.null(stim$y)) return(list(err="No y coordinate in stimulus", seen=NA, time=NA))
-    if (is.null(stim$size)) return(list(err="No size in stimulus", seen=NA, time=NA))
-    if (is.null(stim$color)) return(list(err="No color in stimulus", seen=NA, time=NA))
-    if (is.null(stim$duration)) return(list(err="No duration in stimulus", seen=NA, time=NA))
-    if (is.null(stim$responseWindow)) return(list(err="No responseWindow in stimulus", seen=NA, time=NA))
+  if(is.null(stim$x)) return(list(err="No x coordinate in stimulus", seen=NA, time=NA))
+  if(is.null(stim$y)) return(list(err="No y coordinate in stimulus", seen=NA, time=NA))
+  if(is.null(stim$size)) return(list(err="No size in stimulus", seen=NA, time=NA))
+  if(is.null(stim$level)) return(list(err="No level in stimulus", seen=NA, time=NA))
+  if(is.null(stim$color)) return(list(err="No color in stimulus", seen=NA, time=NA))
+  if(is.null(stim$duration)) return(list(err="No duration in stimulus", seen=NA, time=NA))
+  if(is.null(stim$responseWindow)) return(list(err="No responseWindow in stimulus", seen=NA, time=NA))
+  # check if stimulus in bounds
+  if(stim$x - stim$size / 2 < .OpiEnv$Display$xlim[1] ||
+     stim$x + stim$size / 2 > .OpiEnv$Display$xlim[2] ||
+     stim$y - stim$size / 2 < .OpiEnv$Display$ylim[1] ||
+     stim$y + stim$size / 2 > .OpiEnv$Display$ylim[2])
+    return(list(err="Stimulus out of bounds", seen=NA, time=NA))
 
-    dev.set(.OpiEnv$Display$devNumber)
+  dev.set(.OpiEnv$Display$devNumber)
 
-    key <- NA
-    pres_done <- FALSE
+  key <- NA
+  pres_done <- FALSE
 
-    hKey <- function(k) key <<- Sys.time()
-    hMouse <- function(b,x,y) key <<- Sys.time()
-    hIdle <- function() {
-        if (!pres_done && as.numeric(Sys.time() - pres_start_time) >= stim$duration/1000 ) {
-            pres_done <<- TRUE
-            drawBackground()
-        }
-        if (as.numeric(Sys.time() - pres_start_time) >= stim$responseWindow/1000 ) {
-            return(FALSE)
-        }
+  hKey <- function(k) key <<- Sys.time()
+  hMouse <- function(b,x,y) key <<- Sys.time()
+  hIdle <- function() {
+    if(!pres_done && as.numeric(Sys.time() - pres_start_time) >= stim$duration / 1000) {
+      pres_done <<- TRUE
+      drawBackground()
     }
+    if(as.numeric(Sys.time() - pres_start_time) >= stim$responseWindow / 1000) {
+      return(FALSE)
+    }
+  }
         # I don't really understands why this works. hIdle is the key somehow...
+  bg <- find_pixel_value_display(stim$level)
+  if (stim$color == "red") {
+    vals <- bg * c(1, 0, 0)
+  } else if (stim$color == "green") {
+    vals <- bg * c(0, 1, 0)
+  } else if (stim$color == "blue") {
+    vals <- bg * c(0, 0, 1)
+  } else vals <- bg * c(1, 1, 1) # anything else, means white
+  bg <- rgb(vals[1], vals[2], vals[3], maxColorValue = 255)
+  
+  symbols(stim$x, stim$y, circles = stim$size / 2, bg = bg,
+          add = TRUE, fg = NA, inches = FALSE)
+  pres_start_time <- Sys.time()
 
-    symbols(stim$x, stim$y, circles=stim$size, add=TRUE, fg=NA, bg=stim$color, inches=FALSE)
-    pres_start_time <- Sys.time()
+  getGraphicsEvent("", onKeybd = hKey, onMouseDown = hMouse, onIdle = hIdle)
 
-    getGraphicsEvent("", onKeybd = hKey, onMouseDown = hMouse, onIdle= hIdle)
-
-    if (!is.na(key)) {  # might have to finish the presentation
-        while (as.numeric(Sys.time() - pres_start_time) < stim$duration/1000 )
-            Sys.sleep(5/1000)
-        drawBackground()
-    }
-
-    return(list(
-        err  = NULL,
-        seen = !is.na(key),    
-        time = ifelse(is.na(key), NA, as.numeric(key - pres_start_time) * 1000)
-    ))
+  if (!is.na(key)) {  # might have to finish the presentation
+    while (as.numeric(Sys.time() - pres_start_time) < stim$duration / 1000)
+      Sys.sleep(5 / 1000)
+    drawBackground()
+  }
+  return(list(err = NULL, seen = !is.na(key),
+              time = ifelse(is.na(key), NA, as.numeric(key - pres_start_time) * 1000)))
 }
 
 
@@ -221,20 +307,9 @@ display.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 }#opiPresent.opiTemporalStimulus()
 
 #' @rdname opiSetBackground
-#' @param lum ignored
-#' @param color Color of the background. Any valid R plot color.
-#' @param fix_type One of \code{.OpiEnv$Display$FIX_NONE}, \code{.OpiEnv$Display$FIX_CROSS}, 
-#'                 or \code{.OpiEnv$Display$FIX_CIRCLE}, 
-#' @param fix_cx fixation x position in degrees of visual angle. Default is 0
-#' @param fix_cy fixation y position in degrees of visual angle. Default is 0
-#' @param fix_sx fixation horizontal size in degrees of visual angle. Default is 1. 
-#'               If \code{fix_type} is \code{.OpiEnv$Display$FIX_CIRCLE}, then 
-#'               this is the radius of the circle.
-#' @param fix_sy fixation vertical size in degrees of visual angle. Default is 1
-#' @param fix_color fixation color. Any valid R plot color. Default \code{green}.
 #' @details
 #' \subsection{Display}{
-#'   \code{opiSetBackground(lum=NA, color=grey(0.7), fix_type=.OpiEnv$Display$FIX_CROSS, fix_cx=0, fix_cy=0,fix_sx=1, fix_sy=1, fix_color="green")}
+#'   \code{opiSetBackground(TODO)}
 #' }
 #' @return
 #' \subsection{Display}{ 
@@ -244,34 +319,37 @@ display.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #' \dontrun{
 #'   # Set up a Display and wait for a key press in it.
 #'   chooseOpi("Display")
-#'   if (!is.null(opiInitialize()))
+#'   if (!is.null(opiInitialize(width = 1680, height = 1050, ppi = 128, viewdist = 25)))
 #'     stop("opiInitialize failed")
 #'
-#'   opiSetBackground(color=grey(0.8), fix_type=.OpiEnv$Display$FIX_CIRCLE, fix_sx=2)
+#'   opiSetBackground()
+#'   opiSetBackground(lum = 100, color = "white", fixation = "Circle")
+#'   opiSetBackground(lum = 100, color = "white", fixation = "Cross", fix_color = "red",
+#'                    fix_cx = 2, fix_cy = 5, fix_sx = 1, fix_sy = 2)
+#'   opiClose()
 #' }
-display.opiSetBackground <- function(lum=NA, color=grey(0.7), fix_type=.OpiEnv$Display$FIX_CROSS,
-                                      fix_cx=0, fix_cy=0, fix_sx=1, fix_sy=1,
-                                      fix_color="green") {
-
-    if (! fix_type %in% c(.OpiEnv$Display$FIX_CIRCLE, 
-                          .OpiEnv$Display$FIX_CROSS,
-                          .OpiEnv$Display$FIX_NONE)) {
-        warning("opiSetBackground: invalid fix_type, using None")
-        assign("fix_type", .OpiEnv$Display$FIX_NONE, envir=.OpiEnv$Display)
-    }
-        
-    assign("fix_cx"   , fix_cx   , envir= .OpiEnv$Display)
-    assign("fix_cy"   , fix_cy   , envir= .OpiEnv$Display)
-    assign("fix_sx"   , fix_sx   , envir= .OpiEnv$Display)
-    assign("fix_sy"   , fix_sy   , envir= .OpiEnv$Display)
-    assign("fix_type" , fix_type , envir= .OpiEnv$Display)
-    assign("fix_color", fix_color, envir= .OpiEnv$Display)
-
-    assign("bg", color, envir= .OpiEnv$Display)
-    
-    drawBackground()
-
-    return(NULL)
+display.opiSetBackground <- function(lum       = .OpiEnv$Display$background_lum,
+                                     color     = .OpiEnv$Display$background_color,
+                                     fixation  = .OpiEnv$Display$fixation,
+                                     fix_cx    = .OpiEnv$Display$fix_cx,
+                                     fix_cy    = .OpiEnv$Display$fix_cy,
+                                     fix_sx    = .OpiEnv$Display$fix_sx,
+                                     fix_sy    = .OpiEnv$Display$fix_sy,
+                                     fix_color = .OpiEnv$Display$fix_color) {
+  if (!fixation %in% c("Circle", "Cross", "None")) {
+      warning("opiSetBackground: invalid fixation, using None")
+      assign("fixation", .OpiEnv$Display$FIX_NONE, envir = .OpiEnv$Display)
+  }
+  .OpiEnv$Display$background_lum   <- lum
+  .OpiEnv$Display$background_color <- color
+  .OpiEnv$Display$fixation         <- fixation
+  .OpiEnv$Display$fix_cx           <- fix_cx
+  .OpiEnv$Display$fix_cy           <- fix_cy
+  .OpiEnv$Display$fix_sx           <- fix_sx
+  .OpiEnv$Display$fix_sy           <- fix_sy
+  .OpiEnv$Display$fix_color        <- fix_color
+  drawBackground()
+  return(NULL)
 }
 
 ##############################################################################
@@ -292,7 +370,7 @@ display.opiClose <- function() {
     if (!is.na(.OpiEnv$Display$oldDevice))
         options(device=.OpiEnv$Display$oldDevice)
 
-    return(list(err=NULL))
+    return(NULL)
 }
 
 ##############################################################################
