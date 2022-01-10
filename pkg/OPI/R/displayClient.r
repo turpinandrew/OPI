@@ -253,7 +253,6 @@ display.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
   pres_done <- FALSE
 
   hKey <- function(k) key <<- Sys.time()
-  hMouse <- function(b,x,y) key <<- Sys.time()
   hIdle <- function() {
     if(!pres_done && as.numeric(Sys.time() - pres_start_time) >= stim$duration / 1000) {
       pres_done <<- TRUE
@@ -278,7 +277,7 @@ display.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
           add = TRUE, fg = NA, inches = FALSE)
   pres_start_time <- Sys.time()
 
-  getGraphicsEvent("", onKeybd = hKey, onMouseDown = hMouse, onIdle = hIdle)
+  getGraphicsEvent("", onKeybd = hKey, onIdle = hIdle)
 
   if (!is.na(key)) {  # might have to finish the presentation
     while (as.numeric(Sys.time() - pres_start_time) < stim$duration / 1000)
