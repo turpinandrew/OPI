@@ -22,7 +22,6 @@
 #
 # Modified
 #
-
 ###################################################################
 # .OpiEnv$DayDream$socket is the connection to the daydream
 # .OpiEnv$DayDream$LUT has 256 entries. LUT[x] is cd/m^2 value for grey level x
@@ -32,7 +31,6 @@
 if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
   assign("DayDream", new.env(25), envir=.OpiEnv)
 
-  # constants
   .OpiEnv$DayDream$endian <- "little"
   .OpiEnv$DayDream$socket <- NA
 
@@ -65,6 +63,24 @@ if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
 find_pixel_value_daydream <- function(cdm2)
   return(which.min(abs(.OpiEnv$DayDream$LUT - cdm2)) - 1)
 
+readNumbers <- function(size, type) {
+  msg <- integer(length(size))
+  for(i in 1:length(size))
+    msg[i] <- readBin(.OpiEnv$DayDream$socket, type[i], size = size[i], endian = .OpiEnv$DayDream$endian)
+  lf <- intToUtf8(readBin(.OpiEnv$DayDream$socket, "integer", size = 1, endian=.OpiEnv$DayDream$endian)) # the \n
+  return(msg)
+}
+
+readCharacters <- function(len) {
+  msg <- character(len)
+  for(i in 1:len)
+    msg[i] <- intToUtf8(readBin(.OpiEnv$DayDream$socket, "integer", size = 1, endian = .OpiEnv$DayDream$endian))
+  lf <- intToUtf8(readBin(.OpiEnv$DayDream$socket, "integer", size = 1, endian=.OpiEnv$DayDream$endian)) # the \n
+  print(msg)
+  print(lf)
+  return(paste0(msg, collapse = ""))
+}
+
 ###########################################################################
 # Load an image to server
 #
@@ -74,14 +90,10 @@ find_pixel_value_daydream <- function(cdm2)
 ###########################################################################
 load_image <- function(im, w, h) {
   writeLines(paste("OPI_IMAGE", w, h), .OpiEnv$DayDream$socket)
-  res <- readLines(.OpiEnv$DayDream$socket, n=1)
-  if (res == "READY") {
-    writeBin(as.raw(c(im)), .OpiEnv$DayDream$socket, size=1, endian=.OpiEnv$DayDream$endian)
-  } else {
-    return(FALSE)
-  }
-  res <- readLines(.OpiEnv$DayDream$socket, n=1)
-  return (res == "OK")
+  msg <- readCharacters(5)
+  writeBin(as.raw(c(im)), .OpiEnv$DayDream$socket, size = 1, endian = .OpiEnv$DayDream$endian)
+  msg <- readCharacters(2)
+  return(msg == "OK")
 }
 
 #' @rdname opiInitialize
@@ -132,7 +144,7 @@ daydream.opiInitialize <- function(
         socketConnection(host=ip, port, open = "w+b", blocking = TRUE, timeout = 1000), 
         error=function(e) stop(paste("Cannot connect to phone at",ip,"on port", port))
     )
-    assign("socket", socket, envir = .OpiEnv$DayDream)
+    .OpiEnv$DayDream$socket           <- socket
     # set defaults
     .OpiEnv$DayDream$LUT              <- lut
     .OpiEnv$DayDream$fovy             <- fovy
@@ -148,11 +160,11 @@ daydream.opiInitialize <- function(
     msg <- paste("OPI_SET_FOVY", fovy, sep=" ")
     writeLines(msg, .OpiEnv$DayDream$socket)
     writeLines("OPI_GET_RES", .OpiEnv$DayDream$socket)
-    assign("width",        readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
-    assign("height",       readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
-    assign("single_width", readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
-    assign("single_height",readBin(.OpiEnv$DayDream$socket, "integer", size=4, endian=.OpiEnv$DayDream$endian), envir=.OpiEnv$DayDream)
-    readBin(.OpiEnv$DayDream$socket, "integer", size=1, endian=.OpiEnv$DayDream$endian) # the \n
+    dat <- readNumbers(size = c(4, 4, 4, 4), type = rep("integer", 4))
+    .OpiEnv$DayDream$width         <- dat[1]
+    .OpiEnv$DayDream$height        <- dat[2]
+    .OpiEnv$DayDream$single_width  <- dat[3]
+    .OpiEnv$DayDream$single_height <- dat[4]
     print(paste("Phone res", .OpiEnv$DayDream$width, .OpiEnv$DayDream$height, .OpiEnv$DayDream$single_width, .OpiEnv$DayDream$single_height))
     return(NULL)
 }
@@ -213,10 +225,9 @@ daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     if (load_image(im, len, len)) {
         msg <- paste("OPI_MONO_PRESENT", stim$eye, stim$x, stim$y, stim$size, stim$duration, stim$responseWindow, sep=" ")
         writeLines(msg, .OpiEnv$DayDream$socket)
-        
-        seen <- readBin(.OpiEnv$DayDream$socket, "integer", size=1)
-        time <- readBin(.OpiEnv$DayDream$socket, "double", size=4, endian=.OpiEnv$DayDream$endian)
-        readBin(.OpiEnv$DayDream$socket, "integer", size=1, endian=.OpiEnv$DayDream$endian) # the \n
+        msg <- readNumbers(size = c(1, 4), type = c("integer", "double"))
+        seen <- msg[1]
+        time <- msg[2]
         # seen or not seen? if 1, then seen is TRUE, otherwise is FALSE
         seen <- seen == "1"
         
@@ -307,17 +318,17 @@ daydream.opiSetBackground <- function(eye,
     bg <- find_pixel_value_daydream(lum)
     if(eye != "B") {  # one eye
       writeLines(paste("OPI_MONO_SET_BG", eye, bg), .OpiEnv$DayDream$socket)
-      res <- readLines(.OpiEnv$DayDream$socket, n=1)
-      if (res != "OK")
+      msg <- readCharacters(2)
+      if (msg != "OK")
         return(paste0("Cannot set background to ",bg," in opiSetBackground"))
     } else {  # both eyes
       writeLines(paste("OPI_MONO_SET_BG", "L", bg), .OpiEnv$DayDream$socket)
-      res <- readLines(.OpiEnv$DayDream$socket, n=1)
-      if (res != "OK")
+      msg <- readCharacters(2)
+      if (msg != "OK")
         return(paste0("Cannot set background to ",bg," in opiSetBackground"))
       writeLines(paste("OPI_MONO_SET_BG", "R", bg), .OpiEnv$DayDream$socket)
-      res <- readLines(.OpiEnv$DayDream$socket, n=1)
-      if (res != "OK")
+      msg <- readCharacters(2)
+      if (msg != "OK")
         return(paste0("Cannot set background to ",bg," in opiSetBackground"))
     }
     # store background information
@@ -365,18 +376,18 @@ daydream.opiSetBackground <- function(eye,
       return("Trouble loading fixation image in opiSetBackground.")
     if(eye != "B") { # one eye
       writeLines(paste("OPI_MONO_BG_ADD", eye, fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
-      res <- readLines(.OpiEnv$DayDream$socket, n=1)
-      if (res != "OK")
+      msg <- readCharacters(2)
+      if (msg != "OK")
         return("Trouble adding fixation to background in opiSetBackground")
       
     } else { # both eyes
       writeLines(paste("OPI_MONO_BG_ADD", "L", fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
-      res <- readLines(.OpiEnv$DayDream$socket, n=1)
-      if (res != "OK")
+      msg  <- readCharacters(2)
+      if (msg != "OK")
         return("Trouble adding fixation to background in opiSetBackground")
       writeLines(paste("OPI_MONO_BG_ADD", "R", fix_cx, fix_cy, fix_sx, fix_sy), .OpiEnv$DayDream$socket)
-      res <- readLines(.OpiEnv$DayDream$socket, n=1)
-      if (res != "OK")
+      msg  <- readCharacters(2)
+      if (msg != "OK")
         return("Trouble adding fixation to background in opiSetBackground")
     }
     return(NULL)
@@ -395,16 +406,11 @@ daydream.opiSetBackground <- function(eye,
 #'   DETAILS
 #' }
 daydream.opiClose <- function() {
-    writeLines("OPI_CLOSE", .OpiEnv$DayDream$socket)
-    
-    res <- readLines(.OpiEnv$DayDream$socket, n=1)
-    
-    close(.OpiEnv$DayDream$socket)
-    
-    if (res != "OK")
-        return(list(err="Trouble closing daydream connection."))
-    else
-        return(NULL)
+  writeLines("OPI_CLOSE", .OpiEnv$DayDream$socket)
+  msg <- readCharacters(2)
+  close(.OpiEnv$DayDream$socket)
+  if (msg != "OK") return(list(err="Trouble closing daydream connection."))
+  else return(NULL)
 }
 
 ##############################################################################
