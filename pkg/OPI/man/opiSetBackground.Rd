@@ -35,14 +35,14 @@ display.opiSetBackground(
 
 daydream.opiSetBackground(
   eye,
-  lum = .OpiEnv$DayDream$background_lum,
-  color = .OpiEnv$DayDream$background_color,
-  fixation = .OpiEnv$DayDream$fixation,
-  fix_cx = .OpiEnv$DayDream$fix_cx,
-  fix_cy = .OpiEnv$DayDream$fix_cy,
-  fix_sx = .OpiEnv$DayDream$fix_sx,
-  fix_sy = .OpiEnv$DayDream$fix_sy,
-  fix_color = .OpiEnv$DayDream$fix_color
+  lum = 10,
+  color = "white",
+  fixation = "None",
+  fix_cx = 0,
+  fix_cy = 0,
+  fix_sx = 2,
+  fix_sy = 2,
+  fix_color = "green"
 )
 
 imo.opiSetBackground(

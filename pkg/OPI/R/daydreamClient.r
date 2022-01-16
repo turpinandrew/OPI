@@ -41,7 +41,7 @@ if (exists(".OpiEnv") && !exists("DayDream", where=.OpiEnv)) {
   .OpiEnv$DayDream$height        <- NA
   .OpiEnv$DayDream$single_width  <- NA 
   .OpiEnv$DayDream$single_height <- NA
-
+  .OpiEnv$DayDream$pixsize       <- NA # pixel size calculated from FOVY and height
   .OpiEnv$DayDream$background_left  <- NA # stored MONO background information
   .OpiEnv$DayDream$background_right <- NA
   # background data and defaults
@@ -76,8 +76,6 @@ readCharacters <- function(len) {
   for(i in 1:len)
     msg[i] <- intToUtf8(readBin(.OpiEnv$DayDream$socket, "integer", size = 1, endian = .OpiEnv$DayDream$endian))
   lf <- intToUtf8(readBin(.OpiEnv$DayDream$socket, "integer", size = 1, endian=.OpiEnv$DayDream$endian)) # the \n
-  print(msg)
-  print(lf)
   return(paste0(msg, collapse = ""))
 }
 
@@ -123,8 +121,8 @@ load_image <- function(im, w, h) {
 #'   Always returns NULL.
 #' }
 daydream.opiInitialize <- function(
-    ip="127.0.0.1",
-    port=50008, 
+    ip = "127.0.0.1",
+    port = 50008, 
     lut = seq(0, 400, length.out = 256), # for pixel 1 max brightness is 400
     fovy = 90) {
     cat("Looking for phone at ", ip, "\n")
@@ -165,7 +163,8 @@ daydream.opiInitialize <- function(
     .OpiEnv$DayDream$height        <- dat[2]
     .OpiEnv$DayDream$single_width  <- dat[3]
     .OpiEnv$DayDream$single_height <- dat[4]
-    print(paste("Phone res", .OpiEnv$DayDream$width, .OpiEnv$DayDream$height, .OpiEnv$DayDream$single_width, .OpiEnv$DayDream$single_height))
+    .OpiEnv$DayDream$pixsize       <- .OpiEnv$DayDream$fovy / .OpiEnv$DayDream$height
+    print(paste("Phone res", .OpiEnv$DayDream$width, .OpiEnv$DayDream$height, .OpiEnv$DayDream$single_width, .OpiEnv$DayDream$single_height, 1 / .OpiEnv$DayDream$pixsize, "pix per deg"))
     return(NULL)
 }
 
@@ -196,58 +195,46 @@ daydream.opiPresent <- function(stim, nextStim=NULL) { UseMethod("daydream.opiPr
 setGeneric("daydream.opiPresent")
 
 daydream.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
-    if (is.null(stim)) return(list(err = "no stimulus"))
+  if (is.null(stim)) return(list(err = "no stimulus"))
 
-    if (is.null(stim$x)) return(list(err="No x coordinate in stimulus", seen=NA, time=NA))
-    if (is.null(stim$y)) return(list(err="No y coordinate in stimulus", seen=NA, time=NA))
-    if (is.null(stim$size)) return(list(err="No size in stimulus", seen=NA, time=NA))
-    if (is.null(stim$level)) return(list(err="No level in stimulus", seen=NA, time=NA))
-    if (is.null(stim$duration)) return(list(err="No duration in stimulus", seen=NA, time=NA))
-    if (is.null(stim$responseWindow)) return(list(err="No responseWindow in stimulus", seen=NA, time=NA))
-    if (is.null(stim$eye)) return(list(err="No eye in stimulus", seen=NA, time=NA))
-    # if no info about stimulus color, then it is white
-    if(is.null(stim$color)) stim$color <- "white"
-    
-    # make the stimulus
-    bg <- ifelse(stim$eye == "L", .OpiEnv$DayDream$background_left, .OpiEnv$DayDream$background_right)
-    len <- 51               # length of the image forced to be 51x51
-    radius <- (len - 1) / 2 # and radius too
-    npix <- len^2           # get number of pixels
-    im <- matrix(bg, 3, npix)
-    
-    x <- 0:(npix - 1) %% len
-    y <- 0:(npix - 1) %/% len
-    if(stim$color == "red")        idx <- 1
-    else if(stim$color == "green") idx <- 2
-    else if(stim$color == "blue")  idx <- 3
-    else                           idx <- 1:3
-    im[idx,(x - radius)^2 + (y - radius)^2 < radius^2] <- find_pixel_value_daydream(stim$level)
-    if (load_image(im, len, len)) {
-        msg <- paste("OPI_MONO_PRESENT", stim$eye, stim$x, stim$y, stim$size, stim$duration, stim$responseWindow, sep=" ")
-        writeLines(msg, .OpiEnv$DayDream$socket)
-        msg <- readNumbers(size = c(1, 4), type = c("integer", "double"))
-        seen <- msg[1]
-        time <- msg[2]
-        # seen or not seen? if 1, then seen is TRUE, otherwise is FALSE
-        seen <- seen == "1"
-        
-        if (!seen && time == 0)
-            return(list(err="Background image not set", seen=NA, time=NA))
-        if (!seen && time == 1)
-            return(list(err="Trouble with stim image", seen=NA, time=NA))
-        if (!seen && time == 2)
-            return(list(err="Location out of range for daydream", seen=NA, time=NA))
-        if (!seen && time == 3)
-            return(list(err="OPI present error back from daydream", seen=NA, time=NA))
-
-        return(list(
-            err  = NULL,
-            seen = seen,    # assumes 1 or 0, not "true" or "false"
-            time = time
-        ))
-    } else {
-        return(list(err="OPI present could not load stimulus image", seen=NA, time=NA))
-    }
+  if (is.null(stim$x)) return(list(err="No x coordinate in stimulus", seen=NA, time=NA))
+  if (is.null(stim$y)) return(list(err="No y coordinate in stimulus", seen=NA, time=NA))
+  if (is.null(stim$size)) return(list(err="No size in stimulus", seen=NA, time=NA))
+  if (is.null(stim$level)) return(list(err="No level in stimulus", seen=NA, time=NA))
+  if (is.null(stim$duration)) return(list(err="No duration in stimulus", seen=NA, time=NA))
+  if (is.null(stim$responseWindow)) return(list(err="No responseWindow in stimulus", seen=NA, time=NA))
+  if (is.null(stim$eye)) return(list(err="No eye in stimulus", seen=NA, time=NA))
+  # if no info about stimulus color, then it is white
+  if(is.null(stim$color)) stim$color <- "white"
+  # make the stimulus
+  bg <- ifelse(stim$eye == "L", .OpiEnv$DayDream$background_left, .OpiEnv$DayDream$background_right)
+  imsize <- 101
+  m <- (imsize + 1) / 2
+  radius <- (imsize - 1) / 2 # and radius too
+  npix <- imsize^2           # get number of pixels
+  im <- matrix(find_pixel_value_daydream(bg), 3, npix)
+  x <- 0:(npix - 1) %% imsize
+  y <- 0:(npix - 1) %/% imsize
+  if(stim$color == "red")        idx <- 1
+  else if(stim$color == "green") idx <- 2
+  else if(stim$color == "blue")  idx <- 3
+  else                           idx <- 1:3
+  im[idx,(x - radius)^2 + (y - radius)^2 < radius^2] <- find_pixel_value_daydream(stim$level)
+  if(load_image(im, imsize, imsize)) {
+      msg <- paste("OPI_MONO_PRESENT", stim$eye, stim$x, stim$y, stim$size, stim$duration, stim$responseWindow, sep = " ")
+      writeLines(msg, .OpiEnv$DayDream$socket)
+      msg <- readNumbers(size = c(1, 4), type = c("integer", "double"))
+      seen <- msg[1]
+      time <- msg[2]
+      # seen or not seen? if 1, then seen is TRUE, otherwise is FALSE
+      seen <- seen == "1"
+      if(!seen && time == 0) return(list(err = "Background image not set", seen = NA, time = NA))
+      if(!seen && time == 1) return(list(err = "Trouble with stim image", seen = NA, time = NA))
+      if(!seen && time == 2) return(list(err = "Location out of range for daydream", seen = NA, time = NA))
+      if(!seen && time == 3) return(list(err = "OPI present error back from daydream", seen = NA, time = NA))
+      return(list(err = NULL, seen = seen, time = time))
+  }
+  return(list(err="OPI present could not load stimulus image", seen = NA, time = NA))
 }
 
 ########################################## 
@@ -297,15 +284,9 @@ daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #' \subsection{Daydream}{ 
 #'   DETAILS
 #' }
-daydream.opiSetBackground <- function(eye,
-                                      lum       = .OpiEnv$DayDream$background_lum,
-                                      color     = .OpiEnv$DayDream$background_color,
-                                      fixation  = .OpiEnv$DayDream$fixation,
-                                      fix_cx    = .OpiEnv$DayDream$fix_cx,
-                                      fix_cy    = .OpiEnv$DayDream$fix_cy,
-                                      fix_sx    = .OpiEnv$DayDream$fix_sx,
-                                      fix_sy    = .OpiEnv$DayDream$fix_sy,
-                                      fix_color = .OpiEnv$DayDream$fix_color) {
+daydream.opiSetBackground <- function(eye, lum = 10, color = "white", fixation = "None",
+                                      fix_cx = 0, fix_cy = 0, fix_sx = 2, fix_sy = 2,
+                                      fix_color = "green") {
     if (is.na(lum)) {
         warning('Cannot set background to NA in opiSetBackground')
         return('Cannot set background to NA in opiSetBackground')
@@ -342,16 +323,14 @@ daydream.opiSetBackground <- function(eye,
     .OpiEnv$DayDream$fix_color        <- fix_color
     if(eye == "L") {
       .OpiEnv$DayDream$background_left  <- lum
-      .OpiEnv$DayDream$background_right <- 0
     } else if(eye == "R") {
-      .OpiEnv$DayDream$background_left  <- 0
       .OpiEnv$DayDream$background_right <- lum  
     } else {
       .OpiEnv$DayDream$background_left  <- lum
       .OpiEnv$DayDream$background_right <- lum
     }
     # if even, add 1 to fixation size
-    imsize <- 51
+    imsize <- 101
     m <- (imsize + 1) / 2
     # design fixation target
     npix <- imsize^2
@@ -370,8 +349,8 @@ daydream.opiSetBackground <- function(eye,
       r   <- (imsize - 1) / 2
       # thickness of 5 lines
       idx <- which((x - m)^2 + (y - m)^2 < r^2 & (x - m)^2 + (y - m)^2 >= (r - 5)^2)
-    }
-    im[,idx] <- col
+    } else if(fixation != "None") return(paste0("Wrong fixation target in opiSetBackground"))
+    if(fixation != "None") im[,idx] <- col
     if (!load_image(im, imsize, imsize))
       return("Trouble loading fixation image in opiSetBackground.")
     if(eye != "B") { # one eye
