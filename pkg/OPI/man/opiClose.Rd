@@ -41,9 +41,9 @@ error.
 
 \subsection{Compass}{
   Returns a list of \code{err}, which is an error code, and \code{fixations},
-  which is a matrix with three columns: time (same as \code{time_hw}
-  in \code{opiPresent}), x (degrees relative to the centre of the image
-  returned by \code{opiInitialise} - not the PRL), y (as for x), and one row
+  which is a matrix with three columns: \code{time} (same as \code{time_hw}
+  in \code{opiPresent}), \code{x} (degrees relative to the centre of the image
+  returned by \code{opiInitialise} - not the PRL), \code{y} (as for x), and one row
   per fixation.
 }
 
@@ -68,7 +68,7 @@ error.
 }
 
 \subsection{Octopus900}{
-  DETAILS
+  Returns NULL.
 }
 
 \subsection{SimGaussian}{

@@ -5,4 +5,4 @@ R/.DS_Store
 R/k_notes.txt
 R/k_test.r
 ^.*\.Rproj$
-^\.Rproj\.user$
+^.*\.Rproj\.user$

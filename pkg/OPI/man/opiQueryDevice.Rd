@@ -42,6 +42,10 @@ data.
 \code{isSim} is \code{TRUE} if the device is a simulation, or \code{FALSE} if
 the device is a physical machine.
 
+\subsection{Compass}{
+  A list containing constants and their valuse used in the OPI Compass module.
+}
+
 \subsection{Octopus600}{
   Returns a list of 10 items:
   \enumerate{
@@ -57,6 +61,10 @@ the device is a physical machine.
     \item pupilPositionYRight [in px]
   }
 }
+
+\subsection{Octopus900}{
+  list containing \code{isSim=FALSE}.
+}
 }
 \description{
 Generic function for getting details of the chosen OPI
@@ -64,10 +72,7 @@ implementation that is set with \code{chooseOpi()}
 }
 \details{
 \subsection{Compass}{
-  DETAILS
-}
-\subsection{Compass}{
-  DETAILS
+  Return a list of all the constants used in the OPI Compass module.
 }
 
 \subsection{Display}{
@@ -102,6 +107,10 @@ implementation that is set with \code{chooseOpi()}
 \subsection{Octopus600}{
   If the chosen OPI is \code{Octopus600}, then this function returns
   information about the patient. See the Value section for details.
+}
+
+\subsection{Octopus900}{
+  Prints defined constants in OPI package pertaining to Octopus 900.
 }
 }
 \examples{

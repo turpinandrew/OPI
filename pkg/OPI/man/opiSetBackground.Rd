@@ -93,7 +93,7 @@ simYes.opiSetBackground(col, gridCol)
 
 \item{fixation}{fixation target}
 
-\item{tracking_on}{Tracking on or off}
+\item{tracking_on}{\code{TRUE} for tracking on, \code{FALSE} for off}
 
 \item{fix_cx}{fixation x position in degrees of visual angle. Default is 0}
 
@@ -144,7 +144,7 @@ Returns NULL if succeeded, otherwise an implementation-dependent
 error as follows.
 
 \subsection{Compass}{ 
-  DETAILS
+  A list contining \code{error} which is \code{NULL} for success, or some string description for fail.
 }
 
 \subsection{Display}{ 

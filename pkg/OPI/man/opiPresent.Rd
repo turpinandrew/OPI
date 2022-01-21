@@ -10,7 +10,6 @@
 \alias{imo.opiPresent}
 \alias{kowaAP7000.opiPresent}
 \alias{octo600.opiPresent}
-\alias{octo900.opiPresent}
 \alias{octo900.opiPresentF310}
 \alias{simG.opiPresent}
 \alias{simH.opiPresent}
@@ -32,8 +31,6 @@ imo.opiPresent(stim, nextStim = NULL)
 kowaAP7000.opiPresent(stim, nextStim = NULL)
 
 octo600.opiPresent(stim, nextStim = NULL)
-
-octo900.opiPresent(stim, nextStim = NULL)
 
 octo900.opiPresentF310(stim, nextStim = NULL)
 
@@ -65,13 +62,10 @@ simNo.opiPresent(stim, nextStim = NULL)
 simYes.opiPresent(stim, nextStim = NULL)
 }
 \arguments{
-\item{stim}{A list of class \code{\link{opiStaticStimulus}},
-\code{\link{opiKineticStimulus}}, or \code{\link{opiTemporalStimulus}}}
+\item{stim}{a list of class \code{\link{opiStaticStimulus}},
+\code{\link{opiKineticStimulus}}, or \code{\link{opiTemporalStimulus}} to be presented.}
 
-\item{nextStim}{As for \code{stim}, but the next presentation to be made. This
-might be useful on some machines, particularly projector based systems,
-where preparations  for the next presentation can be made while waiting for a
-response to the current}
+\item{nextStim}{unused - included for compliance with OPI standard.}
 
 \item{...}{Parameters specific to your chosen opi implementation}
 
@@ -163,6 +157,22 @@ For kinetic perimetry on the O900, this value is unknown...}
   presentation on the retinal image returned by \code{opiInitialize}.}
 \item{loc_y}{Only returned for Compass. The y location in pixels of the
   presentation on the retinal image returned by \code{opiInitialize}.}
+
+\subsection{Compass}{
+ A list containing
+ \itemize{
+   \item{err}{0 all clear, >= 1 some error codes (eg cannot track, etc) (integer)}
+   \item{seen}{\code{FALSE} for not seen, \code{TRUE} for seen (button pressed in response window)}
+   \item{time}{response time in ms (integer) since stimulus onset, -1 for not seen}
+   \item{time_rec}{time since epoch when command was received at Compass (integer ms)}
+   \item{time_pres}{time since epoch that stimulus was presented (integer ms)}
+   \item{num_track_events}{number of tracking events that occurred during presentation (integer)}
+   \item{num_motor_fails}{number of times motor could not follow fixation movement during presentation (integer)}
+   \item{pupil_diam}{pupil diameter in mm (float)}
+   \item{loc_x}{pixels integer, location in image of presentation (integer)}
+   \item{loc_y}{pixels integer, location in image of presentation (integer)}
+ }
+}
 }
 \description{
 Generic function for presentation of stimulus stim. Depending on
@@ -242,12 +252,6 @@ a call to \code{\link{opiPresent}}.
   ignored. If \code{eyeControl} is non-zero, as set in \code{opiInitialize},
   answer codes describing patient state may arise (see \code{answer} field
   in the Value section).
-}
-
-\subsection{Octopus900}{
-  \code{opiPresent(stim, nextStim=NULL)}
-  
-  DETAILS HERE
 }
 
 \subsection{Octopus900F310}{

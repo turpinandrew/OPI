@@ -321,13 +321,6 @@ octo900.presentStatic <- function(stim, nextStim, F310=FALSE) {
 ###########################################################################
 # Set up generic calls based on type of stim
 ###########################################################################
-#' @rdname opiPresent
-#' @details
-#' \subsection{Octopus900}{
-#'   \code{opiPresent(stim, nextStim=NULL)}
-#'   
-#'   DETAILS HERE
-#' }
 octo900.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresent") }
 setGeneric("octo900.opiPresent")
 
@@ -603,7 +596,7 @@ octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity
 #' @rdname opiClose
 #' @return
 #' \subsection{Octopus900}{
-#'   DETAILS
+#'   Returns NULL.
 #' }
 octo900.opiClose <- function() {
   writeLines("OPI_CLOSE", .OpiEnv$O900$socket)
@@ -616,11 +609,13 @@ octo900.opiClose <- function() {
 ###########################################################################
 #' @rdname opiQueryDevice
 #' @title Query device using OPI
+#' @details
 #' \subsection{Octopus900}{
-#'   DETAILS
+#'   Prints defined constants in OPI package pertaining to Octopus 900.
 #' }
+#'@return
 #' \subsection{Octopus900}{
-#'   DETAILS
+#'   list containing \code{isSim=FALSE}.
 #' }
 octo900.opiQueryDevice <- function() {
   cat("Defined constants\n")
