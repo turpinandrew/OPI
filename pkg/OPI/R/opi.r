@@ -50,7 +50,7 @@ packageStartupMessage("OPI version 2.9.1")
 #' @export
 opi.implementations <- list(
     list(
-        name="Compass",
+        name             = "Compass",
         opiInitialize    = "compass.opiInitialize",
         opiClose         = "compass.opiClose",
         opiSetBackground = "compass.opiSetBackground",
@@ -58,7 +58,7 @@ opi.implementations <- list(
         opiPresent       = "compass.opiPresent"
     ),
     list(
-        name="imo",
+        name             = "imo",
         opiInitialize    = "imo.opiInitialize",
         opiClose         = "imo.opiClose",
         opiSetBackground = "imo.opiSetBackground",
@@ -66,7 +66,7 @@ opi.implementations <- list(
         opiPresent       = "imo.opiPresent"
     ),
     list(
-        name="KowaAP7000",
+        name             = "KowaAP7000",
         opiInitialize    = "kowaAP7000.opiInitialize",
         opiClose         = "kowaAP7000.opiClose",
         opiSetBackground = "kowaAP7000.opiSetBackground",
@@ -74,7 +74,7 @@ opi.implementations <- list(
         opiPresent       = "kowaAP7000.opiPresent"
     ),
     list(
-        name="Octopus900",
+        name             = "Octopus900",
         opiInitialize    = "octo900.opiInitialize",
         opiClose         = "octo900.opiClose",
         opiSetBackground = "octo900.opiSetBackground",
@@ -82,7 +82,7 @@ opi.implementations <- list(
         opiPresent       = "octo900.opiPresent"
     ),
     list(
-        name="Octopus900F310",
+        name             = "Octopus900F310",
         opiInitialize    = "octo900.opiInitialize",
         opiClose         = "octo900.opiClose",
         opiSetBackground = "octo900.opiSetBackground",
@@ -90,7 +90,7 @@ opi.implementations <- list(
         opiPresent       = "octo900.opiPresentF310"
     ),
     list(
-        name="Octopus600",
+        name             = "Octopus600",
         opiInitialize    = "octo600.opiInitialize",
         opiClose         = "octo600.opiClose",
         opiSetBackground = "octo600.opiSetBackground",
@@ -98,7 +98,7 @@ opi.implementations <- list(
         opiPresent       = "octo600.opiPresent"
     ),
     list(
-        name="SimNo",
+        name             = "SimNo",
         opiInitialize    = "simNo.opiInitialize",
         opiClose         = "simNo.opiClose",
         opiSetBackground = "simNo.opiSetBackground",
@@ -106,7 +106,7 @@ opi.implementations <- list(
         opiPresent       = "simNo.opiPresent"
     ),
     list(
-        name="SimYes",
+        name             = "SimYes",
         opiInitialize    = "simYes.opiInitialize",
         opiClose         = "simYes.opiClose",
         opiSetBackground = "simYes.opiSetBackground",
@@ -114,7 +114,7 @@ opi.implementations <- list(
         opiPresent       = "simYes.opiPresent"
     ),
     list(
-        name="SimHenson",
+        name             = "SimHenson",
         opiInitialize    = "simH.opiInitialize",
         opiClose         = "simH.opiClose",
         opiSetBackground = "simH.opiSetBackground",
@@ -122,7 +122,7 @@ opi.implementations <- list(
         opiPresent       = "simH.opiPresent"
     ),
     list(
-        name="SimGaussian",
+        name             = "SimGaussian",
         opiInitialize    = "simG.opiInitialize",
         opiClose         = "simG.opiClose",
         opiSetBackground = "simG.opiSetBackground",
@@ -130,7 +130,7 @@ opi.implementations <- list(
         opiPresent       = "simG.opiPresent"
     ),
     list(
-        name="SimHensonRT",
+        name             = "SimHensonRT",
         opiInitialize    = "simH_RT.opiInitialize",
         opiClose         = "simH_RT.opiClose",
         opiSetBackground = "simH_RT.opiSetBackground",
@@ -138,7 +138,7 @@ opi.implementations <- list(
         opiPresent       = "simH_RT.opiPresent"
     ),
     list(
-        name="Daydream",
+        name             = "Daydream",
         opiInitialize    = "daydream.opiInitialize",
         opiClose         = "daydream.opiClose",
         opiSetBackground = "daydream.opiSetBackground",
@@ -146,12 +146,20 @@ opi.implementations <- list(
         opiPresent       = "daydream.opiPresent"
     ),
     list(
-        name="Display",
+        name             = "Display",
         opiInitialize    = "display.opiInitialize",
         opiClose         = "display.opiClose",
         opiSetBackground = "display.opiSetBackground",
         opiQueryDevice   = "display.opiQueryDevice",
         opiPresent       = "display.opiPresent"
+    ),
+    list(
+      name             = "PhoneVR",
+      opiInitialize    = "phoneVR.opiInitialize",
+      opiClose         = "phoneVR.opiClose",
+      opiSetBackground = "phoneVR.opiSetBackground",
+      opiQueryDevice   = "phoneVR.opiQueryDevice",
+      opiPresent       = "phoneVR.opiPresent"
     )
 )
 
@@ -189,6 +197,9 @@ opi.implementations <- list(
 #'   \item\code{"Imo"} for interfacing with CrewT's Imo head mounted perimeter.
 #'   \item\code{"DayDream"} for interfacing with an Android phone in a Google Daydream
 #'   \item\code{"Display"} for interfacing with a shiny plot area on the current machine.
+#'   \item\code{"PhoneVR"} for interfacing with phones using VR. At the moment, only
+#'     Android compatible phones are working. The VR headset must be compatible with
+#'     Cardboard
 #'   \item\code{NULL}         print a list of available OPI implementations.
 #' }
 #' @return Returns TRUE if successful, FALSE otherwise.
