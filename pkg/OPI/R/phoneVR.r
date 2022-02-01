@@ -26,29 +26,29 @@ if (exists(".OpiEnv") && !exists("PhoneVR", where = .OpiEnv)) {
   # function that define and reset all phoneVR parameters
   resetAllPhoneVRParameters <- function() {
     # properties of PhoneVR
-    .OpiEnv$PhoneVR$width   <- NA
-    .OpiEnv$PhoneVR$height  <- NA
-    .OpiEnv$PhoneVR$xdpi    <- NA
-    .OpiEnv$PhoneVR$ydpi    <- NA
-    .OpiEnv$PhoneVR$xlim    <- NA
-    .OpiEnv$PhoneVR$ylim    <- NA
+    .OpiEnv$PhoneVR$width     <- NA
+    .OpiEnv$PhoneVR$height    <- NA
+    .OpiEnv$PhoneVR$xdpi      <- NA
+    .OpiEnv$PhoneVR$ydpi      <- NA
+    .OpiEnv$PhoneVR$xlim      <- NA
+    .OpiEnv$PhoneVR$ylim      <- NA
+    .OpiEnv$PhoneVR$roomlight <- NA
     # look up table
-    .OpiEnv$PhoneVR$LUT     <- NA
+    .OpiEnv$PhoneVR$lut       <- NA
     # background data: background eye (R, L, or B), luminance in cdm2 and color
-    .OpiEnv$PhoneVR$bgeye   <- NA
-    .OpiEnv$PhoneVR$bglum   <- NA
-    .OpiEnv$PhoneVR$bgcol   <- NA
+    .OpiEnv$PhoneVR$bgeye     <- NA
+    .OpiEnv$PhoneVR$bglum     <- NA
+    .OpiEnv$PhoneVR$bgcol     <- NA
     # fixation data: type of fixation, eye where fixation is drawn (R, L, or B),
     # luminance in cdm2, color, fixation center (x and y) and size (x and y) in degrees
-    .OpiEnv$PhoneVR$fixeye  <- NA
-    .OpiEnv$PhoneVR$fixtype <- NA
-    .OpiEnv$PhoneVR$fixlum  <- NA
-    .OpiEnv$PhoneVR$fixcol  <- NA
-    .OpiEnv$PhoneVR$fixcx   <- NA
-    .OpiEnv$PhoneVR$fixcy   <- NA
-    .OpiEnv$PhoneVR$fixsx   <- NA
-    .OpiEnv$PhoneVR$fixsy   <- NA
-
+    .OpiEnv$PhoneVR$fixeye    <- NA
+    .OpiEnv$PhoneVR$fixtype   <- NA
+    .OpiEnv$PhoneVR$fixlum    <- NA
+    .OpiEnv$PhoneVR$fixcol    <- NA
+    .OpiEnv$PhoneVR$fixcx     <- NA
+    .OpiEnv$PhoneVR$fixcy     <- NA
+    .OpiEnv$PhoneVR$fixsx     <- NA
+    .OpiEnv$PhoneVR$fixsy     <- NA
   }
   # define and all phoneVR parameters
   resetAllPhoneVRParameters()
@@ -56,11 +56,11 @@ if (exists(".OpiEnv") && !exists("PhoneVR", where = .OpiEnv)) {
 
 # It is 8 bit depth, so it must return a value from 0 to 1
 phoneVR_find_lum_value <- function(cdm2)
-  return((which.min(abs(.OpiEnv$PhoneVR$LUT - cdm2)) - 1) / (length(.OpiEnv$PhoneVR$LUT) - 1))
+  return((which.min(abs(.OpiEnv$PhoneVR$lut - cdm2)) - 1) / (length(.OpiEnv$PhoneVR$lut) - 1))
 
 # It is 8 bit depth, so it must return a value from 0 to 1
 phoneVR_parse_color_string <- function(col)
-  return(tryCatch(c(col2rgb(col, alpha = 1)) / 255, error = function(e) NA))
+  return(tryCatch(t(col2rgb(col, alpha = 1)) / 255, error = function(e) NA))
 
 #' @rdname opiInitialize
 #' @param ip IP address on which server is listening for PhoneVR
@@ -96,9 +96,9 @@ phoneVR.opiInitialize <- function(ip, port = 50008, lut = seq(0, 400, length.out
     .OpiEnv$PhoneVR$socket <- socket
   } else return("Already connected to the phoneVR")
   resetAllPhoneVRParameters()
-  # set LUT
-  .OpiEnv$PhoneVR$LUT <- lut
-  # get phnoe metrics
+  # set look-up table
+  .OpiEnv$PhoneVR$lut <- lut
+  # get phone metrics
   writeLines("OPI_GET_METRICS", .OpiEnv$PhoneVR$socket)
   .OpiEnv$PhoneVR$width  <- as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1))
   .OpiEnv$PhoneVR$height <- as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1))
@@ -108,10 +108,12 @@ phoneVR.opiInitialize <- function(ip, port = 50008, lut = seq(0, 400, length.out
                              round(as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1)), 1))
   .OpiEnv$PhoneVR$ylim   <- c(-round(as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1)), 1),
                              round(as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1)), 1))
+  .OpiEnv$PhoneVR$roomlight <- as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1))
   print(paste("PhoneVR resolution in pixels:", .OpiEnv$PhoneVR$width, .OpiEnv$PhoneVR$height))
   print(paste0("PhoneVR x limits: (", .OpiEnv$PhoneVR$xlim[1], ", ", .OpiEnv$PhoneVR$xlim[2], ") degs"))
   print(paste0("PhoneVR y limits: (", .OpiEnv$PhoneVR$ylim[1], ", ", .OpiEnv$PhoneVR$ylim[2], ") degs"))
   print(paste0("Pixel density (x, y): (", .OpiEnv$PhoneVR$xdpi, ", ", .OpiEnv$PhoneVR$ydpi, ") dpi"))
+  print(paste("Ambient luminance is:", .OpiEnv$PhoneVR$roomlight, "cdm2"))
   return(NULL)
 }
 
@@ -163,38 +165,29 @@ phoneVR.opiSetBackground <- function(bgeye, bglum = 10, bgcol = "white",
   bglum  <- phoneVR_find_lum_value(bglum)
   fixlum <- phoneVR_find_lum_value(fixlum)
   # parse color
-  if(is.character(bgcol)) {
-    bgcol <- phoneVR_parse_color_string(bgcol)
-    if(any(is.na(bgcol))) stop("Wrong color format for fixcol")
-  } else if(is.vector(bgcol) && length(bgcol) != 4) {
-    stop("Wrong color format for fixcol")
-  }else stop("Wrong color format for fixcol")
-  if(is.character(fixcol)) {
-    fixcol <- phoneVR_parse_color_string(fixcol)
-    if(any(is.na(fixcol))) stop("Wrong color format for fixcol")
-  } else if(is.vector(fixcol) && length(fixcol) != 4) {
-    stop("Wrong color format for fixcol")
-  } else stop("Wrong color format for fixcol")
+  bgcol <- phoneVR_parse_color_string(bgcol)
+  if(any(is.na(bgcol))) stop("Wrong color format for background color")
+  fixcol <- phoneVR_parse_color_string(fixcol)
+  if(any(is.na(fixcol))) stop("Wrong color format for fixation color")
   # if all good, then send background
   msg <- paste("OPI_SET_BACKGROUND", bgeyenum, bglum, bgcol[1], bgcol[2], bgcol[3], bgcol[4],
                                      fixeyenum, fixtype, fixcx, fixcy, fixsx, fixsy, fixtheta,
                                      fixlum, fixcol[1], fixcol[2], fixcol[3], fixcol[4])
   writeLines(msg, .OpiEnv$PhoneVR$socket)
   msg <- readLines(.OpiEnv$PhoneVR$socket, n = 1)
-  if(msg == "OK") {
-    .OpiEnv$PhoneVR$bgeye   <- bgeye
-    .OpiEnv$PhoneVR$bglum   <- bglum
-    .OpiEnv$PhoneVR$bgcol   <- bgcol
-    .OpiEnv$PhoneVR$fixeye  <- fixeye
-    .OpiEnv$PhoneVR$fixtype <- fixtype
-    .OpiEnv$PhoneVR$fixlum  <- fixlum
-    .OpiEnv$PhoneVR$fixcol  <- fixcol
-    .OpiEnv$PhoneVR$fixcx   <- fixcx
-    .OpiEnv$PhoneVR$fixcy   <- fixcy
-    .OpiEnv$PhoneVR$fixsx   <- fixsx
-    .OpiEnv$PhoneVR$fixsy   <- fixsy
-    return(NULL)
-  } else return(msg)
+  if(msg != "OK") return(msg)
+  .OpiEnv$PhoneVR$bgeye   <- bgeye
+  .OpiEnv$PhoneVR$bglum   <- bglum
+  .OpiEnv$PhoneVR$bgcol   <- bgcol
+  .OpiEnv$PhoneVR$fixeye  <- fixeye
+  .OpiEnv$PhoneVR$fixtype <- fixtype
+  .OpiEnv$PhoneVR$fixlum  <- fixlum
+  .OpiEnv$PhoneVR$fixcol  <- fixcol
+  .OpiEnv$PhoneVR$fixcx   <- fixcx
+  .OpiEnv$PhoneVR$fixcy   <- fixcy
+  .OpiEnv$PhoneVR$fixsx   <- fixsx
+  .OpiEnv$PhoneVR$fixsy   <- fixsy
+  return(NULL)
 }
 
 #' @rdname opiPresent
@@ -204,58 +197,73 @@ phoneVR.opiSetBackground <- function(bgeye, bglum = 10, bgcol = "white",
 #'   is ignored. PhonVR
 #' }
 phoneVR.opiPresent <- function(stim, nextStim = NULL) {
+  # check integrity
   if(is.null(stim))       return(list(err = "no stimulus"))
   if(is.null(stim$eye))   return(list(err = "No eye in stimulus",            seen = NA, time = NA))
   if(is.null(stim$cx))    return(list(err = "No x coordinate in stimulus",   seen = NA, time = NA))
   if(is.null(stim$cy))    return(list(err = "No y coordinate in stimulus",   seen = NA, time = NA))
   if(is.null(stim$sx))    return(list(err = "No width in stimulus",          seen = NA, time = NA))
-  if(is.null(stim$sy))    return(list(err = "No height in stimulus",          seen = NA, time = NA))
   if(is.null(stim$lum))   return(list(err = "No lum in stimulus",            seen = NA, time = NA))
-  if(is.null(stim$d))     return(list(err = "No duration in stimulus",       seen = NA, time = NA))
-  if(is.null(stim$w))     return(list(err = "No responseWindow in stimulus", seen = NA, time = NA))
-  if(is.null(stim$t))     stim$t     <- stim$d   # defaults to d
-  if(is.null(stim$type))  stim$type  <- "circle" # defaults to circle
-  if(is.null(stim$theta)) stim$theta <- 0        # angle of rotation defaults to zero
-  if(is.null(stim$col))   stim$col   <- "white"  # defaults to white
-  # get number of presentations
-  n <- length(stim$eye)
-  #  parse eye
-  eye <- switch(stim$eye, "L" = 0, "R" = 1, "B" = 2, NA)
-  if(is.na(eye)) stop("Wrong eye code")
-  # get stimulus lum
-  lum <- phoneVR_find_lum_value(stim$lum)
-  # parse color if necessary, if not, rearrange if necessary in a single array, thus:
-  #   (r1, b1, g1, alpha1, r2, b2, g2, alpha2, r3, b3, g3, alpha3, ...)
-  if(is.character(stim$col)) {
-    color <- phoneVR_parse_color_string(stim$col)
-    if(any(is.na(stim$col))) stop("Wrong color format for stim$color")
-  } else if(is.vector(stim$col)) {
-    if(length(stim$col) != 4) stop("Wrong color format for stim$col")
-    color <- stim$col
-  } else if(is.matrix(stim$col) || is.data.frame(stim$col)) {
-    if(ncol(stim$col) != 4) stop("Wrong color format for stim$col")
-    color <- c(t(stim$col))
-  } else stop("Cannot interpret colors from stim$col")
-  # check consistency. Each element of the vector corresponds to
-  # a single stimulus presentation, so all have to have the same
-  # length
-  if(length(stim$type)  != n |
-     length(stim$cx)    != n | length(stim$cy)  != n |
-     length(stim$sx)    != n | length(stim$sy)  != n |
-     length(stim$theta) != n | length(stim$lum) != n |
-     length(stim$t)     != n | length(color) != 4 * n) # col is passed as an array of 4 x n
+  # fill defaults
+  if(is.null(stim$nsteps)) stim$nsteps <- 1        # defaults to 1 step in the presentation
+  if(is.null(stim$d))      stim$d      <- 200      # defaults to 200 ms presentation
+  if(is.null(stim$w))      stim$w      <- 1000     # defaults to a response window of a second
+  if(is.null(stim$sy))     stim$sy     <- stim$sx  # defaults to the the same as size in x
+  if(is.null(stim$type))   stim$type   <- "circle" # defaults to circle
+  if(is.null(stim$theta))  stim$theta  <- 0        # angle of rotation defaults to zero
+  if(is.null(stim$col))    stim$col    <- "white"  # defaults to white
+  if(is.null(stim$tstep))  stim$tstep  <- floor(stim$d / stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$eye)    == 1) stim$eye    <- rep(stim$eye,    stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$type)   == 1) stim$type   <- rep(stim$type,   stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$cx)     == 1) stim$cx     <- rep(stim$cx,     stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$cy)     == 1) stim$cy     <- rep(stim$cy,     stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$sx)     == 1) stim$sx     <- rep(stim$sx,     stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$sy)     == 1) stim$sy     <- rep(stim$sy,     stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$sy)     == 1) stim$sy     <- rep(stim$sy,     stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$theta)  == 1) stim$theta  <- rep(stim$theta,  stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$tstep)  == 1) stim$tstep  <- rep(stim$tstep,  stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$lum)    == 1) stim$lum    <- rep(stim$lum,    stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$col)    == 1) stim$col    <- rep(stim$col,    stim$nsteps)
+  # check consistency
+  if(length(stim$type)  != stim$nsteps |
+     length(stim$cx)    != stim$nsteps | length(stim$cy)  != stim$nsteps |
+     length(stim$sx)    != stim$nsteps | length(stim$sy)  != stim$nsteps |
+     length(stim$theta) != stim$nsteps | length(stim$lum) != stim$nsteps |
+     length(stim$tstep) != stim$nsteps | length(stim$col) != stim$nsteps)
     stop("stimulus parameters inconsistent")
-  msg <- paste("OPI_PRESENT", "STATIC", n, eye, stim$type, stim$cx, stim$cy, stim$sx, stim$sy,
-               stim$theta, stim$t, lum, color[1], color[2], color[3], color[4], stim$d, stim$w)
+  # parse data and get luminance from the Gamma look-up-table
+  stim$eye <- sapply(stim$eye, switch, "L" = 0, "R" = 1, "B" = 2, NA)
+  if(any(is.na(stim$eye))) stop("Wrong eye code")
+  # get stimulus luminance
+  stim$lum <- sapply(stim$lum, phoneVR_find_lum_value)
+  # parse color
+  stim$col <- phoneVR_parse_color_string(stim$col)
+  if(any(is.na(stim$col))) stop("Wrong color format for stimulus color")
+  # send global parameters of the stimulus to present:
+  # number of steps, presentation time and response window
+  msg <- paste("OPI_PRESENT", stim$nsteps, stim$d, stim$w)
   writeLines(msg, .OpiEnv$PhoneVR$socket)
+  # check if received OK
   msg <- readLines(.OpiEnv$PhoneVR$socket, n = 1)
-  if(msg == "OK") {
-    err <- readLines(.OpiEnv$PhoneVR$socket, n = 1)
-    if(err == "") err <- NULL
-    seen <- as.logical(readLines(.OpiEnv$PhoneVR$socket, n = 1))
-    time <- as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1))
-    return(list(err = err, seen = seen, time = time))
-  } else return(list(err = msg, seen = NA, time = NA))
+  if(msg != "OK") return(list(err = msg, seen = NA, time = NA))
+  # send each stimulus step to the OPI server
+  for(i in 1:stim$nsteps) {
+    msg <- paste(stim$eye[i], stim$type[i],
+                 stim$cx[i], stim$cy[i], stim$sx[i], stim$sy[i], stim$theta[i],
+                 stim$tstep[i], stim$lum[i],
+                 stim$col[i,1], stim$col[i,2], stim$col[i,3], stim$col[i,4])
+    writeLines(msg, .OpiEnv$PhoneVR$socket)
+    # check if received OK
+    msg <- readLines(.OpiEnv$PhoneVR$socket, n = 1)
+    if(msg != "OK") return(list(err = msg, seen = NA, time = NA))
+  }
+  # at this point, the server presents the stimulus and returns results,
+  # including possible errors during presentation
+  err <- readLines(.OpiEnv$PhoneVR$socket, n = 1)
+  if(err == "") err <- NULL
+  seen <- as.logical(readLines(.OpiEnv$PhoneVR$socket, n = 1))
+  time <- as.numeric(readLines(.OpiEnv$PhoneVR$socket, n = 1))
+  return(list(err = err, seen = seen, time = time))
 }
 
 #' @rdname opiClose
