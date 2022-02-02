@@ -87,14 +87,14 @@ phoneVR_parse_color_string <- function(col)
 phoneVR.opiInitialize <- function(ip, port = 50008, lut = seq(0, 400, length.out = 256)) {
   # if connection is open, then don't open a new one
   if(is.na(.OpiEnv$PhoneVR$socket)) {
-    print(paste("Looking for phoneVR at", ip))
+    print(paste0("Looking for phone at ", ip, ":", port))
     socket <- tryCatch(
       socketConnection(host = ip, port, open = "w+b", blocking = TRUE, timeout = 1000),
       warning = function(w) return(NULL),
       error   = function(e) return(NULL))
-    if(is.null(socket)) return(paste("Cannot connect for phoneVR at", ip, "and port", port))
+    if(is.null(socket)) return(paste("Cannot connect for phone at", ip, "and port", port))
     .OpiEnv$PhoneVR$socket <- socket
-  } else return("Already connected to the phoneVR")
+  } else return("Already connected to the phone")
   resetAllPhoneVRParameters()
   # set look-up table
   .OpiEnv$PhoneVR$lut <- lut
@@ -278,7 +278,7 @@ phoneVR.opiClose <- function() {
   close(.OpiEnv$PhoneVR$socket)
   .OpiEnv$PhoneVR$socket <- NA
   resetAllPhoneVRParameters()
-  if(msg == "OK") return(NULL)
+  if(length(msg) == 0 || msg == "OK") return(NULL)
   else return(msg)
 }
 
