@@ -197,36 +197,36 @@ phoneVR.opiSetBackground <- function(bgeye, bglum = 10, bgcol = "white",
 #' }
 phoneVR.opiPresent <- function(stim, nextStim = NULL) {
   # check integrity
-  if(is.null(stim))       return(list(err = "no stimulus"))
-  if(is.null(stim$eye))   return(list(err = "No eye in stimulus",            seen = NA, time = NA))
-  if(is.null(stim$cx))    return(list(err = "No x coordinate in stimulus",   seen = NA, time = NA))
-  if(is.null(stim$cy))    return(list(err = "No y coordinate in stimulus",   seen = NA, time = NA))
-  if(is.null(stim$sx))    return(list(err = "No width in stimulus",          seen = NA, time = NA))
-  if(is.null(stim$lum))   return(list(err = "No lum in stimulus",            seen = NA, time = NA))
+  if(is.null(stim)) return(list(err = "no stimulus"))
+  if(is.null(stim$eye)) return(list(err = "No eye in stimulus", seen = NA, time = NA))
+  if(is.null(stim$x)) return(list(err = "No x coordinate in stimulus", seen = NA, time = NA))
+  if(is.null(stim$y)) return(list(err = "No y coordinate in stimulus", seen = NA, time = NA))
+  if(is.null(stim$sx)) return(list(err = "No width in stimulus", seen = NA, time = NA))
+  if(is.null(stim$lum)) return(list(err = "No lum in stimulus", seen = NA, time = NA))
   # fill defaults
-  if(is.null(stim$nsteps)) stim$nsteps <- 1        # defaults to 1 step in the presentation
-  if(is.null(stim$d))      stim$d      <- 200      # defaults to 200 ms presentation
-  if(is.null(stim$w))      stim$w      <- 1000     # defaults to a response window of a second
-  if(is.null(stim$sy))     stim$sy     <- stim$sx  # defaults to the the same as size in x
-  if(is.null(stim$type))   stim$type   <- "circle" # defaults to circle
-  if(is.null(stim$theta))  stim$theta  <- 0        # angle of rotation defaults to zero
-  if(is.null(stim$col))    stim$col    <- "white"  # defaults to white
-  if(is.null(stim$tstep))  stim$tstep  <- floor(stim$d / stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$eye)    == 1) stim$eye    <- rep(stim$eye,    stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$type)   == 1) stim$type   <- rep(stim$type,   stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$cx)     == 1) stim$cx     <- rep(stim$cx,     stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$cy)     == 1) stim$cy     <- rep(stim$cy,     stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$sx)     == 1) stim$sx     <- rep(stim$sx,     stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$sy)     == 1) stim$sy     <- rep(stim$sy,     stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$sy)     == 1) stim$sy     <- rep(stim$sy,     stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$theta)  == 1) stim$theta  <- rep(stim$theta,  stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$tstep)  == 1) stim$tstep  <- rep(stim$tstep,  stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$lum)    == 1) stim$lum    <- rep(stim$lum,    stim$nsteps)
-  if(stim$nsteps > 1 & length(stim$col)    == 1) stim$col    <- rep(stim$col,    stim$nsteps)
+  if(is.null(stim$nsteps)) stim$nsteps <- 1 # defaults to 1 step in the presentation
+  if(is.null(stim$duration)) stim$duration <- 200 # defaults to 200 ms presentation
+  if(is.null(stim$responseWindow)) stim$responseWindow <- 1500 # defaults to a response window of a second
+  if(is.null(stim$sy)) stim$sy <- stim$sx # defaults to the the same as size in x
+  if(is.null(stim$type)) stim$type   <- "circle" # defaults to circle
+  if(is.null(stim$theta)) stim$theta  <- 0 # angle of rotation defaults to zero
+  if(is.null(stim$col)) stim$col    <- "white" # defaults to white
+  if(is.null(stim$tstep)) stim$tstep  <- floor(stim$duration / stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$eye) == 1) stim$eye <- rep(stim$eye, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$type) == 1) stim$type <- rep(stim$type, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$x) == 1) stim$x <- rep(stim$x, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$y) == 1) stim$y <- rep(stim$y, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$sx) == 1) stim$sx <- rep(stim$sx, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$sy) == 1) stim$sy <- rep(stim$sy, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$sy) == 1) stim$sy <- rep(stim$sy, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$theta)  == 1) stim$theta <- rep(stim$theta, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$tstep) == 1) stim$tstep <- rep(stim$tstep, stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$lum) == 1) stim$lum <- rep(stim$lum,    stim$nsteps)
+  if(stim$nsteps > 1 & length(stim$col) == 1) stim$col <- rep(stim$col,    stim$nsteps)
   # check consistency
-  if(length(stim$type)  != stim$nsteps |
-     length(stim$cx)    != stim$nsteps | length(stim$cy)  != stim$nsteps |
-     length(stim$sx)    != stim$nsteps | length(stim$sy)  != stim$nsteps |
+  if(length(stim$type) != stim$nsteps |
+     length(stim$x) != stim$nsteps | length(stim$y) != stim$nsteps |
+     length(stim$sx) != stim$nsteps | length(stim$sy) != stim$nsteps |
      length(stim$theta) != stim$nsteps | length(stim$lum) != stim$nsteps |
      length(stim$tstep) != stim$nsteps | length(stim$col) != stim$nsteps)
     stop("stimulus parameters inconsistent")
@@ -240,7 +240,7 @@ phoneVR.opiPresent <- function(stim, nextStim = NULL) {
   if(any(is.na(stim$col))) stop("Wrong color format for stimulus color")
   # send global parameters of the stimulus to present:
   # number of steps, presentation time and response window
-  msg <- paste("OPI_PRESENT", stim$nsteps, stim$d, stim$w)
+  msg <- paste("OPI_PRESENT", stim$nsteps, stim$duration, stim$responseWindow)
   writeLines(msg, .OpiEnv$PhoneVR$socket)
   # check if received OK
   msg <- readLines(.OpiEnv$PhoneVR$socket, n = 1)
@@ -248,7 +248,7 @@ phoneVR.opiPresent <- function(stim, nextStim = NULL) {
   # send each stimulus step to the OPI server
   for(i in 1:stim$nsteps) {
     msg <- paste(stim$eye[i], stim$type[i],
-                 stim$cx[i], stim$cy[i], stim$sx[i], stim$sy[i], stim$theta[i],
+                 stim$x[i], stim$y[i], stim$sx[i], stim$sy[i], stim$theta[i],
                  stim$tstep[i], stim$lum[i],
                  stim$col[i,1], stim$col[i,2], stim$col[i,3], stim$col[i,4])
     writeLines(msg, .OpiEnv$PhoneVR$socket)
