@@ -80,7 +80,7 @@ phoneVR.opiSetBackground(
   bgeye,
   bglum = 10,
   bgcol = "white",
-  fixeye = bgeye,
+  fixeye,
   fixtype = "none",
   fixcx = 0,
   fixcy = 0,

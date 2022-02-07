@@ -152,7 +152,7 @@ phoneVR.opiInitialize <- function(ip, port = 50008, lut = seq(0, 400, length.out
 #'   Sets background for left, right, or both eyes in phoneVR
 #' }
 phoneVR.opiSetBackground <- function(bgeye, bglum = 10, bgcol = "white",
-                                     fixeye = bgeye, fixtype = "none",
+                                     fixeye, fixtype = "none",
                                      fixcx = 0, fixcy = 0, fixsx = 2, fixsy = 2, fixtheta = 0,
                                      fixlum = 100, fixcol = "green") {
   # parse eyes
