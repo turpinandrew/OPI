@@ -205,13 +205,13 @@ phoneVR.opiPresent <- function(stim, nextStim = NULL) {
   if(is.null(stim$lum)) return(list(err = "No lum in stimulus", seen = NA, time = NA))
   # fill defaults
   if(is.null(stim$nsteps)) stim$nsteps <- 1 # defaults to 1 step in the presentation
-  if(is.null(stim$duration)) stim$duration <- 200 # defaults to 200 ms presentation
-  if(is.null(stim$responseWindow)) stim$responseWindow <- 1500 # defaults to a response window of a second
+  if(is.null(stim$d)) stim$d <- 200 # defaults to 200 ms presentation
+  if(is.null(stim$w)) stim$w <- 1500 # defaults to a response window of a second
   if(is.null(stim$sy)) stim$sy <- stim$sx # defaults to the the same as size in x
   if(is.null(stim$type)) stim$type   <- "circle" # defaults to circle
   if(is.null(stim$theta)) stim$theta  <- 0 # angle of rotation defaults to zero
   if(is.null(stim$col)) stim$col    <- "white" # defaults to white
-  if(is.null(stim$tstep)) stim$tstep  <- floor(stim$duration / stim$nsteps)
+  if(is.null(stim$tstep)) stim$tstep  <- floor(stim$d / stim$nsteps)
   if(stim$nsteps > 1 & length(stim$eye) == 1) stim$eye <- rep(stim$eye, stim$nsteps)
   if(stim$nsteps > 1 & length(stim$type) == 1) stim$type <- rep(stim$type, stim$nsteps)
   if(stim$nsteps > 1 & length(stim$x) == 1) stim$x <- rep(stim$x, stim$nsteps)
@@ -240,7 +240,7 @@ phoneVR.opiPresent <- function(stim, nextStim = NULL) {
   if(any(is.na(stim$col))) stop("Wrong color format for stimulus color")
   # send global parameters of the stimulus to present:
   # number of steps, presentation time and response window
-  msg <- paste("OPI_PRESENT", stim$nsteps, stim$duration, stim$responseWindow)
+  msg <- paste("OPI_PRESENT", stim$nsteps, stim$d, stim$w)
   writeLines(msg, .OpiEnv$PhoneVR$socket)
   # check if received OK
   msg <- readLines(.OpiEnv$PhoneVR$socket, n = 1)
