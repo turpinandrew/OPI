@@ -30,7 +30,7 @@ tool for clinical visual psychophysics", Journal of Vision 12(11) 2012.
 }
 \seealso{
 \itemize{
-  \item Andrew's website: \url{http://people.eng.unimelb.edu.au/aturpin/opi/index.html}
+  \item Andrew's website: \url{https://people.eng.unimelb.edu.au/aturpin/opi/index.html}
   \item Github OPI repository: \url{https://github.com/turpinandrew/OPI}
   \item OPI Discourse Forum: \url{https://openperimetry.org/}
 }

@@ -1,8 +1,8 @@
 Package: OPI
 Type: Package
 Title: Open Perimetry Interface
-Version: 2.9.4
-Date: 2022-01-21
+Version: 2.10.0
+Date: 2022-01-23
 Authors@R: c(
     person("Andrew","Turpin",email="aturpin@unimelb.edu.au",role=c("cre","aut","cph")),
     person("David","Lawson",role=c("ctb","cph")),
