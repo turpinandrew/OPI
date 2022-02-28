@@ -123,7 +123,9 @@
  * Added Display as an OPI client.
  * Fixed cdTodb to stop if given <= 0 input
  * Fixed some color="white" examples. (Color is machine specific)
+
 # OPI 2.10
  * Major rewrite of the Display OPI option.
  * Updates to DayDream code. 
  * Added size option to static stimuli for Compass OPI option.
+ * New device PhoneVR added to support Android phones
