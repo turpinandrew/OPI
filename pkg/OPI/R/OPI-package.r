@@ -28,7 +28,7 @@
 #' tool for clinical visual psychophysics", Journal of Vision 12(11) 2012.
 #'
 #' @import methods
-#' @importFrom grDevices dev.new dev.off dev.set dev.cur getGraphicsEvent grey xy.coords dev.size dev.list rgb
+#' @importFrom grDevices dev.new dev.off dev.set dev.cur getGraphicsEvent grey xy.coords dev.size dev.list rgb col2rgb
 #' @importFrom graphics grid par plot points rect rasterImage lines polygon symbols text
 #' @importFrom stats pnorm runif rgamma
 #' @importFrom utils head tail

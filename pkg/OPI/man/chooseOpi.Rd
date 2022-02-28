@@ -30,6 +30,9 @@ chooseOPI(opiImplementation)
   \item\code{"Imo"} for interfacing with CrewT's Imo head mounted perimeter.
   \item\code{"DayDream"} for interfacing with an Android phone in a Google Daydream
   \item\code{"Display"} for interfacing with a shiny plot area on the current machine.
+  \item\code{"PhoneVR"} for interfacing with phones using VR. At the moment, only
+    Android compatible phones are working. The VR headset must be compatible with
+    Cardboard
   \item\code{NULL}         print a list of available OPI implementations.
 }}
 }
