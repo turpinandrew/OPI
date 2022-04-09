@@ -128,4 +128,4 @@
  * Major rewrite of the Display OPI option.
  * Updates to DayDream code. 
  * Added size option to static stimuli for Compass OPI option.
- * New device PhoneVR added to support Android phones
+ * New device PhoneHMD added to support Android phones
