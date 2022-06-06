@@ -356,6 +356,8 @@ compass.opiClose <- function() {
     num_bytes <- readBin(.OpiEnv$Compass$socket, "integer", size=4, endian=.OpiEnv$Compass$endian)
     print(paste("Num bytes", num_bytes))
 
+    close(.OpiEnv$Compass$socket)
+    
     if (num_bytes == 0) {
         warning("opiClose() returned no bytes - perhaps you forgot opiInitialise")
         return(list(err="No Bytes"))
@@ -367,8 +369,6 @@ compass.opiClose <- function() {
         fixations[i,1] <- readBin(.OpiEnv$Compass$socket, "integer", n=1, size=4, endian=.OpiEnv$Compass$endian)
         fixations[i,2:3] <- readBin(.OpiEnv$Compass$socket, "double", n=2, size=4,  endian=.OpiEnv$Compass$endian)
     }
-
-    close(.OpiEnv$Compass$socket)
 
     return(list(err=NULL, fixations=fixations))
 }
