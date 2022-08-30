@@ -325,6 +325,101 @@ combvec <- function(ListM){
 #' if (!is.null(opiClose()))
 #'   warning("opiClose() failed")
 #'   
+#'   
+#' chooseOpi("SimHenson")
+#' if(!is.null(opiInitialize(type="C", cap=6)))
+#'   stop("opiInitialize failed")
+#' 
+#' #########################################################
+#' # This section is for single location QUESTP
+#' # This example fits a broken stick spatial summation function
+#' # with a multi-dimensional stimulus (varying in size and intensity).
+#' # Stimulus sizes are limited to GI, GII, GIII, GIV and GV.
+#' # The example also shows how to use a helper function to
+#' # simulate responses to multi-dimensional stimuli 
+#' # (here, the simulated threshold varies based on stimulus size) 
+#' #########################################################
+#' makeStim <- function(stim, n) {
+#'   s <- list(x=9, y=9, level=dbTocd(stim[1]), size=stim[2], color="white",
+#'             duration=200, responseWindow=1500, checkFixationOK=NULL)
+#'   class(s) <- "opiStaticStimulus"
+#'   return(s)
+#' }
+#' 
+#' # Helper function for true threshold (depends on log10(stimulus size), 
+#' # diameter assumed to be the second element of stim vector)
+#' ttHelper_SS <- function(location) {  # returns a function of (stim)
+#'   ff <- function(stim) stim
+#'   
+#'   body(ff) <- substitute(
+#'     {return(SensF(log10(pi*(stim[2]/2)^2), c(location$Int1, location$Int2, location$Slo2)))}
+#'   )
+#'   return(ff)
+#' }
+#' 
+#' # Function of sensivity vs SSize (log10(stimulus area))
+#' SensF <- function(SSize, params){
+#'   Sens <- numeric(length(SSize))
+#'   for (i in 1:length(SSize)){
+#'     Sens[i] <- min(c(params[1] + 10*SSize[i], params[2] + params[3]*SSize[i]))
+#'   }
+#'   Sens[Sens < 0] <- 0
+#'   return(Sens)
+#' }
+#' 
+#' Sizes <- c(0.1, 0.21, 0.43, 0.86, 1.72)
+#' 
+#' #True parameters (variability is determined according to Henson et al. based on threshold)
+#' loc <- list(Int1 = 32, Int2 = 28, Slo2 = 2.5, fpr = 0.05, fnr = 0.05, x = 9, y = 9)
+#' 
+#' 
+#' # Function to fit (probability of seen given a certain stimulus intensity and size,
+#' # for different parameters)
+#' pSeen <- function(stim, params){
+#'   
+#'   Th <- SensF(log10(pi*(stim[2]/2)^2), params)
+#'   
+#'   return(0.03 + 
+#'            (1 - 0.03 - 0.03) * 
+#'            (1 - pnorm(stim[1], Th, 1)))
+#' }
+#' 
+#' 
+#' set.seed(111)
+#' #QUEST+ - takes some time to calculate likelihoods
+#' QP <- QUESTP(Fun = pSeen, 
+#'              stimDomain = list(0:50, Sizes),
+#'              paramDomain = list(seq(0, 40, 1), # Domain for total summation intercept
+#'                                 seq(0, 40, 1), # Domain for partial summation intercept
+#'                                 seq(0, 3, 1)), # Domain for partial summation slope
+#'              stopType="H", stopValue=1, maxPresentations=500,
+#'              makeStim = makeStim,
+#'              ttHelper=ttHelper_SS(loc), tt = 30,
+#'              fpr=loc$fpr, fnr=loc$fnr,
+#'              verbose = 2)
+#' 
+#' #Stimulus sizes
+#' G <- log10(c(pi*(0.1/2)^2, pi*(0.21/2)^2, pi*(0.43/2)^2, pi*(0.86/2)^2, pi*(1.72/2)^2));
+#' SizesP <- seq(min(G), max(G), .05)
+#' 
+#' # True and estimated response
+#' Estim_Summation <- SensF(SizesP, params = QP$final) # Estimated spatial summation
+#' GT_Summation <- SensF(SizesP, params = c(loc$Int1, loc$Int2, loc$Slo2)) # True spatial summation
+#' 
+#' #Plot
+#' plot(10^SizesP, GT_Summation, type = "l", ylim = c(0, 40), log = "x",
+#'      xlab = "Stimulus area (deg^2)", ylab = "Sensitivity (dB)", col = "blue")
+#' lines(10^SizesP, Estim_Summation, col = "red")
+#' points(pi*(QP$respSeq$stimuli.2/2)^2, QP$respSeq$stimuli.1, pch = 16,
+#'        col = rgb(red = 1, green = 0, blue = 0, alpha = 0.3))
+#' legend("top", inset = c(0, -.2),legend = c("True","Estimated","Stimuli"), 
+#'        col=c("blue", "red","red"), lty=c(1,1,0),
+#'        pch = c(16, 16, 16), pt.cex = c(0, 0, 1),
+#'        horiz = TRUE, xpd = TRUE, xjust = 0)
+#' 
+#' if (!is.null(opiClose()))
+#'   warning("opiClose() failed")
+#'   
 #' @export
 QUESTP <- function(Fun, #function to be fitted, needs to output a probability of seen
                    stimDomain, 
@@ -347,7 +442,7 @@ QUESTP <- function(Fun, #function to be fitted, needs to output a probability of
     
     #Creates a QUESTP element
     state <- QUESTP.start(Fun = Fun, stimDomain = stimDomain, 
-                          paramDomain = paramDomain, likelihoods = NULL, priors = NULL,
+                          paramDomain = paramDomain, likelihoods = likelihoods, priors = priors,
                           stopType=stopType, stopValue=stopValue, maxSeenLimit=maxSeenLimit,
                           minNotSeenLimit=minNotSeenLimit, minPresentations=minPresentations, 
                           maxPresentations=maxPresentations, 
@@ -537,6 +632,18 @@ QUESTP.step <- function(state, nextStim=NULL) {
     stim <- state$stimDomain[,stimIndex]
     
     #stim <- getTargetStim(state)
+    
+    if (length(stim) > 1 & opiQueryDevice()$isSim){
+        if (is.function(state$opiParams$ttH)){
+            state$opiParams$tt <- max(state$opiParams$ttH(stim),0)
+        }else{
+            stop("For multi-dimensional stimuli, 
+                 OPI needs needs a helper function of the stimulus 
+                 in simulation models - how does 
+                 the threshold change with stimulus parameters?")
+        }
+    }
+    #
     
     params <- c(list(stim=state$makeStim(stim, state$numPresentations), nextStim=nextStim), state$opiParams)
     opiResp <- do.call(opiPresent, params)
