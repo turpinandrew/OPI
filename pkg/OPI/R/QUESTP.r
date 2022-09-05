@@ -638,9 +638,9 @@ QUESTP.step <- function(state, nextStim=NULL) {
             state$opiParams$tt <- max(state$opiParams$ttH(stim),0)
         }else{
             stop("For multi-dimensional stimuli, 
-                 OPI needs needs a helper function of the stimulus 
-                 in simulation models - how does 
-                 the threshold change with stimulus parameters?")
+                 OPI needs a helper function for the stimulus 
+                 in simulation mode - how does 
+                 the threshold change with different stimulus parameters?")
         }
     }
     #

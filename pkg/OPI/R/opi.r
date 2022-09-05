@@ -285,7 +285,7 @@ opiDistributor <- function(operation, ...) {
 #print(paste("Allowed args: ", allowedArgs))
 #print(paste("Have args: ", haveArgs))
     argsToPass  <- intersect(allowedArgs, haveArgs)
-    argsNotPassed  <- setdiff(haveArgs, argsToPass)
+    argsNotPassed  <- setdiff(haveArgs, c(argsToPass, "ttHelper")) # Silently ignore ttHelper function
 
     if (length(argsNotPassed) > 0)
         warning(paste(operation, "Ignored argument ", argsNotPassed, "\n"))
