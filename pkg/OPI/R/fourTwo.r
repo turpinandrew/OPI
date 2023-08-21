@@ -10,24 +10,26 @@
 #     fourTwo.stop     # boolean - true if state is finished
 #     fourTwo.final    # return final estimate from state
 #
-# Author: Andrew Turpin    (aturpin@unimelb.edu.au)
+# Author: Andrew Turpin
 # Date: December 2014
+# Modified Tue 21 Mar 2023: changed licence from gnu to Apache 2.0 
 #
-# Copyright 2014 Andrew Turpin
-# This program is part of the OPI (http://perimetry.org/OPI).
-# OPI is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
+# Copyright [2022] [Andrew Turpin, Ivan Marin-Franch]
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   http://www.apache.org/licenses/LICENSE-2.0
 #
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+require(utils)
 
 #' @rdname fourTwo
 #' @title 4-2 Staircase
@@ -128,13 +130,13 @@
 #'   r <- fourTwo.step(states[[i]])               # step it
 #'   states[[i]] <- r$state                  # update the states
 #' }
-#' 
+#'
 #' finals <- lapply(states, fourTwo.final)    # get final estimates of threshold
 #' for(i in 1:length(locations)) {
 #'   cat(sprintf("Location (%+2d,%+2d) ",locations[[i]][1], locations[[i]][2]))
 #'       cat(sprintf("has threshold %4.2f\n", finals[[i]]))
 #' }
-#' 
+#'
 #' if (!is.null(opiClose()))
 #'   warning("opiClose() failed")
 #' @export
@@ -211,7 +213,7 @@ fourTwo.step <- function(state, nextStim=NULL) {
         # check if staircase is finished.
     if (state$numberOfReversals >= 2) {
         state$finished <- "Rev"
-        state$stairResult <- mean(tail(state$stimuli, 2)) # mean of last two
+        state$stairResult <- mean(utils::tail(state$stimuli, 2)) # mean of last two
     } else if (state$currNotSeenLimit >= 2) {
         state$finished <- "Min"
         state$stairResult <- state$minStimulus

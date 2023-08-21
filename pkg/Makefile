@@ -5,14 +5,14 @@ OPI_VERSION := $(shell cat OPI/DESCRIPTION | grep Version | sed 's/Version: //')
 # R files for OPI package
 OPI_R =	\
     dbTocd.r \
-    fourTwo.r full_threshold.r full_threshold_state.r zest.r mocs.r \
+    fourTwo.r full_threshold.r zest.r mocs.r \
     imoClient.r kowaAP7000Client.r octopus600.r octopus900Client.r \
     opi.r \
     simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r
 
 # Rd files for OPI package
 OPI_MAN	= \
-    FT.Rd OPI-package.Rd RtDbUnits.Rd RtSigmaUnits.Rd ZEST.Rd cdTodb.Rd\
+    FT.Rd RtDbUnits.Rd RtSigmaUnits.Rd ZEST.Rd cdTodb.Rd\
     chooseOpi.Rd dbTocd.Rd fourTwo.Rd opiClose.Rd opiInitialize.Rd opiKineticStimulus.Rd\
     opiPresent.Rd opiQueryDevice.Rd opiSetBackground.Rd opiStaticStimulus.Rd\
     opiTemporalStimulus.Rd
@@ -34,12 +34,14 @@ clean:
 	rm -rf OPI*.tar.gz
 
 build: 
+	(cd OPI ; R -e 'library(devtools);document()')
 	R CMD build OPI
 
 install:
 	R CMD INSTALL OPI_$(OPI_VERSION).tar.gz
 
 OPI.Rcheck: $(OPI_FILES)
-	R CMD check --as-cran OPI
+	(cd OPI ; R -e 'library(devtools);document()')
+	R CMD check --as-cran OPI_$(OPI_VERSION).tar.gz
 	#R CMD check OPI
 

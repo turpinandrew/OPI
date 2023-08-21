@@ -2,12 +2,9 @@
 % Please edit documentation in R/pix2deg.r
 \name{pixTodeg}
 \alias{pixTodeg}
-\alias{degTopix}
 \title{Convert pixels to degrees for machine 'machine'}
 \usage{
 pixTodeg(xy, machine = "compass")
-
-degTopix(xy, machine = "compass")
 }
 \arguments{
 \item{xy}{a 2 element vector c(x,y) where x and y are in pixels}
@@ -16,9 +13,6 @@ degTopix(xy, machine = "compass")
 }
 \value{
 xy converted to degrees of visual field with the usual conventions or \code{NA} if machine is unknown
-
-xy converted to pixels (top-left is (0,0)) for the machine or
-\code{NA} if machine is unknown
 }
 \description{
 Convert pixels to degrees for machine 'machine'
@@ -26,6 +20,4 @@ Convert pixels to degrees for machine 'machine'
 \examples{
 pixTodeg(c(1000, 200), machine="compass") # c(1.290323, 24.516129) degrees
 pixTodeg(c(1920/2, 1920/2)) # c(0,0) degrees
-degTopix(c(0, 0), machine="compass")  # c(960, 960) pixels
-degTopix(c(-15, 2)) # c(495, 898) pixels
 }

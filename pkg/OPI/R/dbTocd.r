@@ -1,31 +1,35 @@
-# Author: Andrew Turpin    (aturpin@unimelb.edu.au)
-# Date: June 2012
+# Open Perimetry Interface convert between perimetric dB to cd/m^2
+#
+# Copyright [2022] [Andrew Turpin, Ivan Marin-Franch, Jonathan Denniss]
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Author: Andrew Turpin
+# Date: March 2023
 #
 # Modified Tue  8 Jul 2014: make generic for any dB scale
+# Modified Tue 21 Mar 2023: changed licence from gnu to Apache 2.0 
 #
-# Copyright 2012 Andrew Turpin and Jonathan Denniss
-# This program is part of the OPI (http://perimetry.org/OPI).
-# OPI is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#' @rdname dbTocd
-#' @title Convert dB to cd/\eqn{\mbox{m}^2}{m^2}
-#' @description Given a value in dB, return the cd/\eqn{\mbox{m}^2}{m^2}
+#' Convert perimetric dB to cd/\eqn{\mbox{m}^2}{m^2}
+#'
+#' Given a value in dB, return the cd/\eqn{\mbox{m}^2}{m^2}
 #' equivalent. Default is to use HFA units, so maximum stimulus is 10000
-#' apostilbs
-#' @param db Value to convert to cd
-#' @param maxStim Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}
-#' @return \code{dbTocd} returns cd/\eqn{\mbox{m}^2}{m^2} value
+#' apostilbs.
+#'
+#' @param db Value to convert to cd/\eqn{\mbox{m}^2}{m^2}.
+#' @param maxStim Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}.
+#' @return cd/\eqn{\mbox{m}^2}{m^2} value for `db` dB.
 #' @examples
 #' # decibels to candela
 #' cd <- dbTocd(0)   # 10000/pi
@@ -34,11 +38,17 @@
 #' cd <- dbTocd(30)  # 10/pi
 #' cd <- dbTocd(40)  # 1/pi
 #' @export
-dbTocd <- function(db, maxStim=10000/pi) { maxStim * 10^(-db/10) }
+dbTocd <- function(db, maxStim = 10000 / pi) maxStim * 10^(-db / 10)
 
-#' @rdname dbTocd
-#' @param cd Value to convert to dB in cd/\eqn{\mbox{m}^2}{m^2}
-#' @return \code{cdTodb} returns a dB value.
+#' Convert cd/\eqn{\mbox{m}^2}{m^2} to perimetric dB.
+#'
+#' Given a value in cd/\eqn{\mbox{m}^2}{m^2}, return the equivalent dB value.
+#' Default is to use HFA units, so maximum stimulus is 10000 apostilbs.
+#'
+#' @param cd Value to convert to dB in cd/\eqn{\mbox{m}^2}{m^2}. Must be > 0.
+#' @param maxStim Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}.
+#'
+#' @return A dB value for `cd` cd/\eqn{\mbox{m}^2}{m^2}.
 #' @examples
 #' # candela to decibels
 #' dB <- cdTodb(10000/pi)  # 0 dB
@@ -48,7 +58,7 @@ dbTocd <- function(db, maxStim=10000/pi) { maxStim * 10^(-db/10) }
 #' dB <- cdTodb(1/pi)      # 40 dB
 #' dB <- cdTodb(0.1/pi)    # 50 dB
 #' @export
-cdTodb <- function(cd, maxStim=10000/pi) { 
+cdTodb <- function(cd, maxStim = 10000/pi) {
     stopifnot(cd > 0)
-    -10*log10(cd/maxStim) 
+    -10 * log10(cd / maxStim)
 }

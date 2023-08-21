@@ -218,7 +218,7 @@ if(!is.null(opiInitialize(type="C", cap=6)))
 
 #########################################################
 # This section is for single location QUESTP
-# This example fits a FoS curve 
+# This example fits a FoS curve
 # Note: only fitting threshold and slope,
 # modify the domain for FPR and FNR to fit those as well
 #########################################################
@@ -234,11 +234,11 @@ makeStim <- function(db, n) {
 loc <- list(threshold = 20, fpr = 0.05, fnr = 0.05)
 
 #Function to fit (Gaussian psychometric function)
-pSeen <- function(x, params){return(params[3] + 
-                                        (1 - params[3] - params[4]) * 
+pSeen <- function(x, params){return(params[3] +
+                                        (1 - params[3] - params[4]) *
                                         (1 - pnorm(x, params[1], params[2])))}
 #QUEST+
-QP <- QUESTP(Fun = pSeen, 
+QP <- QUESTP(Fun = pSeen,
              stimDomain = list(0:50),
              paramDomain = list(seq(0, 40, 1), #Domain for the 50\% threshold (Mean)
                                 seq(.5, 8, .5), #Domain for the slope (SD)
@@ -260,7 +260,7 @@ HensFunction <- function(Th){
 #Stimulus domain
 dB_Domain <- 0:50
 FoS <- pSeen(dB_Domain, params = QP$final) # Estimated FoS
-FoS_GT <- pSeen(dB_Domain, params = c(loc$threshold, HensFunction(loc$threshold), 
+FoS_GT <- pSeen(dB_Domain, params = c(loc$threshold, HensFunction(loc$threshold),
                                       loc$fpr, loc$fnr)) #Ground truth FoS (based on Henson et al.)
 
 #Plot (seen stimuli at the top, unseen stimuli at the bottom)
@@ -268,11 +268,11 @@ plot(dB_Domain, FoS_GT, type = "l", ylim = c(0, 1), xlab = "dB", ylab = "\% seen
 lines(dB_Domain, FoS, col = "red")
 points(QP$respSeq$stimuli, QP$respSeq$responses, pch = 16,
        col = rgb(red = 1, green = 0, blue = 0, alpha = 0.1))
-legend("top", inset = c(0, -.2),legend = c("True","Estimated","Stimuli"), 
+legend("top", inset = c(0, -.2),legend = c("True","Estimated","Stimuli"),
        col=c("blue", "red","red"), lty=c(1,1,0),
        pch = c(16, 16, 16), pt.cex = c(0, 0, 1),
        horiz = TRUE, xpd = TRUE, xjust = 0)
-       
+
 if (!is.null(opiClose()))
   warning("opiClose() failed")
 
@@ -281,13 +281,13 @@ if (!is.null(opiClose()))
 chooseOpi("SimHenson")
 if(!is.null(opiInitialize(type="C", cap=6)))
     stop("opiInitialize failed")
-    
+
 ######################################################################
 # This section is for single location QUESTP
-# This example shows that QUEST+ can replicate a ZEST procedure 
+# This example shows that QUEST+ can replicate a ZEST procedure
 # by fitting a FoS curve with fixed Slope, FPR and FNR
 # Compared with ZEST
-# Note that QUEST+ should be  marginally more efficient in selecting 
+# Note that QUEST+ should be  marginally more efficient in selecting
 # the most informative stimulus
 ######################################################################
 # Stimulus is Size III white-on-white as in the HFA
@@ -305,7 +305,7 @@ loc <- list(threshold = 30, fpr = 0.03, fnr = 0.03)
 pSeen <- function(domain, tt){{0.03+(1-0.03-0.03)*(1-pnorm(domain,tt,1))}}
 
 # ZEST-like QUEST+ procedure
-QP <- QUESTP(Fun = pSeen, 
+QP <- QUESTP(Fun = pSeen,
              stimDomain = list(0:40),
              paramDomain = list(seq(0, 40, 1)),
              stopType="S", stopValue=1.5, maxPresentations=500,
@@ -340,16 +340,16 @@ points(QP$respSeq$stimuli, QP$respSeq$responses, pch = 16,
        col = rgb(red = 0, green = 0, blue = 1, alpha = 0.5))
 points(ZE$respSeq[1,], ZE$respSeq[2,], pch = 16,
        col = rgb(red = 1, green = 0, blue = 0, alpha = 0.5))
-legend("bottomleft", legend = c("QUEST+","ZEST","Stimuli QUEST+", "Stimuli ZEST"), 
+legend("bottomleft", legend = c("QUEST+","ZEST","Stimuli QUEST+", "Stimuli ZEST"),
        col=c("blue", "red","blue","red"), lty=c(1,1,0,0),
        pch = c(16, 16, 16, 16), pt.cex = c(0, 0, 1, 1),
        horiz = FALSE, xpd = TRUE, xjust = 0)
 abline(v = loc$threshold, lty = "dashed")
-       
+
 if (!is.null(opiClose()))
   warning("opiClose() failed")
-  
-  
+
+
 chooseOpi("SimHenson")
 if(!is.null(opiInitialize(type="C", cap=6)))
   stop("opiInitialize failed")
@@ -360,8 +360,8 @@ if(!is.null(opiInitialize(type="C", cap=6)))
 # with a multi-dimensional stimulus (varying in size and intensity).
 # Stimulus sizes are limited to GI, GII, GIII, GIV and GV.
 # The example also shows how to use a helper function to
-# simulate responses to multi-dimensional stimuli 
-# (here, the simulated threshold varies based on stimulus size) 
+# simulate responses to multi-dimensional stimuli
+# (here, the simulated threshold varies based on stimulus size)
 #########################################################
 makeStim <- function(stim, n) {
   s <- list(x=9, y=9, level=dbTocd(stim[1]), size=stim[2], color="white",
@@ -370,11 +370,11 @@ makeStim <- function(stim, n) {
   return(s)
 }
 
-# Helper function for true threshold (depends on log10(stimulus size), 
+# Helper function for true threshold (depends on log10(stimulus size),
 # diameter assumed to be the second element of stim vector)
 ttHelper_SS <- function(location) {  # returns a function of (stim)
   ff <- function(stim) stim
-  
+
   body(ff) <- substitute(
     {return(SensF(log10(pi*(stim[2]/2)^2), c(location$Int1, location$Int2, location$Slo2)))}
   )
@@ -400,18 +400,19 @@ loc <- list(Int1 = 32, Int2 = 28, Slo2 = 2.5, fpr = 0.05, fnr = 0.05, x = 9, y =
 # Function to fit (probability of seen given a certain stimulus intensity and size,
 # for different parameters)
 pSeen <- function(stim, params){
-  
+
   Th <- SensF(log10(pi*(stim[2]/2)^2), params)
-  
-  return(0.03 + 
-           (1 - 0.03 - 0.03) * 
+
+  return(0.03 +
+           (1 - 0.03 - 0.03) *
            (1 - pnorm(stim[1], Th, 1)))
 }
 
 
 set.seed(111)
 #QUEST+ - takes some time to calculate likelihoods
-QP <- QUESTP(Fun = pSeen, 
+\dontrun{
+QP <- QUESTP(Fun = pSeen,
              stimDomain = list(0:50, Sizes),
              paramDomain = list(seq(0, 40, 1), # Domain for total summation intercept
                                 seq(0, 40, 1), # Domain for partial summation intercept
@@ -436,14 +437,15 @@ plot(10^SizesP, GT_Summation, type = "l", ylim = c(0, 40), log = "x",
 lines(10^SizesP, Estim_Summation, col = "red")
 points(pi*(QP$respSeq$stimuli.2/2)^2, QP$respSeq$stimuli.1, pch = 16,
        col = rgb(red = 1, green = 0, blue = 0, alpha = 0.3))
-legend("top", inset = c(0, -.2),legend = c("True","Estimated","Stimuli"), 
+legend("top", inset = c(0, -.2),legend = c("True","Estimated","Stimuli"),
        col=c("blue", "red","red"), lty=c(1,1,0),
        pch = c(16, 16, 16), pt.cex = c(0, 0, 1),
        horiz = TRUE, xpd = TRUE, xjust = 0)
+}
 
 if (!is.null(opiClose()))
   warning("opiClose() failed")
-  
+
 }
 \references{
 Andrew B. Watson; QUEST+: A general multidimensional Bayesian adaptive psychometric method.

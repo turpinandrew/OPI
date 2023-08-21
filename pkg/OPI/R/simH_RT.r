@@ -1,32 +1,30 @@
 #
-# An implementation of the OPI that simulates responses using 
+# An implementation of the OPI that simulates responses using
 # Henson et al (2000) variability and also returns response times
-# using data from McKednrick et al 2014.
+# using data from McKendrick et al 2014.
 #
-# Author: Andrew Turpin    (aturpin@unimelb.edu.au)
+# Author: Andrew Turpin    (andrew.turpin@lei.org.au)
 # Date: August 2013
 #
 # Modified Tue  8 Jul 2014: added type="X" to opiInitialise and opiPresent
 # Modified 20 Jul 2014: added maxStim argument for cdTodB conversion
 # Modified September 2016: Added kinetic
 # Modified October 2016: Completely changed kinetic
-# Modified Feburary 2017: Moved kinetic out to simH.r
+# Modified February 2017: Moved kinetic out to simH.r
 #
-# Copyright 2012 Andrew Turpin
-# This program is part of the OPI (http://perimetry.org/OPI).
-# OPI is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
+# Copyright [2022] [Andrew Turpin]
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   http://www.apache.org/licenses/LICENSE-2.0
 #
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 simH_RT.opiClose         <- function() { return(NULL) }

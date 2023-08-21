@@ -168,49 +168,49 @@ Returns NULL if initialization succeeded, otherwise an
 implementation-dependent error.
 
 \subsection{Compass}{
-  Returns a list with elements:
-  \itemize{
-    \item{err} NULL if successful, not otherwise.
-    \item{prl} a pair giving the (x,y) in degrees of the Preferred Retinal
-      Locus detected in the initial alignment.
-    \item{onh} a pair giving the (x,y) in degrees of the ONH as selected by
-    the user.
-    \item{image} raw bytes being the JPEG compressed infra-red image acquired
-    during alignment.
-  }
+Returns a list with elements:
+\itemize{
+\item{err} NULL if successful, not otherwise.
+\item{prl} a pair giving the (x,y) in degrees of the Preferred Retinal
+Locus detected in the initial alignment.
+\item{onh} a pair giving the (x,y) in degrees of the ONH as selected by
+the user.
+\item{image} raw bytes being the JPEG compressed infra-red image acquired
+during alignment.
+}
 }
 
 \subsection{Display}{
-  Always returns NULL.
+Always returns NULL.
 }
 
 \subsection{Daydream}{
-  Always returns NULL.
+Always returns NULL.
 }
 
 \subsection{imo}{
-  Always returns NULL. Will \code{stop} if there is an error.
+Always returns NULL. Will \code{stop} if there is an error.
 }
 
 \subsection{Kowa AP-7000}{
-  Always returns NULL.
+Always returns NULL.
 }
 
 \subsection{Octopus600}{
-  Returns NULL if successful, or an Octopus 600 error code. The default
-  background and stimulus setup is to white-on-white perimetry.
+Returns NULL if successful, or an Octopus 600 error code. The default
+background and stimulus setup is to white-on-white perimetry.
 }
 
 \subsection{Octopus900}{
-  Returns NULL if successful, 1 if Octopus900 is already initialised by a
-  previous call to \code{opiInitialize}, and 2 if some error occured that
-  prevented ininitialisation. The default background and stimulus setup is
-  to white-on-white perimetry. Use \code{opiSetBackground} to change the
-  background and stimulus colors.
+Returns NULL if successful, 1 if Octopus900 is already initialised by a
+previous call to \code{opiInitialize}, and 2 if some error occured that
+prevented ininitialisation. The default background and stimulus setup is
+to white-on-white perimetry. Use \code{opiSetBackground} to change the
+background and stimulus colors.
 }
 
 \subsection{PhoneHMD}{
-  Returns NULL if connection is made, otherwise, it returns a text with the error
+Returns NULL if connection is made, otherwise, it returns a text with the error
 }
 }
 \description{
@@ -219,206 +219,206 @@ implementation that is set with \code{chooseOpi()}
 }
 \details{
 \subsection{Compass}{
-  \code{opiInitialize(ip, port)}
-  
-  If the chosen OPI implementation is \code{Compass}, then you must specify
-  the IP address and port of the Compass server.
-  
-  \itemize{
-    \item\code{ip} is the IP address of the Compass server as a string.
-    \item\code{port} is the TCP/IP port of the Compass server as a number.
-  }
-  Warning: this returns a list, not a single error code.
+\code{opiInitialize(ip, port)}
+
+If the chosen OPI implementation is \code{Compass}, then you must specify
+the IP address and port of the Compass server.
+
+\itemize{
+\item\code{ip} is the IP address of the Compass server as a string.
+\item\code{port} is the TCP/IP port of the Compass server as a number.
+}
+Warning: this returns a list, not a single error code.
 }
 
 \subsection{Display}{
-  \code{opiInitialize((width, height, ppi, viewdist, lut = .OpiEnv$Display$LUT)
+\code{opiInitialize((width, height, ppi, viewdist, lut = .OpiEnv$Display$LUT)
   )}
-  
-  If the chosen OPI implementation is \code{Display}, then you can specify
-  the limits of the plot area and the background color of the plot area.
-  Note that this assumes \code{link{X11()}} is available on the platform.
 
-  We need to know the physical dimensions of the screen and the window
-  generated in order to calculate stimulus position and size in degrees
-  of visual angle. The physical dimensions in inches are calculated from
-  width, height, and ppi. The pixel size pix per degree is then obtained
-  using viewdist. A gamma function for the screen should be obtained and
-  its lut passed to convert from luminance in cd/m2 to 8-bit pixel value
-  (256 levels).
+If the chosen OPI implementation is \code{Display}, then you can specify
+the limits of the plot area and the background color of the plot area.
+Note that this assumes \code{link{X11()}} is available on the platform.
+
+We need to know the physical dimensions of the screen and the window
+generated in order to calculate stimulus position and size in degrees
+of visual angle. The physical dimensions in inches are calculated from
+width, height, and ppi. The pixel size pix per degree is then obtained
+using viewdist. A gamma function for the screen should be obtained and
+its lut passed to convert from luminance in cd/m2 to 8-bit pixel value
+(256 levels).
 
 }
 
 \subsection{Daydream}{
-  \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 256), fovy = 90)}
-  
-  If the chosen OPI implementation is \code{Daydream}, then you must specify
-  the IP address of the Android phone that is in the Daydream, and the port on
-  which the server running on the phone is listening.
-  
-  \itemize{
-    \item\code{ip} is the IP address of the Daydream server as a string
-    \item\code{port} is the TCP/IP port of the Daydream server as a number
-    \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
-      cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
-      \code{seq(0, 4000, length.out = 256)}
-    \item\code{fovy} Field of view in degrees in the y-axis. It is different depending on the device.
-      For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
-  }
+\code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 256), fovy = 90)}
+
+If the chosen OPI implementation is \code{Daydream}, then you must specify
+the IP address of the Android phone that is in the Daydream, and the port on
+which the server running on the phone is listening.
+
+\itemize{
+\item\code{ip} is the IP address of the Daydream server as a string
+\item\code{port} is the TCP/IP port of the Daydream server as a number
+\item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
+cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
+\code{seq(0, 4000, length.out = 256)}
+\item\code{fovy} Field of view in degrees in the y-axis. It is different depending on the device.
+For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
+}
 }
 
 \subsection{imo}{
-  \code{opiInitialize(ip, port, ppd = 16, tracking = FALSE, tracktol = 2)}
-  
-  If the chosen OPI implementation is \code{imo}, then you must specify the IP
-  address and port of the imo server.
-  
-  \itemize{
-    \item \code{ip} is the IP address of the imo server as a string.
-    \item \code{port} is the TCP/IP port of the imo server as a number.
-    \item \code{ppd} Pixel size in pixels per degree. Default is 16 ppd.
-    \item \code{tracking} Whether to use tracking during stimulus presentation.
-      Default is FALSE.
-    \item \code{tracktol} Tolerance during tracking in degrees of visual angle.
-      The system does not show any stimulus if eye is not within \code{tracktol}
-      degrees of visual angle from fixation point. Default is 2 degrees
-  }
+\code{opiInitialize(ip, port, ppd = 16, tracking = FALSE, tracktol = 2)}
+
+If the chosen OPI implementation is \code{imo}, then you must specify the IP
+address and port of the imo server.
+
+\itemize{
+\item \code{ip} is the IP address of the imo server as a string.
+\item \code{port} is the TCP/IP port of the imo server as a number.
+\item \code{ppd} Pixel size in pixels per degree. Default is 16 ppd.
+\item \code{tracking} Whether to use tracking during stimulus presentation.
+Default is FALSE.
+\item \code{tracktol} Tolerance during tracking in degrees of visual angle.
+The system does not show any stimulus if eye is not within \code{tracktol}
+degrees of visual angle from fixation point. Default is 2 degrees
+}
 }
 
 \subsection{KowaAP7000}{
-  \code{opiInitialize(ip, port)}
-  
-  If the chosen OPI implementation is \code{KowaAP7000}, then you must specify
-  the IP address and port of the AP-7000 server.
-  
-  \itemize{
-    \item\code{ipAddress} is the IP address of the AP-7000 server as a string.
-    \item\code{port} is the TCP/IP port of the AP-7000 server as a number.
-  }
+\code{opiInitialize(ip, port)}
+
+If the chosen OPI implementation is \code{KowaAP7000}, then you must specify
+the IP address and port of the AP-7000 server.
+
+\itemize{
+\item\code{ipAddress} is the IP address of the AP-7000 server as a string.
+\item\code{port} is the TCP/IP port of the AP-7000 server as a number.
+}
 }
 
 \subsection{Octopus600}{
-  \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
-  
-  If the chosen OPI implementation is \code{Octopus600}, then you must specify
-  the IP address of the Octopus 600 and the eye to test.
-  
-  \code{ipAddress} is the IP address of the Octopus 600 as a string.
-  
-  \code{eye} must be either "left" or "right".
-  
-  \code{pupilTracking} is TRUE to turn on IR illumination and set pupil
-  black level (which happens at the first stimulus presentation).
-  
-  \code{pulsar} is TRUE for pulsar stimulus, FALSE for size III white-on-white.
-  
-  \code{eyeControl}
-  \itemize{ 
-    \item 0 is off
-    \item 1 is eye blink
-    \item 2 is eye blink, forehead rest, fixation control
-    \item 3 is eye blink, forehead rest, fixation control, fast eye movements
-  }
+\code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
+
+If the chosen OPI implementation is \code{Octopus600}, then you must specify
+the IP address of the Octopus 600 and the eye to test.
+
+\code{ipAddress} is the IP address of the Octopus 600 as a string.
+
+\code{eye} must be either "left" or "right".
+
+\code{pupilTracking} is TRUE to turn on IR illumination and set pupil
+black level (which happens at the first stimulus presentation).
+
+\code{pulsar} is TRUE for pulsar stimulus, FALSE for size III white-on-white.
+
+\code{eyeControl}
+\itemize{
+\item 0 is off
+\item 1 is eye blink
+\item 2 is eye blink, forehead rest, fixation control
+\item 3 is eye blink, forehead rest, fixation control, fast eye movements
+}
 }
 
 \subsection{Octopus900}{
-  \code{opiInitialize(serverPort=50001,eyeSuiteSettingsLocation, eye, gazeFeed=NA, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
-  
-  If the chosen OPI implementation is \code{Octopus900}, then you must specify
-  a directory and the eye to be tested.
-  
-  \code{serverPort} is the TCP/IP port on which the server is listening (on
-  localhost).
-  
-  \code{eyeSuiteSettingsLocation} is the folder name containing the EyeSuite
-  setting files, and should include the trailing slash.
-  
-  \code{eye} must be either "left" or "right".
-  
-  \code{gazeFeed} is the name of an existing folder into which the video frames
-  of eye tracker are recorded. Set to \code{NA} for no recording.
-  
-  \code{bigWheel} is \code{FALSE} for a standard Octopus 900 machine. Some
-  research machines are fitted with an alternate aperture wheel that has 24
-  sizes, which are accessed with \code{bigWheel} is \code{TRUE}. The mapping
-  from size to 'hole on wheel' is hard coded; see code for details.
-  
-  If \code{pres_buzzer} is greater than zero, a buzzer will sound with each
-  stimuli presented.
-  
-  If \code{resp_buzzer} is greater than zero, a buzzer will sound with each
-  button press (resposne). The volume can be one of 0 (no buzzer), 1, 2, or 3
-  (max volume). If both buzzers are more than zero, the maximum of the two will
-  be used as the volume.
-  
-  If \code{zero_dB_is_10000_asb} is \code{TRUE} then 0 dB is taken as 10000
-  apostilbs, otherwise 0 dB is taken as 4000 apostilbs.
+\code{opiInitialize(serverPort=50001,eyeSuiteSettingsLocation, eye, gazeFeed=NA, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
+
+If the chosen OPI implementation is \code{Octopus900}, then you must specify
+a directory and the eye to be tested.
+
+\code{serverPort} is the TCP/IP port on which the server is listening (on
+localhost).
+
+\code{eyeSuiteSettingsLocation} is the folder name containing the EyeSuite
+setting files, and should include the trailing slash.
+
+\code{eye} must be either "left" or "right".
+
+\code{gazeFeed} is the name of an existing folder into which the video frames
+of eye tracker are recorded. Set to \code{NA} for no recording.
+
+\code{bigWheel} is \code{FALSE} for a standard Octopus 900 machine. Some
+research machines are fitted with an alternate aperture wheel that has 24
+sizes, which are accessed with \code{bigWheel} is \code{TRUE}. The mapping
+from size to 'hole on wheel' is hard coded; see code for details.
+
+If \code{pres_buzzer} is greater than zero, a buzzer will sound with each
+stimuli presented.
+
+If \code{resp_buzzer} is greater than zero, a buzzer will sound with each
+button press (resposne). The volume can be one of 0 (no buzzer), 1, 2, or 3
+(max volume). If both buzzers are more than zero, the maximum of the two will
+be used as the volume.
+
+If \code{zero_dB_is_10000_asb} is \code{TRUE} then 0 dB is taken as 10000
+apostilbs, otherwise 0 dB is taken as 4000 apostilbs.
 }
 
 \subsection{PhoneHMD}{
-  \code{opiInitialize(serverPort, port = 50008, lut = seq(0, 400, length.out = 256))}
-  If the chosen OPI implementation is \code{PhoneHMD}, then you must specify
-  the IP address of the Android PhoneHMD that is in the PhoneHMD, and the port on
-  which the server running on the PhoneHMD is listening.
-  \itemize{
-    \item\code{ip} is the IP address of the PhoneHMD server as a string
-    \item\code{port} is the TCP/IP port of the PhoneHMD server as a number
-    \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
-      cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
-      \code{seq(0, 4000, length.out = 256)}
-  }
+\code{opiInitialize(serverPort, port = 50008, lut = seq(0, 400, length.out = 256))}
+If the chosen OPI implementation is \code{PhoneHMD}, then you must specify
+the IP address of the Android PhoneHMD that is in the PhoneHMD, and the port on
+which the server running on the PhoneHMD is listening.
+\itemize{
+\item\code{ip} is the IP address of the PhoneHMD server as a string
+\item\code{port} is the TCP/IP port of the PhoneHMD server as a number
+\item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
+cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
+\code{seq(0, 4000, length.out = 256)}
+}
 }
 
 \subsection{SimGaussian}{
-  \code{opiInitialize(sd, display=NA, maxStim=10000/pi)}
-  
-  If the chosen OPI implementation is \code{SimGaussian}, then \code{sd} is the
-  standard deviation value that the simulator will use for the slope/spread of
-  the psychometric function.
-  
-  \code{display} and \code{maxStim} is as for SimHenson.
+\code{opiInitialize(sd, display=NA, maxStim=10000/pi)}
+
+If the chosen OPI implementation is \code{SimGaussian}, then \code{sd} is the
+standard deviation value that the simulator will use for the slope/spread of
+the psychometric function.
+
+\code{display} and \code{maxStim} is as for SimHenson.
 }
 
 \subsection{SimHenson}{
-  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, maxStim=10000/pi)}
-  
-  If the chosen OPI implementation is \code{SimHenson}, then \code{type}
-  can be one of: \code{"N"}, for normal patients; \code{"G"}, for POAG
-  patients; and \code{"C"}, for a combination. See Table 1 in Henson et al
-  (2000).
-  
-  If \code{type} is \code{"X"} then \code{A} and \code{B} should be
-  specified and are used in place of one of the three A/B combinations as in
-  Henson et al (2000). \code{cap} is the maximum standard deviation value that
-  the simulator will use for the slope/spread of the psychometric function.
-  
-  If \code{display} is a vector of four numbers \code{c(xlow, xhi, ylow, yhi)},
-  then a plot area is created of dimension \code{xlim=range(xlow, xhi)} and
-  \code{ylim=range(ylow, yhi)} and each call to \code{opiPresent} will display
-  a point on the area. The color of the plot area can be set with
-  \code{opiSetBackground}, and the color of the displayed point is determined
-  by the stimulus passed to \code{opiPresent}.
-  
-  \code{maxStim} is the maximum stimuls value in cd/\eqn{\mbox{m}^2}{m^2}.
-  This is used in converting cd/\eqn{\mbox{m}^2}{m^2} to dB values, and
-  vice versa.
+\code{opiInitialize(type="C", A=NA, B=NA, cap=6, maxStim=10000/pi)}
+
+If the chosen OPI implementation is \code{SimHenson}, then \code{type}
+can be one of: \code{"N"}, for normal patients; \code{"G"}, for POAG
+patients; and \code{"C"}, for a combination. See Table 1 in Henson et al
+(2000).
+
+If \code{type} is \code{"X"} then \code{A} and \code{B} should be
+specified and are used in place of one of the three A/B combinations as in
+Henson et al (2000). \code{cap} is the maximum standard deviation value that
+the simulator will use for the slope/spread of the psychometric function.
+
+If \code{display} is a vector of four numbers \code{c(xlow, xhi, ylow, yhi)},
+then a plot area is created of dimension \code{xlim=range(xlow, xhi)} and
+\code{ylim=range(ylow, yhi)} and each call to \code{opiPresent} will display
+a point on the area. The color of the plot area can be set with
+\code{opiSetBackground}, and the color of the displayed point is determined
+by the stimulus passed to \code{opiPresent}.
+
+\code{maxStim} is the maximum stimuls value in cd/\eqn{\mbox{m}^2}{m^2}.
+This is used in converting cd/\eqn{\mbox{m}^2}{m^2} to dB values, and
+vice versa.
 }
 
 \subsection{SimHensonRT}{
-  \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NA, maxStim=10000/pi, rtData, rtFP=1:1600)}
-  
-  If the chosen OPI implementation is \code{SimHensonRT}, then the first six
-  parameters are as in \code{SimHenson}, and \code{rtData} is a data frame
-  with at least 2 columns: \code{"Rt"}, reponse time; and \code{"Dist"},
-  signifying that distance between assumed threshold and stimulus value in
-  your units.
-  
-  This package contains \code{RtSigmaUnits} or \code{RtDbUnits} that can be
-  loaded with the commands \code{data(RtSigmaUnits)} or \code{data(RtDbUnits)},
-  and are suitable to pass as values for \code{rtData}.
-  
-  \code{rtFp} gives the vector of values in milliseconds from which a response
-  time for a false positive response is randomly sampled.
+\code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NA, maxStim=10000/pi, rtData, rtFP=1:1600)}
+
+If the chosen OPI implementation is \code{SimHensonRT}, then the first six
+parameters are as in \code{SimHenson}, and \code{rtData} is a data frame
+with at least 2 columns: \code{"Rt"}, reponse time; and \code{"Dist"},
+signifying that distance between assumed threshold and stimulus value in
+your units.
+
+This package contains \code{RtSigmaUnits} or \code{RtDbUnits} that can be
+loaded with the commands \code{data(RtSigmaUnits)} or \code{data(RtDbUnits)},
+and are suitable to pass as values for \code{rtData}.
+
+\code{rtFp} gives the vector of values in milliseconds from which a response
+time for a false positive response is randomly sampled.
 }
 }
 \examples{

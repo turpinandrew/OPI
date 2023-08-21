@@ -16,27 +16,27 @@
 # 
 # Based on Andrew Turpin's implementation in his Barramundi Simulator.
 #
-# Author: Andrew Turpin    (aturpin@unimelb.edu.au)
-#         Jonathan Denniss (jdenniss@unimelb.edu.au)
+# Author: Andrew Turpin
+#         Jonathan Denniss
 # Date: June 2012
+# Modified Tue 21 Mar 2023: changed licence from gnu to Apache 2.0 
 #
-# Copyright 2012 Andrew Turpin and Jonathan Denniss
-# This program is part of the OPI (http://perimetry.org/OPI).
-# OPI is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
+# Copyright [2022] [Andrew Turpin, Ivan Marin-Franch, Jonathan Denniss]
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
-#' @rdname full_threshold
+#' @rdname FT
 #' @title Full Threshold
 #' @description FT begins with a 4-2dB staircase beginning at level
 #' \code{est}. If the final estimate (last seen) is more than 4dB away
@@ -279,7 +279,7 @@ FT <- function(est=25, instRange=c(0,40), verbose=FALSE, makeStim, ...) {
     ))
 }#FT()
 
-#' @rdname full_threshold
+#' @rdname FT
 #' @export
 FT.start <- function(est=25, instRange=c(0,40), makeStim, ...) {
     if (est < instRange[1] || est > instRange[2])
@@ -307,7 +307,7 @@ FT.start <- function(est=25, instRange=c(0,40), makeStim, ...) {
     ))
 }# FT.start()
 
-#' @rdname full_threshold
+#' @rdname FT
 #' @param state Current state of the FT returned by \code{FT.start} and
 #' \code{FT.step}
 #' @param nextStim A valid object for \code{opiPresent} to use as its
@@ -377,7 +377,7 @@ FT.step <- function(state, nextStim=NULL) {
     return(list(state=state, resp=opiResp))
 }#FT.step()
 
-#' @rdname full_threshold
+#' @rdname FT
 #' @export
 FT.stop <- function(state) { return(state$finished) }
 
@@ -401,7 +401,7 @@ FT.final.details <- function(state) {
     ))  
 }
 
-#' @rdname full_threshold
+#' @rdname FT
 #' @export
 FT.final <- function(state) {
     return (FT.final.details(state)[["final"]])

@@ -185,42 +185,42 @@ or a vector with R, G, B, and alpha channels}
 Returns NULL if succeeded, otherwise an implementation-dependent
 error as follows.
 
-\subsection{Compass}{ 
-  A list contining \code{error} which is \code{NULL} for success, or some string description for fail.
+\subsection{Compass}{
+A list contining \code{error} which is \code{NULL} for success, or some string description for fail.
 }
 
-\subsection{Display}{ 
-   Changes the background and the fixation marker.
+\subsection{Display}{
+Changes the background and the fixation marker.
 }
 
-\subsection{Daydream}{ 
-  DETAILS
+\subsection{Daydream}{
+DETAILS
 }
 
-\subsection{imo}{ 
-  DETAILS
+\subsection{imo}{
+DETAILS
 }
 
-\subsection{KowaAP7000}{ 
-  DETAILS
+\subsection{KowaAP7000}{
+DETAILS
 }
 
-\subsection{Octopus600}{ 
-  DETAILS
+\subsection{Octopus600}{
+DETAILS
 }
 
-\subsection{Octopus900}{ 
-  -1 indicates \code{opiInitialize} has not been called.
-  
-  -2 indicates could not set the background color.
-  
-  -3 indicates could not set the fixation marker.
-  
-  -4 indicates that all input parameters were NA.
+\subsection{Octopus900}{
+-1 indicates \code{opiInitialize} has not been called.
+
+-2 indicates could not set the background color.
+
+-3 indicates could not set the fixation marker.
+
+-4 indicates that all input parameters were NA.
 }
 
-\subsection{PhoneHMD}{ 
-  Sets background for left, right, or both eyes in PhoneHMD
+\subsection{PhoneHMD}{
+Sets background for left, right, or both eyes in PhoneHMD
 }
 }
 \description{
@@ -229,167 +229,167 @@ implementation that is set with \code{chooseOpi()}
 }
 \details{
 \subsection{Compass}{
-  \code{opiSetBackground(fixation=NA, tracking_on=NA)}
-  \itemize{
-    \item{\code{fixation}=c(x,y,t)} where
-    \itemize{
-      \item{\code{x}} is one of -20, -6, -3, 0, 3, 6, 20 degrees.
-      \item{\code{y}} is 0 degrees.
-      \item{\code{t}} is 0 for a spot fixation marker at \code{c(x,y)}, or 1 for a
-        square centred on one of \code{(-3,0)}, \code{(0,0)}, \code{(+3,0)}.
-    }
-    \item{\code{tracking_on}} is either 0 (tracking off) or 1 (tracking on).
-  }
-  Note: tracking will be relative to the PRL established with the fixation
-  marker used at setup (call to OPI-OPEN), so when tracking is on you should
-  use the same fixation location as in the setup.
+\code{opiSetBackground(fixation=NA, tracking_on=NA)}
+\itemize{
+\item{\code{fixation}=c(x,y,t)} where
+\itemize{
+\item{\code{x}} is one of -20, -6, -3, 0, 3, 6, 20 degrees.
+\item{\code{y}} is 0 degrees.
+\item{\code{t}} is 0 for a spot fixation marker at \code{c(x,y)}, or 1 for a
+square centred on one of \code{(-3,0)}, \code{(0,0)}, \code{(+3,0)}.
+}
+\item{\code{tracking_on}} is either 0 (tracking off) or 1 (tracking on).
+}
+Note: tracking will be relative to the PRL established with the fixation
+marker used at setup (call to OPI-OPEN), so when tracking is on you should
+use the same fixation location as in the setup.
 }
 
 \subsection{Display}{
-  \code{opiSetBackground(TODO)}
+\code{opiSetBackground(TODO)}
 }
 
 \subsection{Daydream}{
-  \code{opiSetBackground(eye, lum=10, color="white", fixation="Cross", fix_cx=0, fix_cy=0, fix_sx=2, fix_sy=2, fix_lum=10, fix_color="green")}
-  \itemize{
-    \item{\code{lum}} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey
-      value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
-    \item{\code{color}} color of the background. It can be \code{'white'} (default) or
-      \code{'green'}.
-    \item{\code{fixation}} can only be \code{'Cross'} at the moment.
-    \item{\code{fix_cx}, \code{fix_cy}} fixation (x, y) position in degrees
-      of visual angle
-    \item{\code{fix_sx}, \code{fix_sy}} dimensions of fixation target in
-      degrees of visual angle
-    \item{\code{fix_lum}} luminance of the fixation target in cd/\eqn{\mbox{m}^2}{m^2} is set to
-      nearest grey value in \code{lut} from \code{opiInitialize}. Default
-      is 15 cd/\eqn{\mbox{m}^2}{m^2}
-    \item{\code{fix_color}} color of the fixation target. It can be \code{'white'} or
-      \code{'green'}  (default).
-  }
+\code{opiSetBackground(eye, lum=10, color="white", fixation="Cross", fix_cx=0, fix_cy=0, fix_sx=2, fix_sy=2, fix_lum=10, fix_color="green")}
+\itemize{
+\item{\code{lum}} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey
+value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
+\item{\code{color}} color of the background. It can be \code{'white'} (default) or
+\code{'green'}.
+\item{\code{fixation}} can only be \code{'Cross'} at the moment.
+\item{\code{fix_cx}, \code{fix_cy}} fixation (x, y) position in degrees
+of visual angle
+\item{\code{fix_sx}, \code{fix_sy}} dimensions of fixation target in
+degrees of visual angle
+\item{\code{fix_lum}} luminance of the fixation target in cd/\eqn{\mbox{m}^2}{m^2} is set to
+nearest grey value in \code{lut} from \code{opiInitialize}. Default
+is 15 cd/\eqn{\mbox{m}^2}{m^2}
+\item{\code{fix_color}} color of the fixation target. It can be \code{'white'} or
+\code{'green'}  (default).
+}
 }
 
 \subsection{imo}{
-  DETAILS
+DETAILS
 }
 
-\subsection{KowaAP7000}{ 
-  \code{opiSetBackground(lum, color, fixation)} 
+\subsection{KowaAP7000}{
+\code{opiSetBackground(lum, color, fixation)}
 
-  \code{lum} and \code{color} are dependant for the Kowa AP-7000. A white
-  background must be 10 cd/\eqn{\mbox{m}^2}{m^2}, and a yellow background must
-  be 100 cd/\eqn{\mbox{m}^2}{m^2}.
+\code{lum} and \code{color} are dependant for the Kowa AP-7000. A white
+background must be 10 cd/\eqn{\mbox{m}^2}{m^2}, and a yellow background must
+be 100 cd/\eqn{\mbox{m}^2}{m^2}.
 
-  If \code{lum} is 10 and \code{color} is not set, then
-  \code{.OpiEnv$KowaAP7000$BACKGROUND_WHITE} is assumed.
-  
-  If \code{lum} is 100 and \code{color} is not set,
-  then \code{.OpiEnv$KowaAP7000$BACKGROUND_YELLOW} is assumed.
-  
-  If both \code{lum} and \code{color} is set, then \code{lum} is ignored
-  (a warning will be generated
-  
-  if \code{lum} is incompatible with \code{color}).
-  
-  \code{fixation} is one of
-  \itemize{
-    \item \code{.OpiEnv$KowaAP7000$FIX_CENTER}, fixation marker in the centre.
-    \item \code{.OpiEnv$KowaAP7000$FIX_CENTRE}, fixation marker in the centre.
-    \item \code{.OpiEnv$KowaAP7000$FIX_AUX},    fixation marker is ???.
-    \item \code{.OpiEnv$KowaAP7000$FIX_MACULA}, fixation marker is a circle(?).
-    \item \code{.OpiEnv$KowaAP7000$FIX_AUX_LEFT}, fixation marker is as for AUX
-      but only lower left.
-  }
+If \code{lum} is 10 and \code{color} is not set, then
+\code{.OpiEnv$KowaAP7000$BACKGROUND_WHITE} is assumed.
+
+If \code{lum} is 100 and \code{color} is not set,
+then \code{.OpiEnv$KowaAP7000$BACKGROUND_YELLOW} is assumed.
+
+If both \code{lum} and \code{color} is set, then \code{lum} is ignored
+(a warning will be generated
+
+if \code{lum} is incompatible with \code{color}).
+
+\code{fixation} is one of
+\itemize{
+\item \code{.OpiEnv$KowaAP7000$FIX_CENTER}, fixation marker in the centre.
+\item \code{.OpiEnv$KowaAP7000$FIX_CENTRE}, fixation marker in the centre.
+\item \code{.OpiEnv$KowaAP7000$FIX_AUX},    fixation marker is ???.
+\item \code{.OpiEnv$KowaAP7000$FIX_MACULA}, fixation marker is a circle(?).
+\item \code{.OpiEnv$KowaAP7000$FIX_AUX_LEFT}, fixation marker is as for AUX
+but only lower left.
+}
 }
 
-\subsection{Octopus600}{ 
-  This function has no effect.
+\subsection{Octopus600}{
+This function has no effect.
 }
 
 \subsection{Octopus900}{
-  \code{opiSetBackground(lum=NA, color=NA, fixation=NA, fixIntensity=NA)} 
+\code{opiSetBackground(lum=NA, color=NA, fixation=NA, fixIntensity=NA)}
 
-  Allowable \code{lum} and \code{color} are defined in the .OpiEnv environment.
+Allowable \code{lum} and \code{color} are defined in the .OpiEnv environment.
 
-  \itemize{
-    \item\code{lum} is intensity of the background and can be one of
-    \itemize{
-      \item \code{.OpiEnv$O900$BG_OFF}, which turns background off.
-      \item \code{.OpiEnv$O900$BG_1}, background of 1.27 cd/\eqn{\mbox{m}^2}{m^2}.
-      \item \code{.OpiEnv$O900$BG_10}, background of 10 cd/\eqn{\mbox{m}^2}{m^2}.
-      \item \code{.OpiEnv$O900$BG_100}, background of 100 cd/\eqn{\mbox{m}^2}{m^2}.
-    }
-    \item\code{color} can be one of the following choices.
-    \itemize{
-      \item\code{.OpiEnv$O900$MET_COL_WW} for white-on-white
-      \item\code{.OpiEnv$O900$MET_COL_RW} for red-on-white
-      \item\code{.OpiEnv$O900$MET_COL_BW} for blue-on-white
-      \item\code{.OpiEnv$O900$MET_COL_WY} for white-on-yellow
-      \item\code{.OpiEnv$O900$MET_COL_RY} for red-on-yellow
-      \item\code{.OpiEnv$O900$MET_COL_BY} for blue-on-yellow
-    }
-    \item\code{fixation} is one of 
-    \itemize{
-      \item\code{.OpiEnv$O900$FIX_CENTRE} or \code{.OpiEnv$O900$FIX_CENTER}
-      \item\code{.OpiEnv$O900$FIX_CROSS}
-      \item\code{.OpiEnv$O900$FIX_RING}
-    }
-    \item\code{fixIntensity} is a percentage between 0 and 100. 0 is off, 100
-      the brightest.
-  }
-  Note if you specify \code{fixation} you also have to specify \code{fixIntensity}.
+\itemize{
+\item\code{lum} is intensity of the background and can be one of
+\itemize{
+\item \code{.OpiEnv$O900$BG_OFF}, which turns background off.
+\item \code{.OpiEnv$O900$BG_1}, background of 1.27 cd/\eqn{\mbox{m}^2}{m^2}.
+\item \code{.OpiEnv$O900$BG_10}, background of 10 cd/\eqn{\mbox{m}^2}{m^2}.
+\item \code{.OpiEnv$O900$BG_100}, background of 100 cd/\eqn{\mbox{m}^2}{m^2}.
+}
+\item\code{color} can be one of the following choices.
+\itemize{
+\item\code{.OpiEnv$O900$MET_COL_WW} for white-on-white
+\item\code{.OpiEnv$O900$MET_COL_RW} for red-on-white
+\item\code{.OpiEnv$O900$MET_COL_BW} for blue-on-white
+\item\code{.OpiEnv$O900$MET_COL_WY} for white-on-yellow
+\item\code{.OpiEnv$O900$MET_COL_RY} for red-on-yellow
+\item\code{.OpiEnv$O900$MET_COL_BY} for blue-on-yellow
+}
+\item\code{fixation} is one of
+\itemize{
+\item\code{.OpiEnv$O900$FIX_CENTRE} or \code{.OpiEnv$O900$FIX_CENTER}
+\item\code{.OpiEnv$O900$FIX_CROSS}
+\item\code{.OpiEnv$O900$FIX_RING}
+}
+\item\code{fixIntensity} is a percentage between 0 and 100. 0 is off, 100
+the brightest.
+}
+Note if you specify \code{fixation} you also have to specify \code{fixIntensity}.
 }
 
 \subsection{PhoneHMD}{
-  \code{opiSetBackground(bgeye, bglum = 10, bgcol = "white", fixeye = eye, fixtype = "Cross", fixlum = 100, fixcol = "green", fixcx = 0, fixcy = 0, fixsx = 2, fix_sy = 2)}
-  \itemize{
-    \item{\code{bgeye}} eye for the background. Can be "R", "L", or "B" for right, left, or both
-    \item{\code{bglum}} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey
-      value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
-    \item{\code{bgcol}} color of the background. Default is white
-    \item{\code{fixeye}} eye for the background. Takes the same values as \code{eye} (default)
-    \item{\code{fixtype}} fixation target
-    \item{\code{fixcx}, \code{fixcy}} fixation (x, y) position in degrees of visual angle
-    \item{\code{fixsx}, \code{fixsy}} dimensions of fixation target in degrees of visual angle
-    \item{\code{fixtheta}} angle of rotation of the fixation target
-    \item{\code{fixlum}} luminance of the fixation target. Default is 100 cd/\eqn{\mbox{m}^2}{m^2}
-    \item{\code{fixcol}} color of the fixation target. Default is green
-  }
+\code{opiSetBackground(bgeye, bglum = 10, bgcol = "white", fixeye = eye, fixtype = "Cross", fixlum = 100, fixcol = "green", fixcx = 0, fixcy = 0, fixsx = 2, fix_sy = 2)}
+\itemize{
+\item{\code{bgeye}} eye for the background. Can be "R", "L", or "B" for right, left, or both
+\item{\code{bglum}} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey
+value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
+\item{\code{bgcol}} color of the background. Default is white
+\item{\code{fixeye}} eye for the background. Takes the same values as \code{eye} (default)
+\item{\code{fixtype}} fixation target
+\item{\code{fixcx}, \code{fixcy}} fixation (x, y) position in degrees of visual angle
+\item{\code{fixsx}, \code{fixsy}} dimensions of fixation target in degrees of visual angle
+\item{\code{fixtheta}} angle of rotation of the fixation target
+\item{\code{fixlum}} luminance of the fixation target. Default is 100 cd/\eqn{\mbox{m}^2}{m^2}
+\item{\code{fixcol}} color of the fixation target. Default is green
+}
 }
 
 \subsection{SimGaussian}{
-  \code{opiSetBackground(col, gridCol)}
-  
-  \code{col} is the background color of the plot area used for displaying
-  stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
-  will only be displayed if \code{opiInitialize} is called with a valid display
-  argument.
+\code{opiSetBackground(col, gridCol)}
+
+\code{col} is the background color of the plot area used for displaying
+stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
+will only be displayed if \code{opiInitialize} is called with a valid display
+argument.
 }
 
-\subsection{SimHenson}{ 
-  \code{opiSetBackground(col, gridCol)}
-  
-  \code{col} is the background color of the plot area used for displaying
-  stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
-  will only be displayed if \code{opiInitialize} is called with a valid display
-  argument.
+\subsection{SimHenson}{
+\code{opiSetBackground(col, gridCol)}
+
+\code{col} is the background color of the plot area used for displaying
+stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
+will only be displayed if \code{opiInitialize} is called with a valid display
+argument.
 }
 
 \subsection{SimHensonRT}{
-  \code{opiSetBackground(col, gridCol)}
-  
-  \code{col} is the background color of the plot area used for displaying
-  stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
-  will only be displayed if \code{opiInitialize} is called with a valid display
-  argument.
+\code{opiSetBackground(col, gridCol)}
+
+\code{col} is the background color of the plot area used for displaying
+stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
+will only be displayed if \code{opiInitialize} is called with a valid display
+argument.
 }
 
 \subsection{SimNo}{
-  DETAILS
+DETAILS
 }
 
 \subsection{SimYes}{
-  DETAILS
+DETAILS
 }
 }
 \examples{

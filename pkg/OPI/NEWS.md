@@ -129,3 +129,8 @@
  * Updates to DayDream code. 
  * Added size option to static stimuli for Compass OPI option.
  * New device PhoneHMD added to support Android phones
+
+# OPI 2.11
+ * Changed to Apache 2,0 license.
+ * Fixed minor bug in ZEST related to minStimulus.
+ * Added .OpiEnv$machine_name which is set to chosen OPI machine

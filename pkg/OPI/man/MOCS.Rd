@@ -10,7 +10,7 @@ MOCS(
   responseWindowMeth = "constant",
   responseFloor = 1500,
   responseHistory = 5,
-  keyHandler = function(correct, ret) return(list(TRUE, 0, NULL)),
+  keyHandler = function(correct, ret) return(list(seen = TRUE, time = 0, err = NULL)),
   interStimMin = 200,
   interStimMax = 500,
   beep_function,
@@ -22,34 +22,34 @@ MOCS(
 \arguments{
 \item{params}{A matrix where each row is \code{x y i n correct_n ll1 ll2 ... llm} where
 \itemize{
-  \item{\code{x} is X coordinate of location}
-  \item{\code{y} is Y coordinate of location}
-  \item{\code{i} is a location number (assigned by caller)}'
-  \item{\code{n} is Number of times this location/luminance(s) should be repeated}
-  \item{\code{correct_n} is the index i of the luminance level (\code{lli}) that
-    should be treated as a ``correct'' response (the correct interval). For a
-    standard MOCS, this will be 1; for a 2AFC, this will be 1 or 2. This number will
-    be in the range [1,m].}
-    \item{\code{lli} is the i'th luminance level to be used at this location for
-    interval i of the presentation in cd/\eqn{\mbox{m}^2}{m^2}. For a standard MOCS,
-    i=1, and the \code{params} matrix will have 5 columns. For a 2AFC, there will be
-    two lli's, and \code{params} will have 6 columns.}
+\item{\code{x} is X coordinate of location}
+\item{\code{y} is Y coordinate of location}
+\item{\code{i} is a location number (assigned by caller)}'
+\item{\code{n} is Number of times this location/luminance(s) should be repeated}
+\item{\code{correct_n} is the index i of the luminance level (\code{lli}) that
+should be treated as a ``correct'' response (the correct interval). For a
+standard MOCS, this will be 1; for a 2AFC, this will be 1 or 2. This number will
+be in the range \code{[1,m]}.}
+\item{\code{lli} is the i'th luminance level to be used at this location for
+interval i of the presentation in cd/\eqn{\mbox{m}^2}{m^2}. For a standard MOCS,
+i=1, and the \code{params} matrix will have 5 columns. For a 2AFC, there will be
+two lli's, and \code{params} will have 6 columns.}
 }}
 
 \item{order}{Control the order in which the stimuli are presented.
 \itemize{
-  \item{\code{"random"} Randomise the order of trials/locations.}
-  \item{\code{"fixed"} Present each row of \code{params} in order of
-    \code{1:nrow(params)}, ignoring the \code{n} (3rd) column in \code{params}.}
+\item{\code{"random"} Randomise the order of trials/locations.}
+\item{\code{"fixed"} Present each row of \code{params} in order of
+\code{1:nrow(params)}, ignoring the \code{n} (4th) column in \code{params}.}
 }}
 
 \item{responseWindowMeth}{Control time perimeter waits for response.
 \itemize{
-  \item{\code{"speed"} After an average of the last \code{speedHistory}
-    response times, with a minimum of \code{responseFloor}. Initially
-    \code{responseFloor}.}
-  \item{\code{"constant"} Always use \code{responseFloor}.}
-  \item{\code{"forceKey"} Wait for a keyboard input.}
+\item{\code{"speed"} After an average of the last \code{speedHistory}
+response times, with a minimum of \code{responseFloor}. Initially
+\code{responseFloor}.}
+\item{\code{"constant"} Always use \code{responseFloor}.}
+\item{\code{"forceKey"} Wait for a keyboard input.}
 }}
 
 \item{responseFloor}{Minimum response window (for any \code{responseWindowMeth}
@@ -59,7 +59,7 @@ except \code{"forceKey"}).}
 (only used if \code{responseWindowMeth} is \code{"speed"}).}
 
 \item{keyHandler}{Function to get a keyboard input and returns as for \code{opiPresent}:
-list(seen={TRUE|FALSE}, response time (in ms), error code). The parameters passed to
+list(err={NULL|msg}, seen={TRUE|FALSE}, time = response time (in ms)). The parameters passed to
 the function are the correct interval number (column 4 of \code{params}), and the
 result of \code{opiPresent}. See Examples.}
 
@@ -83,19 +83,19 @@ immediately after each \code{opiPresent}, and the string is prepended with the
 }
 \value{
 Returns a data.frame with one row per stimulus copied from params with extra columns
-that are location number in the first column, and the return values from \code{opiPresent()}
-and a record of fixation (if \code{checkFixationOK} present in stim objects returned from
-\code{makeStim}: see example). These last values will differ depending on which
+appended: checkFixation checks, and the return values from \code{opiPresent()}
+(see example). These last values will differ depending on which
 machine/simulation you are running (as chosen with \code{chooseOpi()}.
 \itemize{
-  \item{column 1: x}
-  \item{column 2: y}
-  \item{column 3: location number}
-  \item{column 4: correct stimulus index}
-  \item{column 5: TRUE/FALSE was fixating for all presentations in this trial according to
-    \code{checkFixationOK}}
-  \item{column 6...: columns from params}
-  \item{...: columns from opiPresent return}
+\item{column 1: x}
+\item{column 2: y}
+\item{column 3: location number}
+\item{column 4: number of times to repeat this stim}
+\item{column 5: correct stimulus index}
+\item{column 6: TRUE/FALSE was fixating for all presentations in this trial according to
+\code{checkFixationOK}}
+\item{column 7...: columns from params}
+\item{...: columns from opiPresent return}
 }
 }
 \description{
@@ -115,7 +115,7 @@ only one presentation per row, regardless of the value in the 3rd column of \cod
 
 If a response is received before the final trial in a nIFC experiment, it is ignored.
 
-If the \code{checkFixationOK} funciton is present in a stimulus, then it is called after each
+If the \code{checkFixationOK} function is present in a stimulus, then it is called after each
 presentation, and the result is ``anded'' with each stimulus in a trial to get a TRUE/FALSE
 for fixating on all stimuli in a trial.
 }
@@ -143,7 +143,7 @@ makeStim <- function(p, rwin) {
 ################################################################
 # Read in a key press 'z' is correct==1, 'm' otherwise
 #    correct is either 1 or 2, whichever is the correct interval
-#   
+#
 # Return list(seen={TRUE|FALSE}, time=time, err=NULL))
 #        seen is TRUE if correct key pressed
 ################################################################
@@ -152,7 +152,7 @@ makeStim <- function(p, rwin) {
     stop('Python script getKeyPress.py missing?')
 }
 
-keyHandler <- function(correct, ret) { 
+keyHandler <- function(correct, ret) {
   return(list(seen=TRUE, time=0, err=NULL))
   ONE <- "b'z'"
   TWO <- "b'm'"
@@ -177,7 +177,7 @@ keyHandler <- function(correct, ret) {
 # First param is correct, next is 1 for left button, 2 for right button
 # Left button (LB) is correct for interval 1, RB for interval 2
 #    correct is either 1 or 2, whichever is the correct interval
-#   
+#
 # Return list(seen={TRUE|FALSE}, time=time, err=NULL))
 #        seen is TRUE if correct key pressed
 ################################################################

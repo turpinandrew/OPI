@@ -2,29 +2,22 @@
 % Please edit documentation in R/dbTocd.r
 \name{dbTocd}
 \alias{dbTocd}
-\alias{cdTodb}
-\title{Convert dB to cd/\eqn{\mbox{m}^2}{m^2}}
+\title{Convert perimetric dB to cd/\eqn{\mbox{m}^2}{m^2}}
 \usage{
 dbTocd(db, maxStim = 10000/pi)
-
-cdTodb(cd, maxStim = 10000/pi)
 }
 \arguments{
-\item{db}{Value to convert to cd}
+\item{db}{Value to convert to cd/\eqn{\mbox{m}^2}{m^2}.}
 
-\item{maxStim}{Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}}
-
-\item{cd}{Value to convert to dB in cd/\eqn{\mbox{m}^2}{m^2}}
+\item{maxStim}{Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}.}
 }
 \value{
-\code{dbTocd} returns cd/\eqn{\mbox{m}^2}{m^2} value
-
-\code{cdTodb} returns a dB value.
+cd/\eqn{\mbox{m}^2}{m^2} value for \code{db} dB.
 }
 \description{
 Given a value in dB, return the cd/\eqn{\mbox{m}^2}{m^2}
 equivalent. Default is to use HFA units, so maximum stimulus is 10000
-apostilbs
+apostilbs.
 }
 \examples{
 # decibels to candela
@@ -33,11 +26,4 @@ cd <- dbTocd(10)  # 1000/pi
 cd <- dbTocd(20)  # 100/pi
 cd <- dbTocd(30)  # 10/pi
 cd <- dbTocd(40)  # 1/pi
-# candela to decibels
-dB <- cdTodb(10000/pi)  # 0 dB
-dB <- cdTodb(1000/pi)   # 10 dB
-dB <- cdTodb(100/pi)    # 20 dB
-dB <- cdTodb(10/pi)     # 30 dB
-dB <- cdTodb(1/pi)      # 40 dB
-dB <- cdTodb(0.1/pi)    # 50 dB
 }

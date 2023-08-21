@@ -1,22 +1,23 @@
 Package: OPI
 Type: Package
 Title: Open Perimetry Interface
-Version: 2.10.0
-Date: 2022-01-23
+Version: 2.11.0
+Date: 2023-08-21
 Authors@R: c(
-    person("Andrew","Turpin",email="aturpin@unimelb.edu.au",role=c("cre","aut","cph")),
+    person("Andrew","Turpin",email="andrew.turpin@lei.org.au",role=c("cre","aut","cph")),
     person("David","Lawson",role=c("ctb","cph")),
     person("Matthias","Muller",role="ctb"),
     person("Jonathan","Dennis",role=c("ctb","cph")),
     person("Astrid","Zeman",role="ctb"),
     person("Ivan","Marin-Franch",role="ctb"))
 Author: Andrew Turpin [cre, aut, cph], David Lawson [ctb, cph], Matthias Muller [ctb], Jonathan Dennis [ctb, cph], Astrid Zeman [ctb], Ivan Marin-Franch [ctb]
-Maintainer: Andrew Turpin <aturpin@unimelb.edu.au>
-Description: Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters). It specifies basic functions that allow many visual field tests to be constructed. As of October 2017 it is fully implemented on the Octopus 900 and partially on the Heidelberg Edge Perimeter, the Kowa AP 7000, the CrewT imo and the Centervue Compass. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
-License: GPL-3
-URL: https://people.eng.unimelb.edu.au/aturpin/opi/index.html
-Depends: methods
+Maintainer: Andrew Turpin <andrew.turpin@lei.org.au>
+Description: Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 with partial implementations on the Centervue Compass, Kowa AP 7000, Android phones and the CrewT IMO. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
+License: Apache License (== 2.0)
+URL: https://preimtery.org/opi
+Depends: methods, Rfast, abind
 LazyData: true
 Encoding: UTF-8
 RoxygenNote: 7.1.2
-Collate: OPI-package.r opi.r compassClient.r displayClient.r daydreamClient.r dbTocd.r fourTwo.r full_threshold.r imoClient.r kowaAP7000Client.r mocs.r octopus600.r octopus900Client.r pix2deg.r simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r zest.r data-RtDbUnits.r data-RtSigmaUnits.r opiKineticStimulus.r opiStaticStimulus.r opiTemporalStimulus.r
+Collate: OPI-package.r opi.r compassClient.r displayClient.r daydreamClient.r dbTocd.r fourTwo.r full_threshold.r imoClient.r kowaAP7000Client.r mocs.r octopus600.r octopus900Client.r pix2deg.r phoneHMD.r QUESTP.r simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r zest.r data-RtDbUnits.r data-RtSigmaUnits.r opiKineticStimulus.r opiStaticStimulus.r opiTemporalStimulus.r
+Roxygen: list(markdown = TRUE)

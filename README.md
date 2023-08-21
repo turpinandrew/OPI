@@ -18,3 +18,4 @@ Once the package is downloaded and installed through R, it can be used to contro
 - MoCS - [Method of constant stimuli (Wikipedia)](http://en.wikipedia.org/wiki/Psychophysics#Method_of_constant_stimuli)
 - ZEST - [King-Smith et al. 1993](https://www.sciencedirect.com/science/article/pii/0042698994900396)
 - Full Threshold - Best guess at the original HFA algorithm based on a 4-2 staircase
+- QUEST+ - [General Bayesian framework for multiple dimensions](https://jov.arvojournals.org/article.aspx?articleid=2611972)

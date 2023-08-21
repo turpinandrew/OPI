@@ -3,44 +3,42 @@
 #
 # This would all have been nicer in an OO style, with each implementation
 # being a subclass of an opi class, but I don't think it can be in R.
-# The OPI standard doesn't want users employing exactly the same function 
-# no matter what the underlying implementation, and so there cannot be 
+# The OPI standard doesn't want users employing exactly the same function
+# no matter what the underlying implementation, and so there cannot be
 # extra parameters to create method signatures for different classes.
 # Similarly, some implementations use exactly the same method signatures,
 # again which will confuse R, I think. Anyway, if I am wrong, sorry about that.
 # What I've done (use a list of implementations and then use a global
 # integer to index them) works and makes sense to the non-OO person.
 #
-# Author: Andrew Turpin    (aturpin@unimelb.edu.au)
+# Author: Andrew Turpin    (andrew.turpin@lei.org.au)
 # Date: June 2012
 # Modified:    Sep 2014 - added Octopus 600
 #           16 Dec 2014 - added Kowa AP 7000
 #           25 Feb 2016 - added imo
 #           22 Jul 2016 - added Compass
 #
-# Copyright 2012 Andrew Turpin and Jonathan Denniss
-# This program is part of the OPI (http://perimetry.org/OPI).
-# OPI is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
+# Copyright [2012] [Andrew Turpin and Jonathan Denniss]
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   http://www.apache.org/licenses/LICENSE-2.0
 #
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-packageStartupMessage("OPI version 2.9.1")
+packageStartupMessage("OPI version 2.11.0")
 
-#' @export
-.OpiEnv <- new.env(size=20)
+.OpiEnv <- new.env(size = 20)
+assign("chooser", NA, envir = .OpiEnv)
 
 ################################################################################
-# A list of available OPI implementations for chooseOpi to choose from, and 
+# A list of available OPI implementations for chooseOpi to choose from, and
 # the opi* functions to index using .OpiEnv$chooser.
 ################################################################################
 #' @rdname opiDistributor
@@ -165,7 +163,7 @@ opi.implementations <- list(
 
 ################################################################################
 # Input parameters
-#   opiImplementation  Either "Octopus900", "HEP", "SimHenson", "SimGaussian", ... 
+#   opiImplementation  Either "Octopus900", "HEP", "SimHenson", "SimGaussian", ...
 #                      If NULL, prints a list of possible values. Returns TRUE.
 # Side effect
 #   Sets .OpiEnv$chooser
@@ -211,15 +209,15 @@ opi.implementations <- list(
 #' Response Variability in the Visual Field: Comparison of Optic Neuritis, Glaucoma,
 #' Ocular Hypertension, and Normal Eyes. Investigative Ophthalmology & Visual Science,
 #' February 2000, Vol. 41(2).
-#' 
+#'
 #' A.M. McKendrick, J. Denniss and A. Turpin. "Response times across the visual field:
 #' empirical observations and application to threshold determination". Vision Research,
 #' 101, 2014.
-#' 
+#'
 #' A. Turpin, P.H. Artes and A.M. McKendrick. "The Open Perimetry Interface: An
 #' enabling tool for clinical visual psychophysics", Journal of Vision 12(11) 2012.
 #' @export
-chooseOpi <- function(opiImplementation) { 
+chooseOpi <- function(opiImplementation) {
     possible <- unlist(lapply(opi.implementations, "[", "name"), use.names = FALSE)
 
         #
@@ -238,18 +236,18 @@ chooseOpi <- function(opiImplementation) {
         # require(rHEP)
         warning("Have not implemented chooseOPI(HEP)")
         return(FALSE)
-    } 
+    }
 
         #
         # Find the index in opi.implementations
         #
     i <- which(opiImplementation == possible)
     if (length(i) == 0) {
-        assign("chooser", NA, envir=.OpiEnv)
-        warning(paste("chooseOpi() cannot find opiImplementation",opiImplementation))
+        assign("chooser", NA, envir = .OpiEnv)
+        warning(paste("chooseOpi() cannot find opiImplementation", opiImplementation))
         return(FALSE)
     } else {
-        assign("chooser", i, envir=.OpiEnv)
+        assign("chooser", i, envir = .OpiEnv)
         return(TRUE)
     }
 }
@@ -267,7 +265,7 @@ chooseOPI <- chooseOpi
 #' method of a general OPI \code{operation}, which depends on the OPI
 #' implementation selected with \code{\link{chooseOpi}}. It returns an error if no
 #' OPI implementation has been selected yet. A catalog of all specific methods are
-#' listed in \code{opi.implementations}. 
+#' listed in \code{opi.implementations}.
 #' @param operation A general OPI operation of the following methods to: \code{opiInitialize},
 #'   \code{opiPresent} \code{opiClose}, \code{opiSetBackground},
 #'   \code{opiQueryDevice}
@@ -317,14 +315,14 @@ opiDistributor <- function(operation, ...) {
 #' \code{\link{opiPresent}} will have \code{nextStim} as the first argument;
 #' this could be checked by the machine specific implementations (but currently
 #' is not, I think).
-#' 
+#'
 #' Also note that to allow for different parameters depending on the
 #' implementation chosen with \code{chooseOpi}, every parameter MUST be named in
 #' a call to \code{\link{opiPresent}}.
 #' @return A list containing
 #' \item{err }{\code{NULL} if no error occurred, otherwise a
 #'   machine-specific error message.
-#'   
+#'
 #'   This should include errors when the specified size cannot be achieved by
 #'   the device (for example, in a projection system with an aperture wheel of
 #'   predefined sizes.) If \code{stim} is \code{NULL}, then \code{err} contains
@@ -335,9 +333,9 @@ opiDistributor <- function(operation, ...) {
 #' \item{time}{The time in milliseconds from the onset (or offset,
 #' machine-specific) of the presentation until the response from the subject
 #' if \code{seen} is \code{TRUE}.
-#' 
+#'
 #' If \code{seen} is \code{FALSE}, this value is undefined.
-#' 
+#'
 #' For kinetic perimetry on the O900, this value is unknown...}
 #' \item{answer}{Only returned for \code{Octopus600}. Can be the following values:
 #' \itemize{
@@ -376,7 +374,7 @@ opiDistributor <- function(operation, ...) {
 #'   opiPresent command was received by the Compass in ms.}
 #' \item{time_hw}{Only returned for Compass. Hardware time of button press or
 #'   response window expired (integer ms).
-#' 
+#'
 #'   To get the hardware time that a presentation began, subtract
 #'   responseWindow from \code{th} (for aligning with fixation data returned
 #'   by \code{opiClose()}.}
@@ -401,8 +399,8 @@ opiDistributor <- function(operation, ...) {
 #' \code{\link{opiTemporalStimulus}}, \code{\link{chooseOpi}},
 #' \code{\link{opiInitialize}}
 #' @export
-opiPresent        <- function(stim,nextStim=NULL,...) { 
-    opiDistributor("opiPresent", stim=stim, nextStim=nextStim, ...) 
+opiPresent        <- function(stim,nextStim=NULL,...) {
+    opiDistributor("opiPresent", stim=stim, nextStim=nextStim, ...)
 }
 
 #' @rdname opiInitialize

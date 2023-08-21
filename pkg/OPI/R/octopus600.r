@@ -2,24 +2,23 @@
 # OPI for Octopus 600 
 # 
 # Authors: 
-#   Andrew Turpin    (aturpin@unimelb.edu.au)
+#   Andrew Turpin    (andrew.turpin@lei.org.au)
 #   David Lawson     (david.lawson@unimelb.edu.au)
 # Date: July 2014
 #
-# Copyright 2014 Andrew Turpin and David Lawson
-# This program is part of the OPI (http://perimetry.org/OPI).
-# OPI is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
+# Copyright [2016] [Andrew Turpin and David Lawson]
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 if (exists(".OpiEnv") && !exists("O600", where=.OpiEnv))
@@ -319,21 +318,21 @@ octo600.opiClose <- function() {
 #' \subsection{Octopus600}{
 #'   Returns a list of 10 items:
 #'   \enumerate{
-#'     \item answerButton [0 = not pressed, 1 = pressed ]
-#'     \item headSensor [0 = no forehead detected, 1 = forehead detected ]
-#'     \item eyeLidClosureLeft [0 = eye is open, 1 = eye is closed ]
-#'     \item eyeLidClosureRight [0 = eye is open, 1 = eye is closed ]
-#'     \item fixationLostLeft [1 = eye pos lost, 0 = eye pos ok)
-#'     \item fixationLostRight [1 = eye pos lost, 0 = eye pos ok)
-#'     \item pupilPositionXLeft [in px]
-#'     \item pupilPositionYLeft [in px]
-#'     \item pupilPositionXRight [in px]
-#'     \item pupilPositionYRight [in px]
+#'     \item answerButton \{0 = not pressed, 1 = pressed \}
+#'     \item headSensor \{0 = no forehead detected, 1 = forehead detected \}
+#'     \item eyeLidClosureLeft \{0 = eye is open, 1 = eye is closed\}
+#'     \item eyeLidClosureRight \{0 = eye is open, 1 = eye is closed\}
+#'     \item fixationLostLeft \{1 = eye pos lost, 0 = eye pos ok\}
+#'     \item fixationLostRight \{1 = eye pos lost, 0 = eye pos ok\}
+#'     \item pupilPositionXLeft (in px)
+#'     \item pupilPositionYLeft (in px)
+#'     \item pupilPositionXRight (in px)
+#'     \item pupilPositionYRight (in px)
 #'   }
 #' }
 octo600.opiQueryDevice <- function() {
   res <- sendCommand(.OpiEnv$O600$socket, 3004)
-  
+
   ret <- list(
     answerButton        = res[[1]][8],
     headSensor          = res[[1]][9],
