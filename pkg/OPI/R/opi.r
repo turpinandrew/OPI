@@ -34,6 +34,7 @@
 
 packageStartupMessage("OPI version 2.11.0")
 
+#' @export
 .OpiEnv <- new.env(size = 20)
 assign("chooser", NA, envir = .OpiEnv)
 
