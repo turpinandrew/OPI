@@ -32,9 +32,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-packageStartupMessage("OPI version 2.11.0")
+packageStartupMessage(sprintf("OPI version %s", packageVersion("OPI")))
 
 #' @export
+#' @noRd
 .OpiEnv <- new.env(size = 20)
 assign("chooser", NA, envir = .OpiEnv)
 

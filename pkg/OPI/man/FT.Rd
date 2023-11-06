@@ -126,7 +126,7 @@ the simpler \code{FT} can be used. See examples below
 }
 \examples{
 # Stimulus is Size III white-on-white as in the HFA
-makeStim <- function(db, n) { 
+makeStim <- function(db, n) {
   s <- list(x=9, y=9, level=dbTocd(db), size=0.43, color="white",
             duration=200, responseWindow=1500)
   class(s) <- "opiStaticStimulus"
@@ -163,7 +163,7 @@ states <- lapply(locations, function(loc) {
 
 # Loop through until all states are "stop"
 while(!all(st <- unlist(lapply(states, FT.stop)))) {
-  i <- which(!st)                         # choose a random, 
+  i <- which(!st)                         # choose a random,
   i <- i[runif(1, min=1, max=length(i))]  # unstopped state
   r <- FT.step(states[[i]])               # step it
   states[[i]] <- r$state                  # update the states
