@@ -12,28 +12,28 @@ chooseOPI(opiImplementation)
 \arguments{
 \item{opiImplementation}{A character string that is one of the following.
 \itemize{
-\item\code{"SimNo"} for a simulator that always doesn't see.
-\item\code{"SimYes"} for a simulator that always does see.
-\item\code{"SimHenson"} for a simulator that uses a cummulative gaussian
-psychometric function with standard deviation according to Henson et al (2000)
-where variability increases as true threshold (Humphrey dB) value decreases.
-\item\code{"SimHensonRT"} as for SimHenson, but response times in ms are sampled
-from a supplied response time data set for each true positive response.
-\item\code{"SimGaussian"} for a simulator that uses a cummulative gaussian
-psychometric function with standard deviation supplied in opiInitialize().
-\item\code{"Octopus900"} for interfacing with the Octopus 900.
-\item\code{"Octopus900F310"} for interfacing with the Octopus 900 using Logitech
-F310 controller.
-\item\code{"Octopus600"} for interfacing with the Octopus 600.
-\item\code{"HEP"}        not working so well in HEPs.
-\item\code{"KowaAP7000"} for interfacing with Kowa AP-7000.
-\item\code{"Imo"} for interfacing with CrewT's Imo head mounted perimeter.
-\item\code{"DayDream"} for interfacing with an Android phone in a Google Daydream
-\item\code{"Display"} for interfacing with a shiny plot area on the current machine.
-\item\code{"PhoneHMD"} for interfacing with phones using VR. At the moment, only
-Android compatible phones are working. The VR headset must be compatible with
-Cardboard
-\item\code{NULL}         print a list of available OPI implementations.
+  \item\code{"SimNo"} for a simulator that always doesn't see.
+  \item\code{"SimYes"} for a simulator that always does see.
+  \item\code{"SimHenson"} for a simulator that uses a cummulative gaussian
+  psychometric function with standard deviation according to Henson et al (2000)
+  where variability increases as true threshold (Humphrey dB) value decreases.
+  \item\code{"SimHensonRT"} as for SimHenson, but response times in ms are sampled
+  from a supplied response time data set for each true positive response.
+  \item\code{"SimGaussian"} for a simulator that uses a cummulative gaussian
+  psychometric function with standard deviation supplied in opiInitialize().
+  \item\code{"Octopus900"} for interfacing with the Octopus 900.
+  \item\code{"Octopus900F310"} for interfacing with the Octopus 900 using Logitech
+  F310 controller.
+  \item\code{"Octopus600"} for interfacing with the Octopus 600.
+  \item\code{"HEP"}        not working so well in HEPs.
+  \item\code{"KowaAP7000"} for interfacing with Kowa AP-7000.
+  \item\code{"Imo"} for interfacing with CrewT's Imo head mounted perimeter.
+  \item\code{"DayDream"} for interfacing with an Android phone in a Google Daydream
+  \item\code{"Display"} for interfacing with a shiny plot area on the current machine.
+  \item\code{"PhoneHMD"} for interfacing with phones using VR. At the moment, only
+    Android compatible phones are working. The VR headset must be compatible with
+    Cardboard
+  \item\code{NULL}         print a list of available OPI implementations.
 }}
 }
 \value{

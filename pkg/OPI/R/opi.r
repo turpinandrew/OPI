@@ -34,8 +34,8 @@
 
 packageStartupMessage(sprintf("OPI version %s", packageVersion("OPI")))
 
-#' @export
 #' @noRd
+#' @export
 .OpiEnv <- new.env(size = 20)
 assign("chooser", NA, envir = .OpiEnv)
 

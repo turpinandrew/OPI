@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-library(grDevices)
+# library(grDevices)
 
 # Globals
 # .OpiEnv$SimDisplay$display    # device number of plot, or NA
