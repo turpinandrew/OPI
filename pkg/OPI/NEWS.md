@@ -134,3 +134,4 @@
  * Changed to Apache 2,0 license.
  * Fixed minor bug in ZEST related to minStimulus.
  * Added .OpiEnv$machine_name which is set to chosen OPI machine
+ * 2.11.1 Minor bug fix to export .OpiEnv 
