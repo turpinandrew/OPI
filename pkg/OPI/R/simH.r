@@ -51,7 +51,7 @@ if (exists(".OpiEnv") && !exists("SimH", where=.OpiEnv))
 #' @param maxStim Maximum stimulus value in cd/m^2 used for db <-> cd/m^2 conversions for
 #'   "SimHenson", "SimHensonRT", "SimGaussian"
 #' @details
-#' \subsection{SimHenson}{
+#' # SimHenson
 #'   \code{opiInitialize(type="C", A=NA, B=NA, cap=6, maxStim=10000/pi)}
 #'   
 #'   If the chosen OPI implementation is \code{SimHenson}, then \code{type}
@@ -74,7 +74,7 @@ if (exists(".OpiEnv") && !exists("SimH", where=.OpiEnv))
 #'   \code{maxStim} is the maximum stimuls value in cd/\eqn{\mbox{m}^2}{m^2}.
 #'   This is used in converting cd/\eqn{\mbox{m}^2}{m^2} to dB values, and
 #'   vice versa.
-#' }
+#'
 #' @examples
 #' # Set up a simple simulation for white-on-white perimetry
 #' chooseOpi("SimHenson")
@@ -134,14 +134,14 @@ simH.opiInitialize <- function(type = "C", A = -0.081, B = 3.27, cap = 6,
 #' @param col DESCRIPTION for OPI implementations based on simulations
 #' @param gridCol DESCRIPTION for OPI implementation based on simulations
 #' @details
-#' \subsection{SimHenson}{ 
+#' # SimHenson
 #'   \code{opiSetBackground(col, gridCol)}
 #'   
 #'   \code{col} is the background color of the plot area used for displaying
 #'   stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
 #'   will only be displayed if \code{opiInitialize} is called with a valid display
 #'   argument.
-#' }
+#'
 simH.opiSetBackground <- function(col, gridCol) { 
     return (simDisplay.setBackground(col, gridCol))
 }
@@ -155,7 +155,7 @@ simH.opiSetBackground <- function(col, gridCol) {
 #' @param rt_rate response time rate parameter  for OPI implementation "SimHenson"
 #' @param rt_scale response time scale parameter for OPI implementation "SimHenson"
 #' @details
-#' \subsection{SimHenson}{
+#' # SimHenson
 #'   \code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30)}
 #'   
 #'   If the chosen OPI implementation is \code{SimHenson}, then the response to a
@@ -205,7 +205,7 @@ simH.opiSetBackground <- function(col, gridCol) {
 #'   from a Gamma distribution parameterised by \code{rt_shape} and \code{rt_rate}
 #'   and multiplied by \code{rt_scale}.That is:
 #'   \code{rgamma(1, shape=rt_shape, rate=rt_rate) / rt_scale}.
-#' }
+#'
 #' @examples
 #' # Stimulus is Size III white-on-white as in the HFA
 #' makeStim <- function(db, n) {

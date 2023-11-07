@@ -46,9 +46,9 @@ simDisplay.setupDisplay <- function(dimensions = NA) {
         xlab="",
         ylab=""
     )
-    assign("display"   , dev.cur(), envir = .OpiEnv$SimDisplay)
+    assign("display"   , grDevices::dev.cur(), envir = .OpiEnv$SimDisplay)
     assign("bg"        , "white",   envir = .OpiEnv$SimDisplay)
-    assign("grid.color", grey(0.5), envir = .OpiEnv$SimDisplay)
+    assign("grid.color", grDevices::grey(0.5), envir = .OpiEnv$SimDisplay)
     grid(lty=2, col=.OpiEnv$SimDisplay$grid.color)
 
     return (0)
@@ -75,7 +75,7 @@ simDisplay.setBackground <- function(col, gridCol) {
     }
     assign("grid.color", gridCol, envir = .OpiEnv$SimDisplay)
 
-    if (dev.cur() != .OpiEnv$SimDisplay$display) {  # check if window was closed
+    if (grDevices::dev.cur() != .OpiEnv$SimDisplay$display) {  # check if window was closed
         assign("display", NA, envir = .OpiEnv$SimDisplay)
     } else {
         rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4], col = .OpiEnv$SimDisplay$bg)
@@ -93,7 +93,7 @@ simDisplay.setBackground <- function(col, gridCol) {
 simDisplay.present <- function(x, y, color, duration, responseWindow) {
     if(exists("display", envir=.OpiEnv$SimDisplay)) {
         if (!is.na(.OpiEnv$SimDisplay$display)) {
-            if (dev.cur() != .OpiEnv$SimDisplay$display) {  # check if window was closed
+            if (grDevices::dev.cur() != .OpiEnv$SimDisplay$display) {  # check if window was closed
                 assign("display", NA, envir = .OpiEnv$SimDisplay)
             } else {
                 startTime <- Sys.time()

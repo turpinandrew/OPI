@@ -75,21 +75,19 @@ if (exists(".OpiEnv") && !exists("KowaAP7000", where=.OpiEnv)) {
 #######################################################################
 #' @rdname opiInitialize
 #' @details
-#' \subsection{KowaAP7000}{
+#' # KowaAP7000
 #'   \code{opiInitialize(ip, port)}
 #'   
 #'   If the chosen OPI implementation is \code{KowaAP7000}, then you must specify
 #'   the IP address and port of the AP-7000 server.
 #'   
-#'   \itemize{
-#'     \item\code{ipAddress} is the IP address of the AP-7000 server as a string.
-#'     \item\code{port} is the TCP/IP port of the AP-7000 server as a number.
-#'   }
-#' }
+#'   * \code{ipAddress} is the IP address of the AP-7000 server as a string.
+#'   * \code{port} is the TCP/IP port of the AP-7000 server as a number.
+#' 
 #' @return
-#' \subsection{Kowa AP-7000}{
+#' ## Kowa AP-7000
 #'   Always returns NULL.
-#' }
+#' 
 #' @examples
 #' \dontrun{
 #'   # Set up the Kowa AP-7000
@@ -203,7 +201,7 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
         return(list(err="NULL stimulus not supported", seen=NA, x=NA, y=NA))
     }
 
-    if (length(xy.coords(stim$path)$x) > 2) 
+    if (length(grDevices::xy.coords(stim$path)$x) > 2) 
         warning("opiPresent (kinetic): Kowa AP-7000 only supports paths of length 2 (start and end).  Ignoring all but the first two elements of stim$path etc")
 
         # convert sizes to .OpiEnv$KowaAP7000$SIZES_DEGREES
@@ -223,26 +221,26 @@ kowaAP7000.opiPresent.opiKineticStimulus <- function(stim, ...) {
         stop("opiPresent: stimulus color is not supported.")
      }
 
-    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$x[1], -80, "Start x")
-    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$x[1], 80, "Start x")
-    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$x[2], -80, "End x")
-    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$x[2], 80, "End x")
-    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$y[1], -70, "Start y")
-    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$y[1], 65, "Start y")
-    .OpiEnv$KowaAP7000$minCheck(xy.coords(stim$path)$y[2], -70, "End y")
-    .OpiEnv$KowaAP7000$maxCheck(xy.coords(stim$path)$y[2], 65, "End y")
+    .OpiEnv$KowaAP7000$minCheck(grDevices::xy.coords(stim$path)$x[1], -80, "Start x")
+    .OpiEnv$KowaAP7000$maxCheck(grDevices::xy.coords(stim$path)$x[1], 80, "Start x")
+    .OpiEnv$KowaAP7000$minCheck(grDevices::xy.coords(stim$path)$x[2], -80, "End x")
+    .OpiEnv$KowaAP7000$maxCheck(grDevices::xy.coords(stim$path)$x[2], 80, "End x")
+    .OpiEnv$KowaAP7000$minCheck(grDevices::xy.coords(stim$path)$y[1], -70, "Start y")
+    .OpiEnv$KowaAP7000$maxCheck(grDevices::xy.coords(stim$path)$y[1], 65, "Start y")
+    .OpiEnv$KowaAP7000$minCheck(grDevices::xy.coords(stim$path)$y[2], -70, "End y")
+    .OpiEnv$KowaAP7000$maxCheck(grDevices::xy.coords(stim$path)$y[2], 65, "End y")
     .OpiEnv$KowaAP7000$minCheck(stim$levels[1],  10000/pi/10^5, "Stimulus level")
     .OpiEnv$KowaAP7000$maxCheck(stim$levels[1],  10000/pi     , "Stimulus level")
     .OpiEnv$KowaAP7000$minCheck(stim$speeds[1],  3, "Stimulus speed")
     .OpiEnv$KowaAP7000$maxCheck(stim$speeds[1],  5, "Stimulus speed")
 
     msg <- "OPI-PRESENT-KINETIC "
-    xs <- xy.coords(stim$path)$x[1]
-    ys <- xy.coords(stim$path)$y[1]
-    msg <- paste(msg, xy.coords(stim$path)$x[1])
-    msg <- paste(msg, xy.coords(stim$path)$y[1])
-    msg <- paste(msg, xy.coords(stim$path)$x[2])
-    msg <- paste(msg, xy.coords(stim$path)$y[2])
+    xs <- grDevices::xy.coords(stim$path)$x[1]
+    ys <- grDevices::xy.coords(stim$path)$y[1]
+    msg <- paste(msg, grDevices::xy.coords(stim$path)$x[1])
+    msg <- paste(msg, grDevices::xy.coords(stim$path)$y[1])
+    msg <- paste(msg, grDevices::xy.coords(stim$path)$x[2])
+    msg <- paste(msg, grDevices::xy.coords(stim$path)$y[2])
     msg <- paste(msg, cdTodb(stim$levels[1], maxStim=10000/pi))
     msg <- paste(msg, stim$sizes[1])
     msg <- paste(msg, stim$colors[1])
@@ -280,7 +278,7 @@ kowaAP7000.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) 
 ###########################################################################
 #' @rdname opiSetBackground
 #' @details
-#' \subsection{KowaAP7000}{ 
+#' # KowaAP7000
 #'   \code{opiSetBackground(lum, color, fixation)} 
 #' 
 #'   \code{lum} and \code{color} are dependant for the Kowa AP-7000. A white
@@ -299,19 +297,16 @@ kowaAP7000.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) 
 #'   if \code{lum} is incompatible with \code{color}).
 #'   
 #'   \code{fixation} is one of
-#'   \itemize{
-#'     \item \code{.OpiEnv$KowaAP7000$FIX_CENTER}, fixation marker in the centre.
-#'     \item \code{.OpiEnv$KowaAP7000$FIX_CENTRE}, fixation marker in the centre.
-#'     \item \code{.OpiEnv$KowaAP7000$FIX_AUX},    fixation marker is ???.
-#'     \item \code{.OpiEnv$KowaAP7000$FIX_MACULA}, fixation marker is a circle(?).
-#'     \item \code{.OpiEnv$KowaAP7000$FIX_AUX_LEFT}, fixation marker is as for AUX
-#'       but only lower left.
-#'   }
-#' }
+#'     * \code{.OpiEnv$KowaAP7000$FIX_CENTER}, fixation marker in the centre.
+#'     * \code{.OpiEnv$KowaAP7000$FIX_CENTRE}, fixation marker in the centre.
+#'     * \code{.OpiEnv$KowaAP7000$FIX_AUX},    fixation marker is ???.
+#'     * \code{.OpiEnv$KowaAP7000$FIX_MACULA}, fixation marker is a circle(?).
+#'     * \code{.OpiEnv$KowaAP7000$FIX_AUX_LEFT}, fixation marker is as for AUX but only lower left.
+#' 
 #' @return
-#' \subsection{KowaAP7000}{ 
-#'   DETAILS
-#' }
+#' ## KowaAP7000
+#'   Always returns NULL
+#' 
 kowaAP7000.opiSetBackground <- function(lum=NA, color=NA, fixation=NA) {
     if (!is.na(fixation)) {
         .OpiEnv$KowaAP7000$minCheck(fixation, 0, "Fixation")
@@ -374,20 +369,19 @@ kowaAP7000.opiClose <- function() {
 #' @rdname opiQueryDevice
 #' @title Query device using OPI
 #' @details
-#' \subsection{KowaAP7000}{
+#' # KowaAP7000
 #'   If the chosen OPI is \code{KowaAP7000}, then this function returns the current
 #'   location of the pupil. See the Value section for details.
-#' }
-#' \subsection{KowaAP7000}{
+#'
+#' # KowaAP7000
 #'   Returns a list of 4 items:
-#'   \itemize{
-#'     \item \code{pupilX}, the x-coordinate of the pupil position in pixels.
-#'     \item \code{pupilY}, the y-coordinate of the pupil position in pixels.
-#'     \item \code{purkinjeX}, the x-coordinate of the purkinje position in pixels.
-#'     \item \code{purkinjeY}, the y-coordinate of the purkinje position in pixels.
-#'   }
+#'   * \code{pupilX}, the x-coordinate of the pupil position in pixels.
+#'   * \code{pupilY}, the y-coordinate of the pupil position in pixels.
+#'   * \code{purkinjeX}, the x-coordinate of the purkinje position in pixels.
+#'   * \code{purkinjeY}, the y-coordinate of the purkinje position in pixels.
+#' 
 #'   It also prints a list of constants that OPI knows about for the AP-7000.
-#' }
+#' 
 kowaAP7000.opiQueryDevice <- function() {
     cat("Defined constants and functions\n")
     cat("-------------------------------\n")

@@ -83,7 +83,7 @@ sendCommand <- function(socket, id, ...) {
 #' @param pulsar DETAILS
 #' @param eyeControl DETAILS
 #' @details
-#' \subsection{Octopus600}{
+#' # Octopus600
 #'   \code{opiInitialize(ipAddress, eye, pupilTracking=FALSE, pulsar=FALSE, eyeControl=0)}
 #'   
 #'   If the chosen OPI implementation is \code{Octopus600}, then you must specify
@@ -99,18 +99,16 @@ sendCommand <- function(socket, id, ...) {
 #'   \code{pulsar} is TRUE for pulsar stimulus, FALSE for size III white-on-white.
 #'   
 #'   \code{eyeControl}
-#'   \itemize{ 
-#'     \item 0 is off
-#'     \item 1 is eye blink
-#'     \item 2 is eye blink, forehead rest, fixation control
-#'     \item 3 is eye blink, forehead rest, fixation control, fast eye movements
-#'   }
-#' }
+#'     * 0 is off
+#'     * 1 is eye blink
+#'     * 2 is eye blink, forehead rest, fixation control
+#'     * 3 is eye blink, forehead rest, fixation control, fast eye movements
+#' 
 #' @return
-#' \subsection{Octopus600}{
+#' ## Octopus600
 #'   Returns NULL if successful, or an Octopus 600 error code. The default
 #'   background and stimulus setup is to white-on-white perimetry.
-#' }
+#' 
 octo600.opiInitialize <- function(ipAddress = "", eye = "",
                                   pupilTracking = FALSE,
                                   pulsar = FALSE, eyeControl = 0) {
@@ -172,14 +170,13 @@ octo600.opiInitialize <- function(ipAddress = "", eye = "",
 
 #' @rdname opiPresent
 #' @details
-#' \subsection{Octopus600}{
+#' # Octopus600
 #'   \code{opiPresent(stim, nextStim=NULL)}
 #'   
 #'   If the chosen OPI implementation is \code{Octopus600}, then nextStim is
 #'   ignored. If \code{eyeControl} is non-zero, as set in \code{opiInitialize},
 #'   answer codes describing patient state may arise (see \code{answer} field
 #'   in the Value section).
-#' }
 octo600.opiPresent <- function(stim, nextStim=NULL) { UseMethod("octo600.opiPresent") }
 setGeneric("octo600.opiPresent")
 
@@ -258,13 +255,16 @@ octo600.opiPresent.opiKineticStimulus <- function(stim, nextStim=NULL, ...) {
 #' @param fixType fixation type
 #' @param fixColor fixation color
 #' @details
-#' \subsection{Octopus600}{ 
+#' # Octopus600
 #'   This function has no effect.
-#' }
+#' 
 #' @return
-#' \subsection{Octopus600}{ 
-#'   DETAILS
-#' }
+#' ## Octopus600
+#'   * -1 to be implemented
+#'   * -2 O600 sent back an error; bad background parameters
+#'   * -3 O600 sent back an error; bad fixation parameters
+#'   * NULL Success
+#' 
 octo600.opiSetBackground <- function(bgColor=NA, fixType=NA, fixColor=NA, fixIntensity=255) {
   
   if (!is.element(fixType, 1:4))
@@ -296,9 +296,9 @@ octo600.opiSetBackground <- function(bgColor=NA, fixType=NA, fixColor=NA, fixInt
 ###########################################################################
 #' @rdname opiClose
 #' @return
-#' \subsection{Octopus600}{
-#'   DETAILS
-#' }
+#' ## Octopus600
+#'    Always returns NULL
+#' 
 octo600.opiClose <- function() {
     close(.OpiEnv$O600$socket)
     return(NULL)
@@ -310,26 +310,24 @@ octo600.opiClose <- function() {
 #' @rdname opiQueryDevice
 #' @title Query device using OPI
 #' @details
-#' \subsection{Octopus600}{
+#' # Octopus600
 #'   If the chosen OPI is \code{Octopus600}, then this function returns
 #'   information about the patient. See the Value section for details.
-#' }
+#' 
 #' @return
-#' \subsection{Octopus600}{
+#' ## Octopus600
 #'   Returns a list of 10 items:
-#'   \enumerate{
-#'     \item answerButton \{0 = not pressed, 1 = pressed \}
-#'     \item headSensor \{0 = no forehead detected, 1 = forehead detected \}
-#'     \item eyeLidClosureLeft \{0 = eye is open, 1 = eye is closed\}
-#'     \item eyeLidClosureRight \{0 = eye is open, 1 = eye is closed\}
-#'     \item fixationLostLeft \{1 = eye pos lost, 0 = eye pos ok\}
-#'     \item fixationLostRight \{1 = eye pos lost, 0 = eye pos ok\}
-#'     \item pupilPositionXLeft (in px)
-#'     \item pupilPositionYLeft (in px)
-#'     \item pupilPositionXRight (in px)
-#'     \item pupilPositionYRight (in px)
-#'   }
-#' }
+#'     * \code{answerButton} \{0 = not pressed, 1 = pressed \}
+#'     * \code{headSensor} \{0 = no forehead detected, 1 = forehead detected \}
+#'     * \code{eyeLidClosureLeft} \{0 = eye is open, 1 = eye is closed\}
+#'     * \code{eyeLidClosureRight} \{0 = eye is open, 1 = eye is closed\}
+#'     * \code{fixationLostLeft} \{1 = eye pos lost, 0 = eye pos ok\}
+#'     * \code{fixationLostRight} \{1 = eye pos lost, 0 = eye pos ok\}
+#'     * \code{pupilPositionXLeft} (in px)
+#'     * \code{pupilPositionYLeft} (in px)
+#'     * \code{pupilPositionXRight} (in px)
+#'     * \code{pupilPositionYRight} (in px)
+#' 
 octo600.opiQueryDevice <- function() {
   res <- sendCommand(.OpiEnv$O600$socket, 3004)
 

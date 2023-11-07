@@ -77,31 +77,24 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 #' @param ip ip address on which server is listening
 #' @param port port number on which server is listening
 #' @details
-#' \subsection{Compass}{
+#' ## Compass
 #'   \code{opiInitialize(ip, port)}
 #'   
 #'   If the chosen OPI implementation is \code{Compass}, then you must specify
 #'   the IP address and port of the Compass server.
 #'   
-#'   \itemize{
-#'     \item\code{ip} is the IP address of the Compass server as a string.
-#'     \item\code{port} is the TCP/IP port of the Compass server as a number.
-#'   }
+#'   * \code{ip} is the IP address of the Compass server as a string.
+#'   * \code{port} is the TCP/IP port of the Compass server as a number.
 #'   Warning: this returns a list, not a single error code.
-#' }
+
 #' @return
-#' \subsection{Compass}{
+#' ## Compass
 #'   Returns a list with elements:
-#'   \itemize{
-#'     \item{err} NULL if successful, not otherwise.
-#'     \item{prl} a pair giving the (x,y) in degrees of the Preferred Retinal
-#'       Locus detected in the initial alignment.
-#'     \item{onh} a pair giving the (x,y) in degrees of the ONH as selected by
-#'     the user.
-#'     \item{image} raw bytes being the JPEG compressed infra-red image acquired
-#'     during alignment.
-#'   }
-#' }
+#'      * `err` NULL if successful, not otherwise.
+#'      * `prl` a pair giving the (x,y) in degrees of the Preferred Retinal Locus detected in the initial alignment.
+#'      * `onh` a pair giving the (x,y) in degrees of the ONH as selected by the user.
+#'      * `image` raw bytes being the JPEG compressed infra-red image acquired during alignment.
+#' 
 #' @examples
 #' \dontrun{
 #'   # Set up the Compass
@@ -158,7 +151,7 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
 #'             \code{\link{opiKineticStimulus}}, or \code{\link{opiTemporalStimulus}} to be presented.
 #' @param nextStim unused - included for compliance with OPI standard.
 #' @details
-#' \subsection{Compass}{
+#' # Compass
 #'   \code{opiPresent(stim, nextStim=NULL)}
 #'   
 #'   If the chosen OPI implementation is \code{Compass}, then \code{nextStim}
@@ -166,23 +159,21 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
 #'   
 #'   If tracking is on, then this will block until the tracking is obtained,
 #'   and the stimulus presented.
-#' }
+#' 
 #' @return
-#' \subsection{Compass}{
+#' ## Compass
 #'  A list containing
-#'  \itemize{
-#'    \item{err}{0 all clear, >= 1 some error codes (eg cannot track, etc) (integer)}
-#'    \item{seen}{\code{FALSE} for not seen, \code{TRUE} for seen (button pressed in response window)}
-#'    \item{time}{response time in ms (integer) since stimulus onset, -1 for not seen}
-#'    \item{time_rec}{time since epoch when command was received at Compass (integer ms)}
-#'    \item{time_pres}{time since epoch that stimulus was presented (integer ms)}
-#'    \item{num_track_events}{number of tracking events that occurred during presentation (integer)}
-#'    \item{num_motor_fails}{number of times motor could not follow fixation movement during presentation (integer)}
-#'    \item{pupil_diam}{pupil diameter in mm (float)}
-#'    \item{loc_x}{pixels integer, location in image of presentation (integer)}
-#'    \item{loc_y}{pixels integer, location in image of presentation (integer)}
-#'  }
-#' }
+#'    * `err` 0 all clear, >= 1 some error codes (eg cannot track, etc) (integer)
+#'    * `seen` \code{FALSE} for not seen, \code{TRUE} for seen (button pressed in response window)
+#'    * `time` response time in ms (integer) since stimulus onset, -1 for not seen
+#'    * `time_rec` time since epoch when command was received at Compass (integer ms)
+#'    * `time_pres` time since epoch that stimulus was presented (integer ms)
+#'    * `num_track_events` number of tracking events that occurred during presentation (integer)
+#'    * `num_motor_fails` number of times motor could not follow fixation movement during presentation (integer)
+#'    * `pupil_diam` pupil diameter in mm (float)
+#'    * `loc_x` pixels integer, location in image of presentation (integer)
+#'    * `loc_y` pixels integer, location in image of presentation (integer)
+#' 
 compass.opiPresent <- function(stim, nextStim=NULL) { UseMethod("compass.opiPresent") }
 setGeneric("compass.opiPresent")
 

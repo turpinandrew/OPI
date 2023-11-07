@@ -54,7 +54,7 @@ if (exists(".OpiEnv") && !exists("SimHRT", where=.OpiEnv))
 #' @param rtData data.frame with colnames == "Rt", "Dist", "Person" for "SimHensonRT"
 #' @param rtFP response time for false positives ??? for "SimHensonRT"
 #' @details
-#' \subsection{SimHensonRT}{
+#' # SimHensonRT
 #'   \code{opiInitialize(type="C", A=NA, B=NA, cap=6, display=NA, maxStim=10000/pi, rtData, rtFP=1:1600)}
 #'   
 #'   If the chosen OPI implementation is \code{SimHensonRT}, then the first six
@@ -69,7 +69,7 @@ if (exists(".OpiEnv") && !exists("SimHRT", where=.OpiEnv))
 #'   
 #'   \code{rtFp} gives the vector of values in milliseconds from which a response
 #'   time for a false positive response is randomly sampled.
-#' }
+#'
 #' @examples
 #' # Set up a simple simulation for white-on-white perimetry
 #' # and display the stimuli in a plot region and simulate response times
@@ -149,14 +149,14 @@ simH_RT.opiInitialize <- function(type = "C", cap = 6, A = -0.081, B = 3.27,
 ################################################################################
 #' @rdname opiSetBackground
 #' @details
-#' \subsection{SimHensonRT}{
+#' # SimHensonRT
 #'   \code{opiSetBackground(col, gridCol)}
 #'   
 #'   \code{col} is the background color of the plot area used for displaying
 #'   stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
 #'   will only be displayed if \code{opiInitialize} is called with a valid display
 #'   argument.
-#' }
+#'
 simH_RT.opiSetBackground <- function(col, gridCol) { 
     return (simDisplay.setBackground(col, gridCol))
 }
@@ -164,7 +164,7 @@ simH_RT.opiSetBackground <- function(col, gridCol) {
 #' @rdname opiPresent
 #' @param notSeenToSeen SOMETHING for OPI implementation "SimHensonRT"
 #' @details
-#' \subsection{SimHensonRT}{
+#' # SimHensonRT
 #'   \code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30, dist=stim$level - tt)}
 #' 
 #'   For static stimuli, this function is the same as for \code{SimHenson}, but
@@ -174,7 +174,7 @@ simH_RT.opiSetBackground <- function(col, gridCol) {
 #'   the \code{Dist} column of \code{rtData}. The default is just the straight
 #'   difference between the stimulus level and the true threshold, but you might
 #'   want it scaled somehow to match \code{rtData}.
-#' }
+#'
 #' @examples
 #' # Same but with simulated reaction times
 #' chooseOpi("SimHensonRT")

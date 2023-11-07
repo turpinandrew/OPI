@@ -167,7 +167,7 @@ getPupilInfo <- function() {
 # Generate integer x,y points between vertices by Bresenham's algorithm. 
 #
 # @param x,y the x and y coordinates a points to be joined where y can
-#  can be missing and the argument x is processed by \code{\link{xy.coords}}.
+#  can be missing and the argument x is processed by \code{\link{grDevices::xy.coords}}.
 # @param close \code{logical} value indicating if the points form a closed
 #  polygon (without duplicating the first and last points)
 #
@@ -185,7 +185,7 @@ getPupilInfo <- function() {
 #   points(bresenham(verts, close = FALSE), col = 2, pch = 16)
 bresenham <- function(x, y = NULL, close = TRUE) {
   # accept any coordinate structure
-  v <- xy.coords(x = x, y = y, recycle = TRUE, setLab = FALSE)
+  v <- grDevices::xy.coords(x = x, y = y, recycle = TRUE, setLab = FALSE)
   if (!all(is.finite(v$x), is.finite(v$y)))
     stop("finite coordinates required")
   
@@ -248,27 +248,22 @@ bresenham <- function(x, y = NULL, close = TRUE) {
 #' @param tracking tracking on or off
 #' @param tracktol tolerance during tracking in degrees of visual angle
 #' @details
-#' \subsection{imo}{
+#' # imo
 #'   \code{opiInitialize(ip, port, ppd = 16, tracking = FALSE, tracktol = 2)}
 #'   
 #'   If the chosen OPI implementation is \code{imo}, then you must specify the IP
 #'   address and port of the imo server.
 #'   
-#'   \itemize{
-#'     \item \code{ip} is the IP address of the imo server as a string.
-#'     \item \code{port} is the TCP/IP port of the imo server as a number.
-#'     \item \code{ppd} Pixel size in pixels per degree. Default is 16 ppd.
-#'     \item \code{tracking} Whether to use tracking during stimulus presentation.
-#'       Default is FALSE.
-#'     \item \code{tracktol} Tolerance during tracking in degrees of visual angle.
-#'       The system does not show any stimulus if eye is not within \code{tracktol}
-#'       degrees of visual angle from fixation point. Default is 2 degrees
-#'   }
-#' }
+#'     * \code{ip} is the IP address of the imo server as a string.
+#'     * \code{port} is the TCP/IP port of the imo server as a number.
+#'     * \code{ppd} Pixel size in pixels per degree. Default is 16 ppd.
+#'     * \code{tracking} Whether to use tracking during stimulus presentation. Default is FALSE.
+#'     * \code{tracktol} Tolerance during tracking in degrees of visual angle.  The system does not show any stimulus if eye is not within \code{tracktol} degrees of visual angle from fixation point. Default is 2 degrees.
+#' 
 #' @return
-#' \subsection{imo}{
+#' ## imo
 #'   Always returns NULL. Will \code{stop} if there is an error.
-#' }
+#' 
 #' @examples
 #' \dontrun{
 #'   # Set up the imo

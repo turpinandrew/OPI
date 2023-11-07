@@ -29,40 +29,32 @@ require(utils)
 #' @description MOCS performs either a yes/no or n-interval-forced-choice Method of
 #' Constant Stimuli test
 #' @param params A matrix where each row is \code{x y i n correct_n ll1 ll2 ... llm} where
-#'   \itemize{
-#'     \item{\code{x} is X coordinate of location}
-#'     \item{\code{y} is Y coordinate of location}
-#'     \item{\code{i} is a location number (assigned by caller)}'
-#'     \item{\code{n} is Number of times this location/luminance(s) should be repeated}
-#'     \item{\code{correct_n} is the index i of the luminance level (\code{lli}) that
+#'  * \code{x} is X coordinate of location.
+#'  * \code{y} is Y coordinate of location.
+#'  * \code{i} is a location number (assigned by caller).
+#'  * \code{n} is Number of times this location/luminance(s) should be repeated.
+#'  * \code{correct_n} is the index i of the luminance level (\code{lli}) that
 #'       should be treated as a ``correct'' response (the correct interval). For a
 #'       standard MOCS, this will be 1; for a 2AFC, this will be 1 or 2. This number will
-#'       be in the range \code{[1,m]}.}
-#'       \item{\code{lli} is the i'th luminance level to be used at this location for
+#'       be in the range \code{[1,m]}.
+#'  * \code{lli} is the i'th luminance level to be used at this location for
 #'       interval i of the presentation in cd/\eqn{\mbox{m}^2}{m^2}. For a standard MOCS,
 #'       i=1, and the \code{params} matrix will have 5 columns. For a 2AFC, there will be
-#'       two lli's, and \code{params} will have 6 columns.}
-#'   }
+#'       two lli's, and \code{params} will have 6 columns.
+#' 
 #' @param order Control the order in which the stimuli are presented.
-#'   \itemize{
-#'     \item{\code{"random"} Randomise the order of trials/locations.}
-#'     \item{\code{"fixed"} Present each row of \code{params} in order of
-#'       \code{1:nrow(params)}, ignoring the \code{n} (4th) column in \code{params}.}
-#'   }
+#'  * \code{"random"} Randomise the order of trials/locations.
+#'  * \code{"fixed"} Present each row of \code{params} in order of \code{1:nrow(params)}, ignoring the \code{n} (4th) column in \code{params}.
+#' 
 #' @param responseWindowMeth Control time perimeter waits for response.
-#'   \itemize{
-#'     \item{\code{"speed"} After an average of the last \code{speedHistory}
-#'       response times, with a minimum of \code{responseFloor}. Initially
-#'       \code{responseFloor}.}
-#'     \item{\code{"constant"} Always use \code{responseFloor}.}
-#'     \item{\code{"forceKey"} Wait for a keyboard input.}
-#'   }
-#' @param responseFloor Minimum response window (for any \code{responseWindowMeth}
-#'   except \code{"forceKey"}).
+#'  * \code{"speed"} After an average of the last \code{speedHistory} response times, with a minimum of \code{responseFloor}. Initially \code{responseFloor}.
+#'  * \code{"constant"} Always use \code{responseFloor}.
+#'  * \code{"forceKey"} Wait for a keyboard input.
+#' @param responseFloor Minimum response window (for any \code{responseWindowMeth} except \code{"forceKey"}).
 #' @param responseHistory Number of past yeses to average to get response window
 #'   (only used if \code{responseWindowMeth} is \code{"speed"}).
 #' @param keyHandler Function to get a keyboard input and returns as for \code{opiPresent}:
-#'   list(err={NULL|msg}, seen={TRUE|FALSE}, time = response time (in ms)). The parameters passed to
+#'   \code{list(err=\{NULL|msg\}, seen=\{TRUE|FALSE\}, time}. The parameters passed to
 #'   the function are the correct interval number (column 4 of \code{params}), and the
 #'   result of \code{opiPresent}. See Examples.
 #' @param interStimMin Regardless of response, wait \code{runif(interStimMin, interStimMax)} ms.
@@ -96,17 +88,15 @@ require(utils)
 #' appended: checkFixation checks, and the return values from \code{opiPresent()}
 #' (see example). These last values will differ depending on which
 #' machine/simulation you are running (as chosen with \code{chooseOpi()}.
-#' \itemize{
-#'   \item{column 1: x}
-#'   \item{column 2: y}
-#'   \item{column 3: location number}
-#'   \item{column 4: number of times to repeat this stim}
-#'   \item{column 5: correct stimulus index}
-#'   \item{column 6: TRUE/FALSE was fixating for all presentations in this trial according to
-#'     \code{checkFixationOK}}
-#'   \item{column 7...: columns from params}
-#'   \item{...: columns from opiPresent return}
-#' }
+#'   * column 1: x
+#'   * column 2: y
+#'   * column 3: location number
+#'   * column 4: number of times to repeat this stim
+#'   * column 5: correct stimulus index
+#'   * column 6: TRUE/FALSE was fixating for all presentations in this trial according to \code{checkFixationOK}
+#'   * column 7...: columns from params
+#'   * ...: columns from opiPresent return
+#' 
 #' @references
 #' A. Turpin, P.H. Artes and A.M. McKendrick. "The Open Perimetry Interface: An enabling tool for
 #' clinical visual psychophysics", Journal of Vision 12(11) 2012.

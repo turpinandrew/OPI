@@ -42,23 +42,23 @@ simNo.opiInitialize <- function(display = NA) {
 ################################################################################
 #' @rdname opiSetBackground
 #' @details
-#' \subsection{SimNo}{
+#' # SimNo
 #'   DETAILS
-#' }
+#'
 simNo.opiSetBackground <- function(col, gridCol) { 
     return (simDisplay.setBackground(col, gridCol))
 }
 
 #' @rdname opiPresent
 #' @details
-#' \subsection{SimNo}{
+#' # SimNo
 #' 
 #'   \code{opiPresent(stim, nextStim=NULL)}
 #' 
 #'   If the chosen OPI implementation is \code{SimNo}, then the response to a
 #'   stimuli is always no, hence \code{\link{opiPresent}} always returns
 #'   \code{err=NULL}, \code{seen=FALSE}, and \code{time=0}.
-#' }
+#'
 simNo.opiPresent <- function(stim, nextStim=NULL) {
     simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
 

@@ -97,27 +97,22 @@ load_image <- function(im, w, h) {
 #' @param fovy Field of view in degrees in the y-axis. It is different depending on the device.
 #' For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
 #' @details
-#' \subsection{Daydream}{
+#' # Daydream
 #'   \code{opiInitialize(ip="127.0.0.1", port=50008, lut= seq(0, 400, length.out = 256), fovy = 90)}
 #'   
 #'   If the chosen OPI implementation is \code{Daydream}, then you must specify
 #'   the IP address of the Android phone that is in the Daydream, and the port on
 #'   which the server running on the phone is listening.
 #'   
-#'   \itemize{
-#'     \item\code{ip} is the IP address of the Daydream server as a string
-#'     \item\code{port} is the TCP/IP port of the Daydream server as a number
-#'     \item\code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the
-#'       cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is
-#'       \code{seq(0, 4000, length.out = 256)}
-#'     \item\code{fovy} Field of view in degrees in the y-axis. It is different depending on the device.
-#'       For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
-#'   }
-#' }
+#'   * \code{ip} is the IP address of the Daydream server as a string
+#'   * \code{port} is the TCP/IP port of the Daydream server as a number
+#'   * \code{lut} is a vector of 256 luminance values, with \code{lut[i]} being the cd/\eqn{\mbox{m}^2}{m^2} value for grey level i. Default is \code{seq(0, 4000, length.out = 256)}
+#'   * \code{fovy} Field of view in degrees in the y-axis. It is different depending on the device. For Daydream view, it is 90 degrees, for, Daydream view 2 is 100 degrees. Default is 90.
+#' 
 #' @return
-#' \subsection{Daydream}{
+#' ## Daydream
 #'   Always returns NULL.
-#' }
+#' 
 daydream.opiInitialize <- function(
     ip = "127.0.0.1",
     port = 50008, 
@@ -259,29 +254,21 @@ daydream.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #' @param fix_color fixation color
 #' @param eye eye
 #' @details
-#' \subsection{Daydream}{
+#' # Daydream
 #'   \code{opiSetBackground(eye, lum=10, color="white", fixation="Cross", fix_cx=0, fix_cy=0, fix_sx=2, fix_sy=2, fix_lum=10, fix_color="green")}
-#'   \itemize{
-#'     \item{\code{lum}} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey
-#'       value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
-#'     \item{\code{color}} color of the background. It can be \code{'white'} (default) or
-#'       \code{'green'}.
-#'     \item{\code{fixation}} can only be \code{'Cross'} at the moment.
-#'     \item{\code{fix_cx}, \code{fix_cy}} fixation (x, y) position in degrees
-#'       of visual angle
-#'     \item{\code{fix_sx}, \code{fix_sy}} dimensions of fixation target in
-#'       degrees of visual angle
-#'     \item{\code{fix_lum}} luminance of the fixation target in cd/\eqn{\mbox{m}^2}{m^2} is set to
-#'       nearest grey value in \code{lut} from \code{opiInitialize}. Default
-#'       is 15 cd/\eqn{\mbox{m}^2}{m^2}
-#'     \item{\code{fix_color}} color of the fixation target. It can be \code{'white'} or
-#'       \code{'green'}  (default).
-#'   }
-#' }
+#' 
+#'   * \code{lum} background luminance in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey value in \code{lut} from \code{opiInitialize}. Default is 10 cd/\eqn{\mbox{m}^2}{m^2}
+#'   * \code{color} color of the background. It can be \code{'white'} (default) or \code{'green'}.
+#'   * \code{fixation} can only be \code{'Cross'} at the moment.
+#'   * \code{fix_cx}, \code{fix_cy} fixation (x, y) position in degrees of visual angle.
+#'   * \code{fix_sx}, \code{fix_sy} dimensions of fixation target in degrees of visual angle.
+#'   * \code{fix_lum} luminance of the fixation target in cd/\eqn{\mbox{m}^2}{m^2} is set to nearest grey value in \code{lut} from \code{opiInitialize}. Default is 15 cd/\eqn{\mbox{m}^2}{m^2}.
+#'   * \code{fix_color} color of the fixation target. It can be \code{'white'} or \code{'green'} (default).
+#' 
 #' @return
-#' \subsection{Daydream}{ 
-#'   DETAILS
-#' }
+#' ## Daydream
+#'   Returns NULL or an error string.
+#' 
 daydream.opiSetBackground <- function(eye, lum = 10, color = "white", fixation = "None",
                                       fix_cx = 0, fix_cy = 0, fix_sx = 2, fix_sy = 2,
                                       fix_color = "green") {

@@ -19,8 +19,6 @@
 # limitations under the License.
 #
 
-library(grDevices)
-
 ###################################################################
 # .OpiEnv$Display$width window width in pixels
 # .OpiEnv$Display$height window height in pixels
@@ -78,7 +76,7 @@ drawBackground <- function() {
   } else if (.OpiEnv$Display$background_color == "blue") {
     vals <- bg * c(0, 0, 1)
   } else vals <- bg * c(1, 1, 1) # anything else, means white
-  bg <- rgb(vals[1], vals[2], vals[3], maxColorValue = 255)
+  bg <- grDevices::rgb(vals[1], vals[2], vals[3], maxColorValue = 255)
   
   p <- par("usr")
   rect(p[1], p[3], p[2], p[4], border = NA, col = bg)
@@ -150,8 +148,8 @@ display.opiInitialize <- function(width, height, ppi, viewdist, lut = seq(0, 400
   # select X11 window manage and open a new device
   .OpiEnv$Display$oldDevice <- options("device") # store device number
   options(device = "X11")
-  dev.new(title = " ")
-  .OpiEnv$Display$devNumber <- dev.cur() # store device number
+  grDevices::dev.new(title = " ")
+  .OpiEnv$Display$devNumber <- grDevices::dev.cur() # store device number
   par(mar = c(0, 0, 0, 0))
   .OpiEnv$Display$width   <- width
   .OpiEnv$Display$height  <- height
@@ -172,16 +170,16 @@ display.opiInitialize <- function(width, height, ppi, viewdist, lut = seq(0, 400
   par(usr = c(-1, 1, -1, 1)) # use some arbitrary user coordinate extremes
   opiSetBackground(fixation = "None")
   text(0, 0, "Press a key when resized to your liking", col = "white", cex = 2)
-  getGraphicsEvent("Waiting for key press", onKeybd = function(key) return(TRUE))
+  grDevices::getGraphicsEvent("Waiting for key press", onKeybd = function(key) return(TRUE))
   # check the visual field that can be tested in the current screen. This is key as
   # graph control will depend on these limits
-  if(is.null(dev.list())) { # if window closed, return NULL and no harm done
+  if(is.null(grDevices::dev.list())) { # if window closed, return NULL and no harm done
     options(device = .OpiEnv$Display$oldDevice)
     return(NULL)
   }
   # else, ensure we are on the right device
-  dev.set(.OpiEnv$Display$devNumber)
-  dims <- dev.size("px")
+  grDevices::dev.set(.OpiEnv$Display$devNumber)
+  dims <- grDevices::dev.size("px")
   xlim <- dims[1] / pixsize * c(-1, 1) # x limits in degrees
   ylim <- dims[2] / pixsize * c(-1, 1) # y limits in degrees
   .OpiEnv$Display$xlim <- xlim
@@ -248,7 +246,7 @@ display.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
      stim$y + stim$size / 2 > .OpiEnv$Display$ylim[2])
     return(list(err="Stimulus out of bounds", seen=NA, time=NA))
 
-  dev.set(.OpiEnv$Display$devNumber)
+  grDevices::dev.set(.OpiEnv$Display$devNumber)
 
   key <- NA
   pres_done <- FALSE
@@ -272,13 +270,13 @@ display.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
   } else if (stim$color == "blue") {
     vals <- bg * c(0, 0, 1)
   } else vals <- bg * c(1, 1, 1) # anything else, means white
-  bg <- rgb(vals[1], vals[2], vals[3], maxColorValue = 255)
+  bg <- grDevices::rgb(vals[1], vals[2], vals[3], maxColorValue = 255)
   
   symbols(stim$x, stim$y, circles = stim$size / 2, bg = bg,
           add = TRUE, fg = NA, inches = FALSE)
   pres_start_time <- Sys.time()
 
-  getGraphicsEvent("", onKeybd = hKey, onIdle = hIdle)
+  grDevices::getGraphicsEvent("", onKeybd = hKey, onIdle = hIdle)
 
   if (!is.na(key)) {  # might have to finish the presentation
     while (as.numeric(Sys.time() - pres_start_time) < stim$duration / 1000)
@@ -308,13 +306,13 @@ display.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 
 #' @rdname opiSetBackground
 #' @details
-#' \subsection{Display}{
+#' # Display
 #'   \code{opiSetBackground(TODO)}
-#' }
+#' 
 #' @return
-#' \subsection{Display}{ 
+#' ## Display
 #'    Changes the background and the fixation marker.
-#' }
+#' 
 #' @examples
 #' \dontrun{
 #'   # Set up a Display and wait for a key press in it.
@@ -365,7 +363,7 @@ display.opiSetBackground <- function(lum       = .OpiEnv$Display$background_lum,
 #'   Shuts the display.
 #' }
 display.opiClose <- function() {
-    dev.off(.OpiEnv$Display$devNumber)
+    grDevices::dev.off(.OpiEnv$Display$devNumber)
 
     if (!is.na(.OpiEnv$Display$oldDevice))
         options(device=.OpiEnv$Display$oldDevice)

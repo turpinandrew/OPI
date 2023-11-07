@@ -121,9 +121,9 @@ setupBackgroundConstants <- function() {
 #' @param bigWheel FALSE (standard machine), TRUE for modified apeture wheel for "Octopus900"
 #' @param pres_buzzer 0 (no buzzer),1, 2, 3 (max volume) for "Octopus900"
 #' @param resp_buzzer 0 (no buzzer),1, 2, 3 (max volume) for "Octopus900"
-#' @param zero_dB_is_10000_asb Is 0 dB 10000 apostibl (TRUE) or or 4000 (FALSE) for "Octopus900"
+#' @param zero_dB_is_10000_asb Is 0 dB 10000 apostilb (TRUE) or or 4000 (FALSE) for "Octopus900"
 #' @details
-#' \subsection{Octopus900}{
+#' # Octopus900
 #'   \code{opiInitialize(serverPort=50001,eyeSuiteSettingsLocation, eye, gazeFeed=NA, bigWheel=FALSE,pres_buzzer=0, resp_buzzer=0, zero_dB_is_10000_asb=TRUE)}
 #'
 #'   If the chosen OPI implementation is \code{Octopus900}, then you must specify
@@ -149,21 +149,21 @@ setupBackgroundConstants <- function() {
 #'   stimuli presented.
 #'
 #'   If \code{resp_buzzer} is greater than zero, a buzzer will sound with each
-#'   button press (resposne). The volume can be one of 0 (no buzzer), 1, 2, or 3
+#'   button press (response). The volume can be one of 0 (no buzzer), 1, 2, or 3
 #'   (max volume). If both buzzers are more than zero, the maximum of the two will
 #'   be used as the volume.
 #'
 #'   If \code{zero_dB_is_10000_asb} is \code{TRUE} then 0 dB is taken as 10000
 #'   apostilbs, otherwise 0 dB is taken as 4000 apostilbs.
-#' }
+#' 
 #' @return
-#' \subsection{Octopus900}{
+#' ## Octopus900
 #'   Returns NULL if successful, 1 if Octopus900 is already initialised by a
-#'   previous call to \code{opiInitialize}, and 2 if some error occured that
-#'   prevented ininitialisation. The default background and stimulus setup is
+#'   previous call to \code{opiInitialize}, and 2 if some error occurred that
+#'   prevented initialisation. The default background and stimulus setup is
 #'   to white-on-white perimetry. Use \code{opiSetBackground} to change the
 #'   background and stimulus colors.
-#' }
+#' 
 #' @examples
 #' \dontrun{
 #'   # Set up the Octopus 900
@@ -325,7 +325,7 @@ setGeneric("octo900.opiPresent")
 
 #' @rdname opiPresent
 #' @details
-#' \subsection{Octopus900F310}{
+#' # Octopus900F310
 #'   \code{opiPresent(stim, nextStim=NULL)}
 #'
 #'   This functions as for the Octopus900, but responses are taken from the F310
@@ -336,7 +336,6 @@ setGeneric("octo900.opiPresent")
 #'   If the R button is pressed, \code{seen} is set to 2.
 #'
 #'   If no button is pressed within \code{responseWindow}, then \code{seen} is set to 0.
-#' }
 octo900.opiPresentF310 <- function(stim, nextStim=NULL) { UseMethod("octo900.opiPresentF310") }
 setGeneric("octo900.opiPresentF310")
 
@@ -496,49 +495,39 @@ octo900.opiPresent.opiKineticStimulus <- function(stim, ...) {
 #' @param fixation fixation target
 #' @param fixIntensity fixation point intensity
 #' @details
-#' \subsection{Octopus900}{
+#' # Octopus900
 #'   \code{opiSetBackground(lum=NA, color=NA, fixation=NA, fixIntensity=NA)}
 #'
-#'   Allowable \code{lum} and \code{color} are defined in the .OpiEnv environment.
+#'   \code{lum} is intensity of the background and can be one of
+#'     *  \code{.OpiEnv$O900$BG_OFF}, which turns background off.
+#'     *  \code{.OpiEnv$O900$BG_1}, background of 1.27 cd/\eqn{\mbox{m}^2}{m^2}.
+#'     *  \code{.OpiEnv$O900$BG_10}, background of 10 cd/\eqn{\mbox{m}^2}{m^2}.
+#'     *  \code{.OpiEnv$O900$BG_100}, background of 100 cd/\eqn{\mbox{m}^2}{m^2}.
 #'
-#'   \itemize{
-#'     \item\code{lum} is intensity of the background and can be one of
-#'     \itemize{
-#'       \item \code{.OpiEnv$O900$BG_OFF}, which turns background off.
-#'       \item \code{.OpiEnv$O900$BG_1}, background of 1.27 cd/\eqn{\mbox{m}^2}{m^2}.
-#'       \item \code{.OpiEnv$O900$BG_10}, background of 10 cd/\eqn{\mbox{m}^2}{m^2}.
-#'       \item \code{.OpiEnv$O900$BG_100}, background of 100 cd/\eqn{\mbox{m}^2}{m^2}.
-#'     }
-#'     \item\code{color} can be one of the following choices.
-#'     \itemize{
-#'       \item\code{.OpiEnv$O900$MET_COL_WW} for white-on-white
-#'       \item\code{.OpiEnv$O900$MET_COL_RW} for red-on-white
-#'       \item\code{.OpiEnv$O900$MET_COL_BW} for blue-on-white
-#'       \item\code{.OpiEnv$O900$MET_COL_WY} for white-on-yellow
-#'       \item\code{.OpiEnv$O900$MET_COL_RY} for red-on-yellow
-#'       \item\code{.OpiEnv$O900$MET_COL_BY} for blue-on-yellow
-#'     }
-#'     \item\code{fixation} is one of
-#'     \itemize{
-#'       \item\code{.OpiEnv$O900$FIX_CENTRE} or \code{.OpiEnv$O900$FIX_CENTER}
-#'       \item\code{.OpiEnv$O900$FIX_CROSS}
-#'       \item\code{.OpiEnv$O900$FIX_RING}
-#'     }
-#'     \item\code{fixIntensity} is a percentage between 0 and 100. 0 is off, 100
-#'       the brightest.
-#'   }
+#'   \code{color} can be one of the following choices.
+#'     * \code{.OpiEnv$O900$MET_COL_WW} for white-on-white
+#'     * \code{.OpiEnv$O900$MET_COL_RW} for red-on-white
+#'     * \code{.OpiEnv$O900$MET_COL_BW} for blue-on-white
+#'     * \code{.OpiEnv$O900$MET_COL_WY} for white-on-yellow
+#'     * \code{.OpiEnv$O900$MET_COL_RY} for red-on-yellow
+#'     * \code{.OpiEnv$O900$MET_COL_BY} for blue-on-yellow
+#' 
+#'   \code{fixation} is one of
+#'     * \code{.OpiEnv$O900$FIX_CENTRE} or \code{.OpiEnv$O900$FIX_CENTER}
+#'     * \code{.OpiEnv$O900$FIX_CROSS}
+#'     * \code{.OpiEnv$O900$FIX_RING}
+#' 
+#'     \code{fixIntensity} is a percentage between 0 and 100. 0 is off, 100 the brightest.
+#'
 #'   Note if you specify \code{fixation} you also have to specify \code{fixIntensity}.
-#' }
+#' 
 #' @return
-#' \subsection{Octopus900}{
-#'   -1 indicates \code{opiInitialize} has not been called.
-#'
-#'   -2 indicates could not set the background color.
-#'
-#'   -3 indicates could not set the fixation marker.
-#'
-#'   -4 indicates that all input parameters were NA.
-#' }
+#' ## Octopus900
+#'   * -1 indicates \code{opiInitialize} has not been called.
+#'   * -2 indicates could not set the background color.
+#'   * -3 indicates could not set the fixation marker.
+#'   * -4 indicates that all input parameters were NA.
+#' 
 #' @examples
 #' \dontrun{
 #'   chooseOpi("Octopus900")
@@ -594,9 +583,8 @@ octo900.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, fixIntensity
 ###########################################################################
 #' @rdname opiClose
 #' @return
-#' \subsection{Octopus900}{
+#' ## Octopus900
 #'   Returns NULL.
-#' }
 octo900.opiClose <- function() {
   writeLines("OPI_CLOSE", .OpiEnv$O900$socket)
   close(.OpiEnv$O900$socket)
@@ -609,13 +597,11 @@ octo900.opiClose <- function() {
 #' @rdname opiQueryDevice
 #' @title Query device using OPI
 #' @details
-#' \subsection{Octopus900}{
+#' # Octopus900
 #'   Prints defined constants in OPI package pertaining to Octopus 900.
-#' }
 #'@return
-#' \subsection{Octopus900}{
+#' ## Octopus900
 #'   list containing \code{isSim=FALSE}.
-#' }
 octo900.opiQueryDevice <- function() {
   cat("Defined constants\n")
   cat("-----------------\n")

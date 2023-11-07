@@ -105,52 +105,50 @@ overriding \code{state$minStimulus}, \code{state$maxStimulus} and \code{state$st
 }
 \value{
 \subsection{Single location}{
-  \code{ZEST} returns a list containing
-  \itemize{
-    \item{npres:}{ Total number of presentations used.}
-    \item{respSeq:}{Response sequence stored as a matrix: row 1 is dB values of stimuli, row 2
-      is 1/0 for seen/not-seen, row 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not
-      present in stim objects returned from \code{makeStim}).}
-    \item{pdfs:}{ If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each
-      presentation, otherwise NULL.}
-    \item{final}{ The mean/median/mode of the final pdf, depending on \code{stimChoice}, which is
-      the determined threshold.}
-    \item{opiResp}{A list of responses received from each successful call to \code{opiPresent}
-      within \code{ZEST}.}
-  }
+
+\code{ZEST} returns a list containing
+\itemize{
+\item \code{npres} Total number of presentations used.
+\item \code{respSeq} Response sequence stored as a matrix: row 1 is dB values of stimuli, row 2
+\item is 1/0 for seen/not-seen, row 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not
+\item present in stim objects returned from \code{makeStim}).
+\item \code{pdfs} If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each presentation, otherwise NULL.
+\item \code{final} The mean/median/mode of the final pdf, depending on \code{stimChoice}, which is the determined threshold.
+\item \code{opiResp} A list of responses received from each successful call to \code{opiPresent} within \code{ZEST}.
 }
+}
+
 \subsection{Multilple locations}{
-  \code{ZEST.start} returns a list that can be passed to \code{ZEST.step}, \code{ZEST.stop}, and
-  \code{ZEST.final}. It represents the state of a ZEST at a single location at a point in time
-  and contains the following.
-  \itemize{
-    \item{name:}{ \code{ZEST}}
-    \item{}{ A copy of all of the parameters supplied to ZEST.start: \code{domain},
-      \code{likelihood}, \code{stopType}, \code{stopValue}, \code{minStimulus}, \code{maxStimulus},
-      \code{maxSeenLimit}, \code{minNotSeenLimit}, \code{maxPresentations}, \code{makeStim},
-      \code{stimChoice}, \code{currSeenLimit}, \code{currNotSeenLimit}, and \code{opiParams}.}
-    \item{pdf:}{ Current pdf: vector of probabilities the same length as \code{domain}.}
-    \item{numPresentations:}{ The number of times \code{ZEST.step} has been called on this state.}
-    \item{stimuli:}{ A vector containing the stimuli used at each call of \code{ZEST.step}.}
-    \item{responses:}{ A vector containing the responses received at each call of
-      \code{ZEST.step}.}
-    \item{responseTimes:}{ A vector containing the response times received at each call of
-      \code{ZEST.step}.}
-    \item{fixated:}{ A vector containing TRUE/FALSE if fixation was OK according to
-      \code{checkFixationOK} for each call of \code{ZEST.step} (defaults to TRUE if
-      \code{checkFixationOK} not present).}
-    \item{opiResp}{A list of responses received from each call to \code{opiPresent} within \code{ZEST.step}.}
-  }
-  \code{ZEST.step} returns a list containing
-  \itemize{
-    \item{state:}{ The new state after presenting a stimuli and getting a response.}
-    \item{resp:}{ The return from the \code{opiPresent} call that was made.}
-  }
-  \code{ZEST.stop} returns \code{TRUE} if the ZEST has reached its stopping criteria, and
-    \code{FALSE} otherwise.
-  \code{ZEST.final} returns an estimate of threshold based on state. If \code{state$stimChoice}
-  is \code{mean} then the mean is returned. If \code{state$stimChoice} is \code{mode} then the
-  mode is returned. If \code{state$stimChoice} is \code{median} then the median is returned.
+
+\code{ZEST.start} returns a list that can be passed to \code{ZEST.step}, \code{ZEST.stop}, and
+\code{ZEST.final}. It represents the state of a ZEST at a single location at a point in time
+and contains the following.
+\itemize{
+\item \code{name} \code{ZEST}.
+\item \code{pdf} Current pdf: vector of probabilities the same length as \code{domain}.
+\item \code{numPresentations} The number of times \code{ZEST.step} has been called on this state.
+\item \code{stimuli} A vector containing the stimuli used at each call of \code{ZEST.step}.
+\item \code{responses} A vector containing the responses received at each call of \code{ZEST.step}.
+\item \code{responseTimes} A vector containing the response times received at each call of \code{ZEST.step}.
+\item \code{fixated} A vector containing TRUE/FALSE if fixation was OK according to
+\code{checkFixationOK} for each call of \code{ZEST.step} (defaults to TRUE if
+\code{checkFixationOK} not present).
+\item \code{opiResp} A list of responses received from each call to \code{opiPresent} within \code{ZEST.step}.
+\item A copy of all of the parameters supplied to ZEST.start: \code{domain},
+\code{likelihood}, \code{stopType}, \code{stopValue}, \code{minStimulus}, \code{maxStimulus},
+\code{maxSeenLimit}, \code{minNotSeenLimit}, \code{maxPresentations}, \code{makeStim},
+\code{stimChoice}, \code{currSeenLimit}, \code{currNotSeenLimit}, and \code{opiParams}.
+}
+
+\code{ZEST.step} returns a list containing
+* \code{state} The new state after presenting a stimuli and getting a response.
+* \code{resp} The return from the \code{opiPresent} call that was made.
+
+\code{ZEST.stop} returns \code{TRUE} if the ZEST has reached its stopping criteria, and \code{FALSE} otherwise.
+
+\code{ZEST.final} returns an estimate of threshold based on state. If \code{state$stimChoice}
+is \code{mean} then the mean is returned. If \code{state$stimChoice} is \code{mode} then the
+mode is returned. If \code{state$stimChoice} is \code{median} then the median is returned.
 }
 }
 \description{

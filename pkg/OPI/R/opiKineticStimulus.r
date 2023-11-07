@@ -5,24 +5,15 @@
 #' @usage "See details"
 #' @details The list should be of class opiKineticStimulus and contain the
 #' following elements.
-#' \itemize{
-#'   \item\code{path} list of (x,y) coordinates in degrees that is usable by
-#'     \code{xy.coords()}
-#'   \item\code{image} \code{image[i]} is the image to display (in a machine specific
-#'     format) in the section of the path specified by \code{path[i]..path[i+1]}. 
-#'   \item\code{levels} if \code{is.na(image)} then \code{levels[i]} is the stimulus
-#'     level in cd/\eqn{\mbox{m}^2}{m^2} in the section of the path specified by
-#'     \code{path[i]..path[i+1]}
-#'   \item\code{sizes} \code{sizes[i]} is the size of stimulus (diameter in degrees)
-#'     to use for the section of path specified by \code{path[i]..path[i+1]}, or a
-#'     scaling factor for \code{images[i]}.
-#'   \item\code{colors} \code{colors[i]} is the color to use for the stimulus in the
-#'     section of path specified by \code{path[i]..path[i+1]}. Ignored if !is.na(image). 
-#'   \item\code{speeds}\code{speeds[i]} is the speed (degrees per second) for the
-#'     stimulus to traverse the path specified by \code{path[i]..path[i+1]}.
-#'   \item\code{...} machine specific parameters
-#' }
-#' \subsection{Octopus 900}{
+#'   * \code{path} list of (x,y) coordinates in degrees that is usable by \code{xy.coords()}
+#'   * \code{image} \code{image[i]} is the image to display (in a machine specific format) in the section of the path specified by \code{path[i]..path[i+1]}. 
+#'   * \code{levels} if \code{is.na(image)} then \code{levels[i]} is the stimulus level in cd/\eqn{\mbox{m}^2}{m^2} in the section of the path specified by \code{path[i]..path[i+1]}
+#'   * \code{sizes} \code{sizes[i]} is the size of stimulus (diameter in degrees) to use for the section of path specified by \code{path[i]..path[i+1]}, or a scaling factor for \code{images[i]}.
+#'   * \code{colors} \code{colors[i]} is the color to use for the stimulus in the section of path specified by \code{path[i]..path[i+1]}. Ignored if !is.na(image). 
+#'   * \code{speeds}\code{speeds[i]} is the speed (degrees per second) for the stimulus to traverse the path specified by \code{path[i]..path[i+1]}.
+#'   * \code{...} machine specific parameters
+#'
+#' # Octopus 900
 #'   \code{x} and \code{y} are in degrees, with precision to three decimal places
 #'     recognised.
 #'     
@@ -35,8 +26,8 @@
 #'   
 #'   \code{sizes} are in degrees, but are rounded to the nearest Goldmann Size I..V
 #'     for display.
-#' }
-#' \subsection{Kowa AP 7000}{
+#'
+#' # Kowa AP 7000
 #'   Only a simple path with a start and an end point is supported by the AP-7000.
 #'   
 #'   \code{x} and \code{y} are in degrees and should only be length 2. (precision?)
@@ -54,8 +45,9 @@
 #'     for display.
 #'   
 #'   \code{speeds} are in degrees per second in the range 3 to 5.
-#' }
-#' \subsection{Compass}{Not implemented.}
+#'
+#' # Compass
+#'   Not implemented.
 #' @seealso \code{\link{opiSetBackground}}, \code{\link{opiStaticStimulus}},
 #' \code{\link{opiTemporalStimulus}}
 #' @examples

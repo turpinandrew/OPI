@@ -28,8 +28,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#
-require(utils)
 
 #' @rdname fourTwo
 #' @title 4-2 Staircase
@@ -54,42 +52,44 @@ require(utils)
 #' \code{fourTwo.final} calls can maintain the state of the fourTwo after
 #' each presentation, and should be used. See examples below.
 #' @return
-#' \subsection{Multilple locations}{
+#' ## Multilple locations
 #'   \code{fourTwo.start} returns a list that can be passed to \code{fourTwo.step},
 #'   \code{fourTwo.stop}, and \code{fourTwo.final}. It represents the state of a fourTwo
 #'   at a single location at a point in time and contains the following.
-#'   \itemize{
-#'     \item{name:}{\code{ fourTwo}}
-#'     \item{}{ A copy of all of the parameters supplied to fourTwo.start: 
-#'       \code{startingEstimate=est}, \code{minStimulus=instRange[1]},
-#'       \code{maxStimulus=instRange[2]}, \code{makeStim}, and \code{opiParams=list(...)}}
-#'     \item{currentLevel:}{ The next stimulus to present.}
-#'     \item{lastSeen:}{ The last seen stimulus.}
-#'     \item{lastResponse:}{ The last response given.}
-#'     \item{stairResult:}{ The final result if finished (initially \code{NA}).}
-#'     \item{finished:}{ \code{"Not"} if staircae has not finished, or one of
-#'       \code{"Rev"} (finished due to 2 reversas), \code{"Max"} (finished due to 2
-#'       \code{maxStimulus} seen), \code{"Min"} (finished due to 2 \code{minStimulus} not seen)}
-#'     \item{numberOfReversals:}{ Number of reversals so far.}
-#'     \item{currSeenLimit:}{ Number of times \code{maxStimulus} has been seen.}
-#'     \item{currNotSeenLimit:}{ Number of times \code{minStimulus} not seen.}
-#'     \item{numPresentations:}{ Number of presentations so far.}
-#'     \item{stimuli:}{ Vector of stimuli shown at each call to \code{fourTwo.step}.}
-#'     \item{responses:}{ Vector of responses received (1 seen, 0 not) receieved at each call to \code{fourTwo.step}.}
-#'     \item{responseTimes:}{ Vector of response times receieved at each call to \code{fourTwo.step}.}
-#'   }
+#'     * \code{name}, \code{fourTwo}.
+#'     * \code{startingEstimate=est}, input param.
+#'     * \code{currentLevel}, the next stimulus to present.
+#'     * \code{minStimulus=instRange[1]}, input param.
+#'     * \code{maxStimulus=instRange[2]}, input param.
+#'     * \code{makeStim}, input param.
+#'     * \code{lastSeen}, the last seen stimulus.
+#'     * \code{lastResponse}, the last response given.
+#'     * \code{stairResult}, The final result if finished (initially \code{NA}).
+#'     * \code{finished}, \code{"Not"} if staircase has not finished, or one of 
+#'                      \code{"Rev"} (finished due to 2 reversals), 
+#'                      \code{"Max"} (finished due to 2 \code{maxStimulus} seen), 
+#'                      \code{"Min"} (finished due to 2 \code{minStimulus} not seen).
+#'     * \code{verbose}, number of reversals so far.
+#'     * \code{numberOfReversals}, number of reversals so far.
+#'     * \code{currSeenLimit}, number of times \code{maxStimulus} has been seen.
+#'     * \code{currNotSeenLimit}, number of times \code{minStimulus} not seen.
+#'     * \code{numPresentations}, number of presentations so far.
+#'     * \code{stimuli}, vector of stimuli shown at each call to \code{fourTwo.step}.
+#'     * \code{responses}, vector of responses received (1 seen, 0 not) received at each call to \code{fourTwo.step}.
+#'     * \code{responseTimes}, vector of response times received at each call to \code{fourTwo.step}.
+#'     * \code{opiParams=list(...)}, input param
+#' 
 #'   \code{fourTwo.step} returns a list containing
-#'   \itemize{
-#'     \item{state:}{ The new state after presenting a stimuli and getting a response.}
-#'     \item{resp:}{ The return from the \code{opiPresent} call that was made.}
-#'   }
+#'     * \code{state}, the new state after presenting a stimuli and getting a response.
+#'     * \code{resp}, the return from the \code{opiPresent} call that was made.
+#' 
 #'   \code{fourTwo.stop} returns \code{TRUE} if the staircase is finished (2 reversals, or \code{maxStimulus}
 #'     is seen twice or \code{minStimulus} is not seen twice).
 #'
-#'   \code{fourTwo.final} returns the final estimate of threshold (mena of last
+#'   \code{fourTwo.final} returns the final estimate of threshold (mean of last
 #'     two reversals). This issues a warning if called before the staircase has
 #'     finished, but still returns a value.
-#' }
+#'
 #' @seealso \code{\link{dbTocd}}, \code{\link{opiPresent}}, \code{\link{FT}}
 #' @examples
 #' # Stimulus is Size III white-on-white as in the HFA

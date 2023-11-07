@@ -34,7 +34,11 @@
 
 packageStartupMessage(sprintf("OPI version %s", packageVersion("OPI")))
 
-#' @noRd
+#' Environment holding the state of the OPI
+#'
+#' @description
+#' Holds the chosen machine and any parameters forming the state of the machine.
+#'
 #' @export
 .OpiEnv <- new.env(size = 20)
 assign("chooser", NA, envir = .OpiEnv)
@@ -178,30 +182,22 @@ opi.implementations <- list(
 #' @title Choose an implementation of the OPI
 #' @description Chooses an implementation of the OPI to use
 #' @param opiImplementation A character string that is one of the following.
-#' \itemize{
-#'   \item\code{"SimNo"} for a simulator that always doesn't see.
-#'   \item\code{"SimYes"} for a simulator that always does see.
-#'   \item\code{"SimHenson"} for a simulator that uses a cummulative gaussian
-#'   psychometric function with standard deviation according to Henson et al (2000)
-#'   where variability increases as true threshold (Humphrey dB) value decreases.
-#'   \item\code{"SimHensonRT"} as for SimHenson, but response times in ms are sampled
-#'   from a supplied response time data set for each true positive response.
-#'   \item\code{"SimGaussian"} for a simulator that uses a cummulative gaussian
-#'   psychometric function with standard deviation supplied in opiInitialize().
-#'   \item\code{"Octopus900"} for interfacing with the Octopus 900.
-#'   \item\code{"Octopus900F310"} for interfacing with the Octopus 900 using Logitech
-#'   F310 controller.
-#'   \item\code{"Octopus600"} for interfacing with the Octopus 600.
-#'   \item\code{"HEP"}        not working so well in HEPs.
-#'   \item\code{"KowaAP7000"} for interfacing with Kowa AP-7000.
-#'   \item\code{"Imo"} for interfacing with CrewT's Imo head mounted perimeter.
-#'   \item\code{"DayDream"} for interfacing with an Android phone in a Google Daydream
-#'   \item\code{"Display"} for interfacing with a shiny plot area on the current machine.
-#'   \item\code{"PhoneHMD"} for interfacing with phones using VR. At the moment, only
-#'     Android compatible phones are working. The VR headset must be compatible with
-#'     Cardboard
-#'   \item\code{NULL}         print a list of available OPI implementations.
-#' }
+#'   * \code{"SimNo"} for a simulator that always doesn't see.
+#'   * \code{"SimYes"} for a simulator that always does see.
+#'   * \code{"SimHenson"} for a simulator that uses a cummulative gaussian psychometric function with standard deviation according to Henson et al (2000) where variability increases as true threshold (Humphrey dB) value decreases.
+#'   * \code{"SimHensonRT"} as for SimHenson, but response times in ms are sampled from a supplied response time data set for each true positive response.
+#'   * \code{"SimGaussian"} for a simulator that uses a cummulative gaussian psychometric function with standard deviation supplied in opiInitialize().
+#'   * \code{"Octopus900"} for interfacing with the Octopus 900.
+#'   * \code{"Octopus900F310"} for interfacing with the Octopus 900 using Logitech F310 controller.
+#'   * \code{"Octopus600"} for interfacing with the Octopus 600.
+#'   * \code{"HEP"}        not working so well in HEPs.
+#'   * \code{"KowaAP7000"} for interfacing with Kowa AP-7000.
+#'   * \code{"Imo"} for interfacing with CrewT's Imo head mounted perimeter.
+#'   * \code{"DayDream"} for interfacing with an Android phone in a Google Daydream
+#'   * \code{"Display"} for interfacing with a shiny plot area on the current machine.
+#'   * \code{"PhoneHMD"} for interfacing with phones using VR. At the moment, only Android compatible phones are working. The VR headset must be compatible with Cardboard
+#'   * \code{NULL}         print a list of available OPI implementations.
+#' 
 #' @return Returns TRUE if successful, FALSE otherwise.
 #' @examples
 #' if(!chooseOpi("SimHenson"))
@@ -322,76 +318,61 @@ opiDistributor <- function(operation, ...) {
 #' implementation chosen with \code{chooseOpi}, every parameter MUST be named in
 #' a call to \code{\link{opiPresent}}.
 #' @return A list containing
-#' \item{err }{\code{NULL} if no error occurred, otherwise a
-#'   machine-specific error message.
-#'
+#' * \code{err} \code{NULL} if no error occurred, otherwise a machine-specific error message.
 #'   This should include errors when the specified size cannot be achieved by
 #'   the device (for example, in a projection system with an aperture wheel of
 #'   predefined sizes.) If \code{stim} is \code{NULL}, then \code{err} contains
-#'   the status of the machine.}
-#' \item{seen }{\code{TRUE} if a response was detected in the allowed
+#'   the status of the machine.
+#' * \code{seen} \code{TRUE} if a response was detected in the allowed
 #'   \code{responseWindow}, \code{FALSE} otherwise. (Note, see
-#'   Octopus900F310 above).}
-#' \item{time}{The time in milliseconds from the onset (or offset,
-#' machine-specific) of the presentation until the response from the subject
-#' if \code{seen} is \code{TRUE}.
+#'   Octopus900F310 above).
+#' * \code{time} The time in milliseconds from the onset (or offset,
+#'   machine-specific) of the presentation until the response from the subject
+#'   if \code{seen} is \code{TRUE}. If \code{seen} is \code{FALSE}, this value is undefined.
+#'   For kinetic perimetry on the O900, this value is unknown... (what does this mean!?)
 #'
-#' If \code{seen} is \code{FALSE}, this value is undefined.
-#'
-#' For kinetic perimetry on the O900, this value is unknown...}
-#' \item{answer}{Only returned for \code{Octopus600}. Can be the following values:
-#' \itemize{
-#'   \item 0 = stimulus not seen;
-#'   \item 1 = stimulus seen;
-#'   \item 132 = Response button was pressed before stimulus presentation
-#'     (Patient needs a break - hold on examination);
-#'   \item 36 = Eye is closed before stimulus presentation;
-#'   \item 68 = Fixation lost before stimulus presentation (pupil center is
-#'     out of green window in video image);
-#'   \item 260 = Forehead rest lost before stimulus presentation;
-#'   \item 516 = Fast Eye movements before stimulus presentation;
-#'   \item 258 = Forehead rest lost during stimulus presentation;
-#'   \item 66 = Fixation lost during stimulus presentation (pupil center is
-#'     out of green window in video image);
-#'   \item 34 = Eye was closed during stimulus presentation;
-#'   \item 18 = Patient answer was too early (<=100ms after stimulus
-#'     presentation) - lucky punch;
-#'   \item 514 = Fast Eye movements during stimulus presentation
-#' }}
-#' \item{pupilX}{Only returned for KowaAP7000 (in pixels) and an
-#'   opiStaticStimulus or O900 (in degrees) and staic/kinetic if gazeFeed==1.
-#'   x-coordinate of centre of pupil during presentation.}
-#' \item{pupilY}{Only returned for KowaAP7000 (in pixels) and an
+#' ## O600
+#' \code{answer} only returned for \code{Octopus600}. Can be the following values:
+#'   * 0 = stimulus not seen;
+#'   * 1 = stimulus seen;
+#'   * 132 = Response button was pressed before stimulus presentation (Patient needs a break - hold on examination);
+#'   * 36 = Eye is closed before stimulus presentation;
+#'   * 68 = Fixation lost before stimulus presentation (pupil center is out of green window in video image);
+#'   * 260 = Forehead rest lost before stimulus presentation;
+#'   * 516 = Fast Eye movements before stimulus presentation;
+#'   * 258 = Forehead rest lost during stimulus presentation;
+#'   * 66 = Fixation lost during stimulus presentation (pupil center is out of green window in video image);
+#'   * 34 = Eye was closed during stimulus presentation;
+#'   * 18 = Patient answer was too early (<=100ms after stimulus presentation) - lucky punch;
+#'   * 514 = Fast Eye movements during stimulus presentation
+#' 
+#' ## Kowa AP7000
+#' * \code{pupilX} Only returned for KowaAP7000 (in pixels) and an
 #'   opiStaticStimulus or O900 (in degrees) and static/kinetic if gazeFeed==1.
-#'   y-coordinate of centre of pupil during presentation.}
-#' \item{purkinjeX}{Only returned for KowaAP7000 and an opiStaticStimulus.
-#'   x-coordinate of centre of Purkinje Image in pixels during presentation.}
-#' \item{purkinjeY}{Only returned for KowaAP7000 and an opiStaticStimulus.
-#'   y-coordinate of centre of Purkinje Image in pixels during presentation.}
-#' \item{x}{Only returned for KowaAP7000 or Octopus900 and an
-#'   opiKineticStimulus. x coordinate of stimuli when button is pressed.}
-#' \item{y}{Only returned for KowaAP7000 or Octopus900 and an
-#'   opiKineticStimulus. y coordinate of stimuli when button is pressed.}
-#' \item{time_rec}{Only returned for Compass. Time since epoch that the
-#'   opiPresent command was received by the Compass in ms.}
-#' \item{time_hw}{Only returned for Compass. Hardware time of button press or
-#'   response window expired (integer ms).
+#'   x-coordinate of centre of pupil during presentation.
+#' * \code{pupilY} Only returned for KowaAP7000 (in pixels) and an
+#'   opiStaticStimulus or O900 (in degrees) and static/kinetic if gazeFeed==1.
+#'   y-coordinate of centre of pupil during presentation.
+#' * \code{purkinjeX} Only returned for KowaAP7000 and an opiStaticStimulus.  x-coordinate of centre of Purkinje Image in pixels during presentation.
+#' * \code{purkinjeY} Only returned for KowaAP7000 and an opiStaticStimulus.  y-coordinate of centre of Purkinje Image in pixels during presentation.
 #'
+#' ## Kowa AP7000 and Octopus O900
+#' * \code{x} Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. x coordinate of stimuli when button is pressed.
+#' * \code{y} Only returned for KowaAP7000 or Octopus900 and an opiKineticStimulus. y coordinate of stimuli when button is pressed.
+#'
+#' ## Compass
+#' * \code{time_rec} Time since epoch that the opiPresent command was received by the Compass in ms.
+#' * \code{time_hw} Hardware time of button press or response window expired (integer ms).
 #'   To get the hardware time that a presentation began, subtract
 #'   responseWindow from \code{th} (for aligning with fixation data returned
-#'   by \code{opiClose()}.}
-#' \item{time_resp}{Only returned for Compass. Time since epoch that the
-#'   response was received or response window expired (in ms).}
-#' \item{num_track_events}{Only returned for Compass. The number of tracking
-#'   events associated with this presentation.}
-#' \item{num_motor_fails}{Only returned for Compass. The number of time the
-#'   motor could not keep pace with eye movements.}
-#' \item{pupil_diam}{Only returned for Compass. The diameter of the pupil on
-#'   milimetres on presentation.}
-#' \item{loc_x}{Only returned for Compass. The x location in pixels of the
-#'   presentation on the retinal image returned by \code{opiInitialize}.}
-#' \item{loc_y}{Only returned for Compass. The y location in pixels of the
-#'   presentation on the retinal image returned by \code{opiInitialize}.}
+#'   by \code{opiClose()}.
+#' * \code{time_resp} Time since epoch that the response was received or response window expired (in ms).
+#' * \code{num_track_events} The number of tracking events associated with this presentation.
+#' * \code{num_motor_fails} The number of time the motor could not keep pace with eye movements.
+#' * \code{pupil_diam} The diameter of the pupil on millimeters on presentation.
+#' * \code{loc_x} The x location in pixels of the presentation on the retinal image returned by \code{opiInitialize}.
+#' * \code{loc_y} The y location in pixels of the presentation on the retinal image returned by \code{opiInitialize}.
+#' 
 #' @references
 #' David B. Henson, Shaila Chaudry, Paul H. Artes, E. Brian Faragher, and
 #' Alec Ansons. Response Variability in the Visual Field: Comparison of Optic

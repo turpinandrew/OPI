@@ -25,9 +25,9 @@
 
 #' @rdname opiClose
 #' @return
-#' \subsection{SimGaussian}{
+#' ## SimGaussian
 #'   DETAILS
-#' }
+#' 
 #' @examples
 #' chooseOpi("SimGaussian")
 #' if (!is.null(opiInitialize(sd=2)))
@@ -57,7 +57,7 @@ if (exists(".OpiEnv") && !exists("SimG", where=.OpiEnv))
 #' @rdname opiInitialize
 #' @param sd standard deviation for the Gaussian
 #' @details
-#' \subsection{SimGaussian}{
+#' # SimGaussian
 #'   \code{opiInitialize(sd, display=NA, maxStim=10000/pi)}
 #'   
 #'   If the chosen OPI implementation is \code{SimGaussian}, then \code{sd} is the
@@ -65,7 +65,7 @@ if (exists(".OpiEnv") && !exists("SimG", where=.OpiEnv))
 #'   the psychometric function.
 #'   
 #'   \code{display} and \code{maxStim} is as for SimHenson.
-#' }
+#'
 #' @examples
 #' # Set up a simulation using a psychometric function that is
 #' # a cumulative gaussian of standard deviation 2
@@ -93,14 +93,14 @@ simG.opiInitialize <- function(sd = 2, display = NA, maxStim = 10000 / pi) {
 ################################################################################
 #' @rdname opiSetBackground
 #' @details
-#' \subsection{SimGaussian}{
+#' # SimGaussian
 #'   \code{opiSetBackground(col, gridCol)}
 #'   
 #'   \code{col} is the background color of the plot area used for displaying
 #'   stimuli, and \code{gridCol} the color of the gridlines. Note the plot area
 #'   will only be displayed if \code{opiInitialize} is called with a valid display
 #'   argument.
-#' }
+#'
 #' @examples
 #' chooseOpi("SimGaussian")
 #' if (!is.null(opiInitialize(sd=2)))
@@ -114,7 +114,7 @@ simG.opiSetBackground <- function(col, gridCol) {
 
 #' @rdname opiPresent
 #' @details
-#' \subsection{SimGaussian}{
+#' # SimGaussian
 #'   \code{opiPresent(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30)}
 #'   
 #'   If the chosen OPI implementation is \code{SimGaussian}, then the response
@@ -123,7 +123,7 @@ simG.opiSetBackground <- function(col, gridCol) {
 #'   \code{fpr+(1-fpr-fnr)*(1-pnorm(x, tt, simG.global.sd))}, where \code{x}
 #'   is the stimulus value in Humphrey dB, and \code{simG.global.sd} is
 #'   set with \code{opiInitialize}.
-#' }
+#'
 simG.opiPresent <- function(stim, nextStim=NULL, fpr=0.03, fnr=0.01, tt=30) { UseMethod("simG.opiPresent") }
 setGeneric("simG.opiPresent")
 

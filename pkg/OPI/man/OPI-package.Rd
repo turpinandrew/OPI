@@ -9,7 +9,7 @@
 Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 with partial implementations on the Centervue Compass, Kowa AP 7000, Android phones and the CrewT IMO. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
 }
 \note{
-`.OpiEnv$machine_name` is set to the name of the chosen OPI set by the `chooseOPI` function call.
+\code{.OpiEnv$machine_name} is set to the name of the chosen OPI set by the \code{chooseOPI} function call.
 }
 \seealso{
 Useful links:

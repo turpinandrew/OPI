@@ -12,7 +12,7 @@ dbTocd(db, maxStim = 10000/pi)
 \item{maxStim}{Stimulus value for 0dB in cd/\eqn{\mbox{m}^2}{m^2}.}
 }
 \value{
-cd/\eqn{\mbox{m}^2}{m^2} value for `db` dB.
+cd/\eqn{\mbox{m}^2}{m^2} value for \code{db} dB.
 }
 \description{
 Given a value in dB, return the cd/\eqn{\mbox{m}^2}{m^2}

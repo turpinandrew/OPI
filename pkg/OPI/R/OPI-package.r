@@ -1,7 +1,5 @@
 #' @keywords internal
 #'
-#' @importFrom grDevices dev.cur dev.list dev.new dev.off xy.coords
-#' @importFrom grDevices dev.set dev.size getGraphicsEvent grey rgb
 #' @importFrom graphics  grid lines par points rect symbols text
 #' @importFrom methods   is
 #' @importFrom stats pnorm rgamma runif
