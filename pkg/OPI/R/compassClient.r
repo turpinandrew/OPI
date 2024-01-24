@@ -1,8 +1,8 @@
 #
 # OPI for Compass
-# 
+#
 # Based on kowaAP7000Client.r.
-# 
+#
 # Author: Andrew Turpin    (andrew.turpin@lei.org.au)
 # Date: July 2016 (In Padova!)
 # Modified
@@ -35,18 +35,18 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 
     .OpiEnv$Compass$ZERO_DB_IN_ASB <- 10000
 
-    .OpiEnv$Compass$MAX_DB <- 50  
-    .OpiEnv$Compass$MIN_DB <- 0  
+    .OpiEnv$Compass$MAX_DB <- 50
+    .OpiEnv$Compass$MIN_DB <- 0
     .OpiEnv$Compass$MIN_X  <- -30
-    .OpiEnv$Compass$MAX_X  <- 30  
+    .OpiEnv$Compass$MAX_X  <- 30
     .OpiEnv$Compass$MIN_Y  <- -30
-    .OpiEnv$Compass$MAX_Y  <- 30  
-    .OpiEnv$Compass$MIN_RESP_WINDOW  <- 0    
+    .OpiEnv$Compass$MAX_Y  <- 30
+    .OpiEnv$Compass$MIN_RESP_WINDOW  <- 0
     .OpiEnv$Compass$MAX_RESP_WINDOW  <- 2680
     .OpiEnv$Compass$MIN_DURATION  <- 1
 
-    .OpiEnv$Compass$SEEN     <- 1  
-    .OpiEnv$Compass$NOT_SEEN <- 0  
+    .OpiEnv$Compass$SEEN     <- 1
+    .OpiEnv$Compass$NOT_SEEN <- 0
 
     # Utility functions for validating inputs
     .OpiEnv$Compass$minCheck <- function(x, limit, txt) {
@@ -64,25 +64,26 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 }
 
 #######################################################################
-# INPUT: 
+# INPUT:
 #   ip    = ip address on which server is listening
 #   port  = port number on which server is listening
 #
-# @return list of 
+# @return list of
 #       err NULL if succeed, error code otherwise
 #       prl c(x,y) of PRL
 #       image retinal image as a jpeg in raw bytes
 #######################################################################
 #' @rdname opiInitialize
+#' @importFrom openssl base64_encode
 #' @param ip ip address on which server is listening
 #' @param port port number on which server is listening
 #' @details
 #' ## Compass
 #'   \code{opiInitialize(ip, port)}
-#'   
+#'
 #'   If the chosen OPI implementation is \code{Compass}, then you must specify
 #'   the IP address and port of the Compass server.
-#'   
+#'
 #'   * \code{ip} is the IP address of the Compass server as a string.
 #'   * \code{port} is the TCP/IP port of the Compass server as a number.
 #'   Warning: this returns a list, not a single error code.
@@ -93,8 +94,9 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 #'      * `err` NULL if successful, not otherwise.
 #'      * `prl` a pair giving the (x,y) in degrees of the Preferred Retinal Locus detected in the initial alignment.
 #'      * `onh` a pair giving the (x,y) in degrees of the ONH as selected by the user.
-#'      * `image` raw bytes being the JPEG compressed infra-red image acquired during alignment.
-#' 
+#'      * `image` raw bytes being the JPEG compressed infra-red image acquired during alignment encoded using
+#'                 `openssl::base64_encode()`.
+#'
 #' @examples
 #' \dontrun{
 #'   # Set up the Compass
@@ -105,20 +107,20 @@ if (exists(".OpiEnv") && !exists("Compass", where=.OpiEnv)) {
 #' }
 compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
     cat("Looking for server... ")
-    suppressWarnings(tryCatch(    
+    suppressWarnings(tryCatch(
         v <- socketConnection(host = ip, port,
                       blocking = TRUE, open = "w+b",
                       timeout = 10)
-        , error=function(e) { 
+        , error=function(e) {
             stop(paste(" cannot find a server at", ip, "on port",port))
         }
     ))
     close(v)
-    
+
     cat("found server at",ip,port,":)\n")
 
     socket <- tryCatch(
-        socketConnection(host=ip, port, open = "w+b", blocking = TRUE, timeout = 1000), 
+        socketConnection(host=ip, port, open = "w+b", blocking = TRUE, timeout = 1000),
         error=function(e) stop(paste("Cannot connect to Compass at",ip,"on port", port))
     )
 
@@ -126,21 +128,21 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
 
     msg <- "OPI-OPEN"
     writeLines(msg, socket)
-    
+
     n <- readBin(socket, "integer", size=4, endian=.OpiEnv$Compass$endian)
 
     if (length(n) == 0) {    # Compass was not happy with that OPEN, try until it is (AHT: Sep 2018)
         warning('Compass did not like the OPEN command. Suggest closeAllConnections() and try again')
-        return(list(err="Bad open", prl=NULL, onh=NULL, image=NULL))    
+        return(list(err = "Bad open", prl=NULL, onh=NULL, image=NULL))
     } else {
         #print(paste("opiInitialize read: ", n))
-        prlx <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
-        prly <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
-        onhx <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
-        onhy <- readBin(socket, "double", size=4, endian=.OpiEnv$Compass$endian)
-        im <- readBin(socket, "raw", n=(n-16), size=1, endian=.OpiEnv$Compass$endian)
+        prlx <- readBin(socket, "double", size = 4, endian = .OpiEnv$Compass$endian)
+        prly <- readBin(socket, "double", size = 4, endian = .OpiEnv$Compass$endian)
+        onhx <- readBin(socket, "double", size = 4, endian = .OpiEnv$Compass$endian)
+        onhy <- readBin(socket, "double", size = 4, endian = .OpiEnv$Compass$endian)
+        im <- openssl::base64_encode(readBin(socket, "raw", n = n - 16, size = 1, endian = .OpiEnv$Compass$endian))
 
-        return(list(err=NULL, prl=c(prlx, prly), onh=c(onhx, onhy), image=im))    
+        return(list(err = NULL, prl = c(prlx, prly), onh = c(onhx, onhy), image = im))
     }
 }
 
@@ -153,13 +155,13 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
 #' @details
 #' # Compass
 #'   \code{opiPresent(stim, nextStim=NULL)}
-#'   
+#'
 #'   If the chosen OPI implementation is \code{Compass}, then \code{nextStim}
 #'   is ignored. Note that the dB level is rounded to the nearest integer.
-#'   
+#'
 #'   If tracking is on, then this will block until the tracking is obtained,
 #'   and the stimulus presented.
-#' 
+#'
 #' @return
 #' ## Compass
 #'  A list containing
@@ -173,7 +175,7 @@ compass.opiInitialize <- function(ip="192.168.1.2", port=44965) {
 #'    * `pupil_diam` pupil diameter in mm (float)
 #'    * `loc_x` pixels integer, location in image of presentation (integer)
 #'    * `loc_y` pixels integer, location in image of presentation (integer)
-#' 
+#'
 compass.opiPresent <- function(stim, nextStim=NULL) { UseMethod("compass.opiPresent") }
 setGeneric("compass.opiPresent")
 
@@ -197,7 +199,7 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     .OpiEnv$Compass$minCheck(lev, .OpiEnv$Compass$MIN_DB, "Stimulus level")
     .OpiEnv$Compass$maxCheck(lev, .OpiEnv$Compass$MAX_DB, "Stimulus level")
 
-    if (!is.null(nextStim)) 
+    if (!is.null(nextStim))
         warning("opiPresent: nextStim ignored")
 
     msg <- "OPI-PRESENT-STATIC"
@@ -223,7 +225,7 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     return(list(
       err             =NULL,
       seen            =ifelse(s[2] == "1", TRUE, FALSE),    # assumes 1 or 0, not "true" or "false"
-      time            =as.numeric(s[3]), 
+      time            =as.numeric(s[3]),
       time_hw         =as.numeric(s[4]),
       time_rec        =as.numeric(s[5]),
       time_resp       =as.numeric(s[6]),
@@ -235,9 +237,9 @@ compass.opiPresent.opiStaticStimulus <- function(stim, nextStim) {
     ))
 }
 
-########################################## 
-# Present kinetic stim, return values 
-########################################## 
+##########################################
+# Present kinetic stim, return values
+##########################################
 compass.opiPresent.opiKineticStimulus <- function(stim, ...) {
     warning("Compass does not support kinetic stimuli (yet)")
     return(list(err="Compass does not support kinetic stimuli (yet)", seen=FALSE, time=0))
@@ -271,7 +273,7 @@ compass.opiPresent.opiTemporalStimulus <- function(stim, nextStim=NULL, ...) {
 #'   use the same fixation location as in the setup.
 #' }
 #' @return
-#' \subsection{Compass}{ 
+#' \subsection{Compass}{
 #'   A list contining \code{error} which is \code{NULL} for success, or some string description for fail.
 #' }
 compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=NA) {
@@ -320,16 +322,16 @@ compass.opiSetBackground <- function(lum=NA, color=NA, fixation=NA, tracking_on=
             return(list(error=paste("opiSetBackground: failed to set fixation: ", s[1])))
         }
     }
-    
+
     return(list(error=NULL))
 }
 
 ###########################################################################
 # return list(err=NULL, fixations=matrix of fixations)
 #       matrix has one row per fixation
-#       col-1 timestamp (ms since epoch) 
-#       col-2 x in degrees 
-#       col-3 y in degrees 
+#       col-1 timestamp (ms since epoch)
+#       col-2 x in degrees
+#       col-3 y in degrees
 ###########################################################################
 #' @rdname opiClose
 #' @return
@@ -347,7 +349,7 @@ compass.opiClose <- function() {
     print(paste("Num bytes", num_bytes))
 
     close(.OpiEnv$Compass$socket)
-    
+
     if (num_bytes == 0) {
         warning("opiClose() returned no bytes - perhaps you forgot opiInitialise")
         return(list(err="No Bytes"))

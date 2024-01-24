@@ -173,7 +173,8 @@ Returns a list with elements:
 * \code{err} NULL if successful, not otherwise.
 * \code{prl} a pair giving the (x,y) in degrees of the Preferred Retinal Locus detected in the initial alignment.
 * \code{onh} a pair giving the (x,y) in degrees of the ONH as selected by the user.
-* \code{image} raw bytes being the JPEG compressed infra-red image acquired during alignment.
+* \code{image} raw bytes being the JPEG compressed infra-red image acquired during alignment encoded using
+\code{openssl::base64_encode()}.
 }
 
 \subsection{Display}{
