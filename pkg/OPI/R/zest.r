@@ -363,7 +363,7 @@ ZEST.step <- function(state, nextStim = NULL, fixedStimValue = NA, fixedResponse
     }
 
     fixation_is_good <- TRUE
-    if (!is.na(fixedResponse) && !is.null(params$stim$checkFixationOK)) {
+    if (is.na(fixedResponse) && !is.null(params$stim$checkFixationOK)) {
         fixation_is_good <- params$stim$checkFixationOK(opiResp)
     }
 
