@@ -134,5 +134,6 @@
  * Changed to Apache 2,0 license.
  * Fixed minor bug in ZEST related to minStimulus.
  * Added .OpiEnv$machine_name which is set to chosen OPI machine
- * 2.11.1 Minor bug fix to export .OpiEnv 
+ * 2.11.1 Minor bug fix to export .OpiEnv , added QUEST+
  * 2.11.2 Minor bug fix to encode return image for Compass initialise
+ * 2.11.3 Added fixedResponse param to ZEST.step

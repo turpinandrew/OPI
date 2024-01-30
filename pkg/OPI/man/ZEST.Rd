@@ -45,7 +45,7 @@ ZEST.start(
   ...
 )
 
-ZEST.step(state, nextStim = NULL, fixedStimValue = NA)
+ZEST.step(state, nextStim = NULL, fixedStimValue = NA, fixedResponse = NA)
 
 ZEST.stop(state)
 
@@ -102,6 +102,8 @@ enjoyment.}
 
 \item{fixedStimValue}{A number in \code{state$domain} that, is \code{!is.na}, will be used as the stimulus value
 overriding \code{state$minStimulus}, \code{state$maxStimulus} and \code{state$stimChoice}.}
+
+\item{fixedResponse}{Ignored if \code{!is.na} otherwise used as the response to the stim shown.}
 }
 \value{
 \subsection{Single location}{
@@ -150,6 +152,10 @@ and contains the following.
 is \code{mean} then the mean is returned. If \code{state$stimChoice} is \code{mode} then the
 mode is returned. If \code{state$stimChoice} is \code{median} then the median is returned.
 }
+
+A list containing
+* \code{state} The new state after presenting a stimuli and getting a response.
+* \code{resp} The return from the \code{opiPresent} call that was made.
 }
 \description{
 An implementation of the Bayesian test procedures of King-Smith et al.
