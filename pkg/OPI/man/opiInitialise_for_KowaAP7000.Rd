@@ -8,6 +8,9 @@
 
 \item{port}{Port number on which AP7000 server is listening}
 }
+\value{
+\code{list(err = NULL)}
+}
 \description{
 This is for internal use only. Use \code{\link[=opiInitialise]{opiInitialise()}} with
 these Arguments and you will get the Value back.

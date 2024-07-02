@@ -19,7 +19,7 @@ opiSetup_for_KowaAP7000(lum = NA, color = NA, fixation = NA)
 * \code{.opi_env$KowaAP7000$FIX_AUX_LEFT}, fixation marker is as for AUX but only lower left.}
 }
 \value{
-Always returns list(err = NULL)
+Always returns \code{list(err = NULL)}
 }
 \description{
 Implementation of opiSetup for the Kowa AP7000 machine.

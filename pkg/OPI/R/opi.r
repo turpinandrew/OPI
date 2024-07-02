@@ -19,6 +19,8 @@ packageStartupMessage("OPI version", utils::packageVersion("OPI"))
 
 # Used for holding state of the OPI
 
+#' @name .opi_env
+#' @title Global environment for OPI to hold machine specific constants, etc.
 #' @export
 .opi_env <- new.env(size = 20)
 
@@ -137,7 +139,7 @@ opiQueryDevice <- function() {
 #' Specific parameters and return values can be seen in the machine specific versions
 #' listed below in the ’See Also’.
 #'
-#' @param settings A list containing the same names as that returned by {@link opi_queryDevice}.
+#' @param settings A list containing the same names as that returned by [opi_queryDevice].
 #'
 #' @return Each implementation should(!) return a list with at least the following elements:
 #'   * \code{err} \code{NULL} if no error, otherwise a string describing the error.

@@ -35,34 +35,33 @@ use as its \code{nextStim}.}
 }
 \value{
 \subsection{Multiple locations}{
+
 \code{fourTwo.start} returns a list that can be passed to \code{fourTwo.step},
 \code{fourTwo.stop}, and \code{fourTwo.final}. It represents the state of a fourTwo
 at a single location at a point in time and contains the following.
 \itemize{
-\item{name:}{\code{ fourTwo}}
-\item{}{ A copy of all of the parameters supplied to fourTwo.start:
-\code{startingEstimate=est}, \code{minStimulus=instRange[1]},
-\code{maxStimulus=instRange[2]}, \code{makeStim}, and \code{opiParams=list(...)}}
-\item{currentLevel:}{ The next stimulus to present.}
-\item{lastSeen:}{ The last seen stimulus.}
-\item{lastResponse:}{ The last response given.}
-\item{stairResult:}{ The final result if finished (initially \code{NA}).}
-\item{finished:}{ \code{"Not"} if staircase has not finished, or one of
-\code{"Rev"} (finished due to 2 reversals), \code{"Max"} (finished due to 2
-\code{maxStimulus} seen), \code{"Min"} (finished due to 2 \code{minStimulus} not seen)}
-\item{numberOfReversals:}{ Number of reversals so far.}
-\item{currSeenLimit:}{ Number of times \code{maxStimulus} has been seen.}
-\item{currNotSeenLimit:}{ Number of times \code{minStimulus} not seen.}
-\item{numPresentations:}{ Number of presentations so far.}
-\item{stimuli:}{ Vector of stimuli shown at each call to \code{fourTwo.step}.}
-\item{responses:}{ Vector of responses received (1 seen, 0 not) received at each call to \code{fourTwo.step}.}
-\item{responseTimes:}{ Vector of response times received at each call to \code{fourTwo.step}.}
+\item \code{name} \code{fourTwo}
+\item A copy of all of the parameters supplied to fourTwo.start: \code{startingEstimate=est}, \code{minStimulus=instRange[1]}, \code{maxStimulus=instRange[2]}, \code{makeStim}, and \code{opiParams=list(...)}
+\item \code{currentLevel} The next stimulus to present.
+\item \code{lastSeen} The last seen stimulus.
+\item \code{lastResponse} The last response given.
+\item \code{stairResult} The final result if finished (initially \code{NA}).
+\item \code{finished} \code{"Not"} if staircase has not finished, or one of \code{"Rev"} (finished due to 2 reversals), \code{"Max"} (finished due to 2 \code{maxStimulus} seen), \code{"Min"} (finished due to 2 \code{minStimulus} not seen)
+\item \code{numberOfReversals} Number of reversals so far.
+\item \code{currSeenLimit} Number of times \code{maxStimulus} has been seen.
+\item \code{currNotSeenLimit} Number of times \code{minStimulus} not seen.
+\item \code{numPresentations} Number of presentations so far.
+\item \code{stimuli} Vector of stimuli shown at each call to \code{fourTwo.step}.
+\item \code{responses} Vector of responses received (1 seen, 0 not) received at each call to \code{fourTwo.step}.
+\item \code{responseTimes} Vector of response times received at each call to \code{fourTwo.step}.
 }
+
 \code{fourTwo.step} returns a list containing
 \itemize{
-\item{state:}{ The new state after presenting a stimuli and getting a response.}
-\item{resp:}{ The return from the \code{opiPresent} call that was made.}
+\item \code{state} The new state after presenting a stimuli and getting a response.
+\item \code{resp} The return from the \code{opiPresent} call that was made.
 }
+
 \code{fourTwo.stop} returns \code{TRUE} if the staircase is finished (2 reversals, or \code{maxStimulus}
 is seen twice or \code{minStimulus} is not seen twice).
 

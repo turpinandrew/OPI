@@ -9,6 +9,9 @@
 \item{nextStim}{The stimulus to present after stim
 (it is not presented, but projector can move to it during response window)}
 }
+\value{
+See \link{kowa.presentStatic}, \link{kowa.presentTemporal}, or \link{kowa.presentKinetic}.
+}
 \description{
 This is for internal use only. Use \code{\link[=opiPresent]{opiPresent()}} with the same arguments and
 the class of \code{stim} as one of \code{opiStaticStimulus}, \code{opiTemporalStimulus}, or \code{opiKineticStimulus}.

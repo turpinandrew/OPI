@@ -36,19 +36,19 @@
 #'     "Identifying Steep Psychometric Function Slope Quickly in Clinical Applications",
 #'     Vision Research, 50(23). November 2010. Pages 2476-2485
 #'
-#' @param domains A list of 4 vectors: \itemize{
-#'  \item{\code{slopes}: The valid slopes in the domain of psychometric functions.}
-#'  \item{\code{thresholds}: The valid thresholds in the domain of psychometric functions.}
-#'  \item{\code{fps}: The valid upper asymptotes (false positives) in the domain of psychometric functions.}
-#'  \item{\code{fns}: The valid lower asymptotes (false negatives) in the domain of psychometric functions.}
-#' }
-#' @param priors A list of 4 vectors: \itemize{
-#'  \item{\code{slopes}: The prior probability vector for \code{domains$slopes}.}
-#'  \item{\code{thresholds}: The prior probability vector for \code{domains$thresholds}.}
-#'  \item{\code{fps}: The prior probability vector for \code{domains$fps}.}
-#'  \item{\code{fns}: The prior probability vector for \code{domains$fns}.}
-#' }
-#'   Each prior should the same length as its `domains` counterpart and sum to 1.
+#' @param domains A list of 4 vectors:
+#'  * \code{slopes} The valid slopes in the domain of psychometric functions.
+#'  * \code{thresholds} The valid thresholds in the domain of psychometric functions.
+#'  * \code{fps} The valid upper asymptotes (false positives) in the domain of psychometric functions.
+#'  * \code{fns} The valid lower asymptotes (false negatives) in the domain of psychometric functions.
+#'
+#' @param priors A list of 4 vectors:
+#'  * \code{slopes} The prior probability vector for \code{domains$slopes}.
+#'  * \code{thresholds} The prior probability vector for \code{domains$thresholds}.
+#'  * \code{fps} The prior probability vector for \code{domains$fps}.
+#'  * \code{fns} The prior probability vector for \code{domains$fns}.
+#'
+#' Each prior should the same length as its `domains` counterpart and sum to 1.
 #'
 #' @param stimValues Vector of allowable stimulus values.
 #' @param stopType \code{N}, for number of presentations and \code{H}, for the entropy  of the pdf.
@@ -85,55 +85,36 @@
 #' that maintain state. See examples below.
 #'
 #' @return
-#' \subsection{Single location}{
-#'   \code{KTPsi} returns a list containing
-#'   \itemize{
-#'     \item{npres:}{ Total number of presentations used.}
-#'     \item{respSeq:}{ Response sequence stored as a matrix: row 1 is dB values of stimuli, row 2
-#'       is 1/0 for seen/not-seen, row 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not
-#'       present in stim objects returned from \code{makeStim}).}
-#'     \item{pdfs:}{ If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each
-#'       presentation, otherwise NULL.}
-#'     \item{final}{ The mean/median/mode of the final pdf, depending on \code{stimChoice}, which is
-#'       the determined threshold.}
-#'     \item{opiResp}{ A list of responses received from each successful call to \code{opiPresent}
-#'       within \code{KTPsi}.}
-#'   }
-#' }
-#' \subsection{Multilple locations}{
-#'   \code{KTPsi.start} returns a list that can be passed to \code{KTPsi.step}, \code{KTPsi.stop}, and
-#'   \code{KTPsi.final}. It represents the state of a KTPsi at a single location at a point in time
-#'   and contains the following.
-#'   \itemize{
-#'     \item{name:}{ \code{KTPsi}}
-#'     \item{}{ A copy of all of the parameters supplied to KTPsi.start: \code{domains},
-#'       \code{priors}, \code{stimValues}, \code{stopType}, \code{stopValue},
-#'       \code{maxPresentations}, \code{makeStim} and \code{opiParams}.}
-#'     \item{psi:}{ A matrix where \code{psi[domain_index, stim]} is the
-#'               probability of seeing \code{stim} assuming the psychometric function
-#'               for the domain index \code{domain_index}.}
-#'     \item{labels:}{ A text representation of \code{psi[domain_index, ]}, or the the
-#'               psychometric function for the domain index \code{domain_index}.}
-#'     \item{pdf:}{ Current pdf: vector of probabilities the same length as product of lengths of
-#'          \code{domain} elements.}
-#'     \item{numPresentations:}{ The number of times \code{KTPsi.step} has been called on this state.}
-#'     \item{stimuli:}{ A vector containing the stimuli used at each call of \code{KTPsi.step}.}
-#'     \item{responses:}{ A vector containing the responses received at each call of \code{KTPsi.step}.}
-#'     \item{responseTimes:}{ A vector containing the response times received at each call of \code{KTPsi.step}.}
-#'     \item{fixated:}{ A vector containing TRUE/FALSE if fixation was OK according to
-#'       \code{checkFixationOK} for each call of \code{KTPsi.step} (defaults to TRUE if
-#'       \code{checkFixationOK} not present).}
-#'     \item{opiResp}{A list of responses received from each call to \code{opiPresent} within \code{KTPsi.step}.}
-#'   }
-#'   \code{KTPsi.step} returns a list containing
-#'   \itemize{
-#'     \item{state:}{ The new state after presenting a stimuli and getting a response.}
-#'     \item{resp:}{ The return from the \code{opiPresent} call that was made.}
-#'   }
-#'   \code{KTPsi.stop} returns \code{TRUE} if the KTPsi has reached its stopping criteria, and
-#'     \code{FALSE} otherwise.
-#'   \code{KTPsi.final} returns an estimate of threshold based on state based on its parameter.
-#' }
+#' ## Single location
+#' \code{KTPsi} returns a list containing
+#'   * \code{npres} Total number of presentations used.
+#'   * \code{respSeq} Response sequence stored as a matrix: row 1 is dB values of stimuli, row 2 is 1/0 for seen/not-seen, row 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not present in stim objects returned from \code{makeStim}).
+#'   * \code{pdfs} If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each presentation, otherwise NULL.
+#'   * \code{final} The mean/median/mode of the final pdf, depending on \code{stimChoice}, which is the determined threshold.
+#'   * \code{opiResp} A list of responses received from each successful call to \code{opiPresent} within \code{KTPsi}.
+
+#' ## Multilple locations
+#' \code{KTPsi.start} returns a list that can be passed to \code{KTPsi.step}, \code{KTPsi.stop}, and \code{KTPsi.final}. It represents the state of a KTPsi at a single location at a point in time and contains the following.
+#'   * \code{name} \code{KTPsi}
+#'   * A copy of all of the parameters supplied to KTPsi.start: \code{domains}, \code{priors}, \code{stimValues}, \code{stopType}, \code{stopValue}, \code{maxPresentations}, \code{makeStim} and \code{opiParams}.
+#'   * \code{psi} A matrix where \code{psi[domain_index, stim]} is the probability of seeing \code{stim} assuming the psychometric function for the domain index \code{domain_index}.
+#'   * \code{labels} A text representation of \code{psi[domain_index, ]}, or the the psychometric function for the domain index \code{domain_index}.
+#'   * \code{pdf} Current pdf: vector of probabilities the same length as product of lengths of \code{domain} elements.
+#'   * \code{numPresentations} The number of times \code{KTPsi.step} has been called on this state.
+#'   * \code{stimuli} A vector containing the stimuli used at each call of \code{KTPsi.step}.
+#'   * \code{responses} A vector containing the responses received at each call of \code{KTPsi.step}.
+#'   * \code{responseTimes} A vector containing the response times received at each call of \code{KTPsi.step}.
+#'   * \code{fixated} A vector containing TRUE/FALSE if fixation was OK according to \code{checkFixationOK} for each call of \code{KTPsi.step} (defaults to TRUE if \code{checkFixationOK} not present).
+#'   * \code{opiResp} A list of responses received from each call to \code{opiPresent} within \code{KTPsi.step}.
+#'
+#' \code{KTPsi.step} returns a list containing
+#'   *  \code{stat:} The new state after presenting a stimuli and getting a response.
+#'   *  \code{resp} The return from the \code{opiPresent} call that was made.
+#'
+#' \code{KTPsi.stop} returns \code{TRUE} if the KTPsi has reached its stopping criteria, and \code{FALSE} otherwise.
+#' 
+#' \code{KTPsi.final} returns an estimate of threshold based on state based on its parameter.
+#'
 #' @references
 #' Kontsevich and Tyler. Vision Research 39 (1999) pages 2729--2737.
 #'

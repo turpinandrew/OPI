@@ -7,7 +7,7 @@
 opiSetup(settings)
 }
 \arguments{
-\item{settings}{A list containing the same names as that returned by {@link opi_queryDevice}.}
+\item{settings}{A list containing the same names as that returned by \link{opi_queryDevice}.}
 }
 \value{
 Each implementation should(!) return a list with at least the following elements:
