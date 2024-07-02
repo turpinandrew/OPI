@@ -183,7 +183,7 @@ that maintain state. See examples below.
 }
 \examples{
 chooseOpi("SimHenson")
-if(!is.null(opiInitialize(type="C", cap=6)))
+if(!is.null(opiInitialize(type="C", cap=6)$err))
   stop("opiInitialize failed")
 
 ##############################################
@@ -251,7 +251,7 @@ for(i in 1:length(locations)) {
   #cat(sprintf("has threshold \%4.2f\n", finals[[i]]))
 }
 
-if (!is.null(opiClose()))
+if (!is.null(opiClose()$err))
   warning("opiClose() failed")
 }
 \references{

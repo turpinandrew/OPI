@@ -34,38 +34,35 @@ and returns an OPI datatype ready for passing to opiPresent}
 use as its \code{nextStim}.}
 }
 \value{
-\subsection{Multilple locations}{
-
+\subsection{Multiple locations}{
 \code{fourTwo.start} returns a list that can be passed to \code{fourTwo.step},
 \code{fourTwo.stop}, and \code{fourTwo.final}. It represents the state of a fourTwo
 at a single location at a point in time and contains the following.
-* \code{name}, \code{fourTwo}.
-* \code{startingEstimate=est}, input param.
-* \code{currentLevel}, the next stimulus to present.
-* \code{minStimulus=instRange[1]}, input param.
-* \code{maxStimulus=instRange[2]}, input param.
-* \code{makeStim}, input param.
-* \code{lastSeen}, the last seen stimulus.
-* \code{lastResponse}, the last response given.
-* \code{stairResult}, The final result if finished (initially \code{NA}).
-* \code{finished}, \code{"Not"} if staircase has not finished, or one of
-\code{"Rev"} (finished due to 2 reversals),
-\code{"Max"} (finished due to 2 \code{maxStimulus} seen),
-\code{"Min"} (finished due to 2 \code{minStimulus} not seen).
-* \code{verbose}, number of reversals so far.
-* \code{numberOfReversals}, number of reversals so far.
-* \code{currSeenLimit}, number of times \code{maxStimulus} has been seen.
-* \code{currNotSeenLimit}, number of times \code{minStimulus} not seen.
-* \code{numPresentations}, number of presentations so far.
-* \code{stimuli}, vector of stimuli shown at each call to \code{fourTwo.step}.
-* \code{responses}, vector of responses received (1 seen, 0 not) received at each call to \code{fourTwo.step}.
-* \code{responseTimes}, vector of response times received at each call to \code{fourTwo.step}.
-* \code{opiParams=list(...)}, input param
-
+\itemize{
+\item{name:}{\code{ fourTwo}}
+\item{}{ A copy of all of the parameters supplied to fourTwo.start:
+\code{startingEstimate=est}, \code{minStimulus=instRange[1]},
+\code{maxStimulus=instRange[2]}, \code{makeStim}, and \code{opiParams=list(...)}}
+\item{currentLevel:}{ The next stimulus to present.}
+\item{lastSeen:}{ The last seen stimulus.}
+\item{lastResponse:}{ The last response given.}
+\item{stairResult:}{ The final result if finished (initially \code{NA}).}
+\item{finished:}{ \code{"Not"} if staircase has not finished, or one of
+\code{"Rev"} (finished due to 2 reversals), \code{"Max"} (finished due to 2
+\code{maxStimulus} seen), \code{"Min"} (finished due to 2 \code{minStimulus} not seen)}
+\item{numberOfReversals:}{ Number of reversals so far.}
+\item{currSeenLimit:}{ Number of times \code{maxStimulus} has been seen.}
+\item{currNotSeenLimit:}{ Number of times \code{minStimulus} not seen.}
+\item{numPresentations:}{ Number of presentations so far.}
+\item{stimuli:}{ Vector of stimuli shown at each call to \code{fourTwo.step}.}
+\item{responses:}{ Vector of responses received (1 seen, 0 not) received at each call to \code{fourTwo.step}.}
+\item{responseTimes:}{ Vector of response times received at each call to \code{fourTwo.step}.}
+}
 \code{fourTwo.step} returns a list containing
-* \code{state}, the new state after presenting a stimuli and getting a response.
-* \code{resp}, the return from the \code{opiPresent} call that was made.
-
+\itemize{
+\item{state:}{ The new state after presenting a stimuli and getting a response.}
+\item{resp:}{ The return from the \code{opiPresent} call that was made.}
+}
 \code{fourTwo.stop} returns \code{TRUE} if the staircase is finished (2 reversals, or \code{maxStimulus}
 is seen twice or \code{minStimulus} is not seen twice).
 
@@ -86,7 +83,7 @@ initial staircase starts at \code{est} and proceeds in steps of 4 dB until
 the first reversal, and 2dB until the next reversal. The mean of the last
 two presentations is taken as the threshold value. Note this function will
 repeatedly call \code{opiPresent} for a stimulus until \code{opiPresent}
-returns \code{NULL} (ie no error occured). If more than one fourTwo is to
+returns \code{NULL} (ie no error occurred). If more than one fourTwo is to
 be interleaved (for example, testing multiple locations), then the
 \code{fourTwo.start}, \code{fourTwo.step}, \code{fourTwo.stop} and
 \code{fourTwo.final} calls can maintain the state of the fourTwo after
@@ -101,7 +98,7 @@ makeStim <- function(db, n) {
   return(s)
 }
 chooseOpi("SimHenson")
-if (!is.null(opiInitialize(type="C", cap=6)))
+if (!is.null(opiInitialize(type="C", cap=6)$err))
   stop("opiInitialize failed")
 
 ##############################################
@@ -126,7 +123,7 @@ states <- lapply(locations, function(loc) {
 
 # Loop through until all states are "stop"
 while(!all(st <- unlist(lapply(states, fourTwo.stop)))) {
-  i <- which(!st)                         # choose a random, 
+  i <- which(!st)                         # choose a random,
   i <- i[runif(1, min=1, max=length(i))]  # unstopped state
   r <- fourTwo.step(states[[i]])               # step it
   states[[i]] <- r$state                  # update the states
@@ -138,7 +135,7 @@ for(i in 1:length(locations)) {
       cat(sprintf("has threshold \%4.2f\n", finals[[i]]))
 }
 
-if (!is.null(opiClose()))
+if (!is.null(opiClose()$err))
   warning("opiClose() failed")
 }
 \seealso{

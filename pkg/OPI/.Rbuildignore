@@ -1,8 +1,2 @@
-R/octopus900.r
-R/octopus900.r.new
-R/.DS_Store
+^LICENSE.md
 .DS_Store
-R/k_notes.txt
-R/k_test.r
-^.*\.Rproj$
-^.*\.Rproj\.user$

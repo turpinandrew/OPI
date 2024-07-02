@@ -26,8 +26,6 @@
 # limitations under the License.
 #
 #
-require(stats)
-require(utils)
 
 ##########################
 # little helper functions
@@ -142,7 +140,7 @@ ZEST.entropy <- function(state) {
 #' @seealso \code{\link{dbTocd}}, \code{\link{opiPresent}}
 #' @examples
 #' chooseOpi("SimHenson")
-#' if(!is.null(opiInitialize(type="C", cap=6)))
+#' if(!is.null(opiInitialize(type="C", cap=6)$err))
 #'   stop("opiInitialize failed")
 #'
 #' ##############################################
@@ -210,7 +208,7 @@ ZEST.entropy <- function(state) {
 #'   #cat(sprintf("has threshold %4.2f\n", finals[[i]]))
 #' }
 #'
-#' if (!is.null(opiClose()))
+#' if (!is.null(opiClose()$err))
 #'   warning("opiClose() failed")
 #' @export
 ZEST <- function(domain = 0:40, prior = rep(1 / length(domain),length(domain)),

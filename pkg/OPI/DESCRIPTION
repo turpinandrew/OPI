@@ -1,23 +1,25 @@
 Package: OPI
 Type: Package
 Title: Open Perimetry Interface
-Version: 2.11.3
-Date: 2024-01-30
+Version: 3.0.1
+Date: 2024-07-02
 Authors@R: c(
-    person("Andrew","Turpin",email="andrew.turpin@lei.org.au",role=c("cre","aut","cph")),
-    person("David","Lawson",role=c("ctb","cph")),
-    person("Matthias","Muller",role="ctb"),
-    person("Jonathan","Dennis",role=c("ctb","cph")),
-    person("Astrid","Zeman",role="ctb"),
-    person("Ivan","Marin-Franch",role="ctb"))
-Author: Andrew Turpin [cre, aut, cph], David Lawson [ctb, cph], Matthias Muller [ctb], Jonathan Dennis [ctb, cph], Astrid Zeman [ctb], Ivan Marin-Franch [ctb]
-Maintainer: Andrew Turpin <andrew.turpin@lei.org.au>
-Description: Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 with partial implementations on the Centervue Compass, Kowa AP 7000, Android phones and the CrewT IMO. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
-License: Apache License (== 2.0)
-URL: https://people.eng.unimelb.edu.au/aturpin/opi/index.html
-Depends: methods, Rfast, abind, grDevices, openssl
+    person("Andrew", "Turpin", email="andrew.turpin@lei.org.au", comment = c("ORCID: 0000-0003-2559-8769"), role=c("cre","aut","cph")),
+    person("David", "Lawson",role=c("ctb","cph")),
+    person("Ivan", "Marin-Franch",role=c("ctb","cph")),
+    person("Matthias", "Muller",role="ctb"),
+    person("Jonathan", "Denniss",role=c("ctb","cph")),
+    person("Astrid", "Zeman",role="ctb"),
+    person("Giovanni", "Montesano",role="ctb"))
+Description: Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 and CrewT ImoVifa (Topcon Tempo) with partial implementations on the Centervue Compass, Kowa AP 7000 and Android phones. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
+License: Apache License (>= 2)
+URL: https://opi.lei.org.au/
+Imports: jsonlite, Rfast, abind, openssl
 LazyData: true
 Encoding: UTF-8
 RoxygenNote: 7.3.1
-Collate: OPI-package.r opi.r compassClient.r displayClient.r daydreamClient.r dbTocd.r fourTwo.r full_threshold.r imoClient.r kowaAP7000Client.r mocs.r octopus600.r octopus900Client.r pix2deg.r phoneHMD.r QUESTP.r simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r zest.r data-RtDbUnits.r data-RtSigmaUnits.r opiKineticStimulus.r opiStaticStimulus.r opiTemporalStimulus.r
 Roxygen: list(markdown = TRUE)
+Collate: opi.r Display.r PicoVR.r PhoneHMD.r ImoVifa.r dbTocd.r data-RtDbUnits.r data-RtSigmaUnits.r SimYes.r SimNo.r SimHenson.r SimGaussian.r zest.r mocs.r fourTwo.r full_threshold.r pix2deg.r QUESTP.r KTPsi.r Compass.r Octopus900.r Octopus600.r OPI-package.r SimHensonRT.r KowaAP7000Client.r
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

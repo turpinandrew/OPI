@@ -137,3 +137,27 @@
  * 2.11.1 Minor bug fix to export .OpiEnv , added QUEST+
  * 2.11.2 Minor bug fix to encode return image for Compass initialise
  * 2.11.3 Added fixedResponse param to ZEST.step
+
+
+# OPI 3.0.0 (July 2024)
+ * Major rewrite of the OPI 2.11.3 package to include
+   - New support for the OPI-JOVP server hence screen-based perimeters
+   - Changed from GNU to Apache 2.0 license
+   - R code for all machines automatically generated from `rgen` in `OPI-JOVP` package
+   - Deprecated opiSetBackground, replaced with opiSetup
+   - Deprecated Kinetic simulation: SimHenson etc now only work for static stimuli.
+   - Other algorithms and simulations stay the same as before
+ * Addition of the imoVifa (aka Tempo)
+ * New unit tests
+ * Gotchas when working across machines
+   - Some of the previous commands were documented to return a list containing `err = NULL`
+     on success. For commands where this was the only expected item in the return list, 
+     like `opiInitialise` on the Octopus900, this meant they returned an empty list.
+     That is, `is.null(result$err)` was trivially true as `is.null(result)` was true. 
+     But this is not always the case for `opiInitialise` on all machines. 
+     So code for use on more than one machine should check opi function return
+     `result` success as `is.null(result$err)`, not `is.null(result)` as in the past.
+     Algorithms in this package have been updated to reflect this.
+
+## OPI 3.0.1 
+  * Eye tracking for ImoVifa/Tempo added.

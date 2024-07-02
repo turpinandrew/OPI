@@ -1,23 +1,53 @@
-Package: OPI
-Type: Package
-Title: Open Perimetry Interface
-Version: 2.11.1
-Date: 2023-11-06
-Authors@R: c(
-    person("Andrew","Turpin",email="andrew.turpin@lei.org.au",role=c("cre","aut","cph")),
-    person("David","Lawson",role=c("ctb","cph")),
-    person("Matthias","Muller",role="ctb"),
-    person("Jonathan","Dennis",role=c("ctb","cph")),
-    person("Astrid","Zeman",role="ctb"),
-    person("Ivan","Marin-Franch",role="ctb"))
-Author: Andrew Turpin [cre, aut, cph], David Lawson [ctb, cph], Matthias Muller [ctb], Jonathan Dennis [ctb, cph], Astrid Zeman [ctb], Ivan Marin-Franch [ctb]
-Maintainer: Andrew Turpin <andrew.turpin@lei.org.au>
-Description: Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 with partial implementations on the Centervue Compass, Kowa AP 7000, Android phones and the CrewT IMO. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
-License: Apache License (== 2.0)
-URL: https://preimtery.org/opi
-Depends: methods, Rfast, abind
-LazyData: true
-Encoding: UTF-8
-RoxygenNote: 7.1.2
-Collate: OPI-package.r opi.r compassClient.r displayClient.r daydreamClient.r dbTocd.r fourTwo.r full_threshold.r imoClient.r kowaAP7000Client.r mocs.r octopus600.r octopus900Client.r pix2deg.r phoneHMD.r QUESTP.r simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r zest.r data-RtDbUnits.r data-RtSigmaUnits.r opiKineticStimulus.r opiStaticStimulus.r opiTemporalStimulus.r
-Roxygen: list(markdown = TRUE)
+# Open Perimetry Interface (OPI)
+
+The OPI package (Open Perimetry Interface) is used to both simulate and execute visual field testing 
+algorithms (perimetry algorithms) on machines that can create visual stimuli. 
+The simulation can be done solely with this package. Controlling machines, be they standard 
+displays, phones, tablets, etc or commercial perimeters 
+requires the OPI Monitor Java package. Use of commercial machines usually requires permission 
+from the manufacturer and some other relevant third party software or key.
+
+## Why should I use it?
+
+You should use this package for implementing, developing, testing and using visual 
+psychophysics test procedures particularly (but not limited to) those used for 
+clinical visual field testing (perimetry).
+
+## How do I use it?
+
+The package supports 5 R functions that work across multiple platforms: 
+ * `opiInitialize()` For creating a connection to a machine or simulated subject.
+ * `opiSetup()` For setting parameters like fixation markers, background colors, luminance, etc.
+ * `opiPresent()` For presenting visual stimuli and getting a response.
+ * `opiClose()` For closing a connection with a machine or simulated subject.
+ * `opiQuery()` For getting information about a machine or simulated subject.
+
+The machine or simulation that the set of functions operate upon is selected using the `chooseOPI()` function.
+
+## How do I get it?
+
+The OPI package is free from CRAN and includes all code needed for simulation and use on 
+machines such as standard displays (ie your computer monitor). 
+
+To use the 
+ * Octopus 900 machine, you should contact Haag-Streit to seek permission.
+ * imoVifa/Tempo machine, contact CREWT (Japan)or Topcon Healthcare Inc (USA) to seek permission.
+ * Compass or Maia machine, contact iCare to seek permission.
+ * Kowa AP7000 machine, contact Kowa to seek permission.
+
+Note the reason for requiring permission from commercial partners of the OPI
+for use on their machines is for medico-legal reasons related to the 
+accreditation of the machines as medical devices by regulating bodies in 
+different countries.  
+
+If you do not have contact details with the companies, email 
+[Andrew Turpin](mailto:andrew.turpin@lei.org.au)
+and he can put you in touch with the right person.
+
+## Other resources
+
+[OPI www page](https://opi.lei.org.au)
+
+[OPI github](https://github.com/turpinandrew/OPI)
+
+[OPI Discourse Forum](https://openperimetry.org/)

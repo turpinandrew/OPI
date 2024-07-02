@@ -1,10 +1,9 @@
 #
 # An implementation of the OPI that simulates a patient that never responds.
 #
-# Author: Andrew Turpin    (andrew.turpin@lei.org.au)
-# Date: October 2012
+# Author: Andrew Turpin
 #
-# Copyright [2022] [Andrew Turpin]
+# Copyright [2022] [Andrew Turpin & Ivan Marin-Franch]
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,54 +16,64 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-simNo.opiClose         <- function() { return(NULL) }
-simNo.opiQueryDevice   <- function() { return (list(type="SimNo", isSim=TRUE)) }
-
-################################################################################
-# Input
-#   display Dimensions of plot area to display stim. c(-x,+x,-y,+y) No display if NULL
-#
-# Return NULL if succesful, string error message otherwise  
-################################################################################
-simNo.opiInitialize <- function(display = NA) {
-    if(simDisplay.setupDisplay(display))
-        warning("opiInitialize (SimNo): display parameter may not contain 4 numbers.")
-    return(NULL)
-}
-
-################################################################################
-# Set background of plot area to col
-# Return:
-#   NULL - succsess
-#   -1   - opiInitialize not called
-################################################################################
-#' @rdname opiSetBackground
-#' @details
-#' # SimNo
-#'   DETAILS
+#' @title opiClose_for_SimNo
+#' @description
+#' Does nothing.
+#' @usage NULL
+#' @return A list with elements:
+#'   * \code{error} Always \code{FALSE}.
+#'   * \code{msg} A string "Close OK".
 #'
-simNo.opiSetBackground <- function(col, gridCol) { 
-    return (simDisplay.setBackground(col, gridCol))
-}
+opiClose_for_SimNo <- function() list(err = NULL)
 
-#' @rdname opiPresent
-#' @details
-#' # SimNo
-#' 
-#'   \code{opiPresent(stim, nextStim=NULL)}
-#' 
-#'   If the chosen OPI implementation is \code{SimNo}, then the response to a
-#'   stimuli is always no, hence \code{\link{opiPresent}} always returns
-#'   \code{err=NULL}, \code{seen=FALSE}, and \code{time=0}.
+#' @title opiQueryDevice_for_SimNo
+#' @description
+#' Returns name of the machine.
+#' @usage NULL
 #'
-simNo.opiPresent <- function(stim, nextStim=NULL) {
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
+#' @return A list with elements:
+#'   * \code{machine} that is set to `"SimNo"`.
+#'   * \code{isSim} that is set to TRUE.
+#'
+opiQueryDevice_for_SimNo <- function() list(isSim = TRUE, machine = "SimNo")
 
-    return ( list(
-        err = NULL,
-        seen= FALSE,
-        time= 0
-    ))
-}
+#' @title opiInitialise_for_SimNo
+#' @description
+#' Does nothing.
+#'
+#' @usage NULL
+#' @param ... Any object you like, it is ignored.
+#'
+#' @return A list with elements:
+#'   * \code{err} Always \code{NULL}.
+#'
+opiInitialise_for_SimNo <- function(...) list(err = NULL)
+
+#' @title opiSetup_for_SimNo
+#' @description
+#' Does nothing.
+#'
+#' @usage NULL
+#' @param settings Anything you like, it is ignored.
+#'
+#' @return A list with elements:
+#'   * \code{err} Always \code{NULL}.
+#'
+opiSetup_for_SimNo <- function(settings) list(err = NULL)
+
+#' @title opiPresent_for_SimNo
+#' @description
+#' Always respond 'not seen' to any parameter.
+#' No checking is done on the validity of `stim`.
+#'
+#' @usage NULL
+#' @param stim Anything you like, it is ignored.
+#' @param ... Any parameters you like, they are ignored.
+#'
+#' @return A list with elements:
+#'   * \code{err} Always \code{NULL}.
+#    * \code{seen} Always \code{FALSE}.
+#'   * \code{time} Always \code{NA}.
+#'
+opiPresent_for_SimNo <- function(stim, ...) list(err = NULL, seen = FALSE, time = NA)

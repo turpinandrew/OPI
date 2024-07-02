@@ -1,10 +1,9 @@
 #
 # An implementation of the OPI that simulates a patient that always responds.
 #
-# Author: Andrew Turpin    (andrew.turpin@lei.org.au)
-# Date: October 2012
+# Author: Andrew Turpin
 #
-# Copyright [2022] [Andrew Turpin]
+# Copyright [2022] [Andrew Turpin & Ivan Marin-Franch]
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,52 +18,60 @@
 # limitations under the License.
 #
 
-simYes.opiClose         <- function() { return(NULL) }
-simYes.opiQueryDevice   <- function() { return (list(type="SimNo", isSim=TRUE)) }
-
-################################################################################
-# Input
-#   display Dimensions of plot area to display stim. c(-x,+x,-y,+y) No display if NULL
-#
-# Return NULL if succesful, string error message otherwise  
-################################################################################
-simYes.opiInitialize <- function(display = NA) {
-    if(simDisplay.setupDisplay(display))
-        warning("opiInitialize (SimNo): display parameter may not contain 4 numbers.")
-
-    return(NULL)
-}
-
-################################################################################
-# Set background of plot area to col
-# Return:
-#   NULL - succsess
-#   -1   - opiInitialize not called
-################################################################################
-#' @rdname opiSetBackground
-#' @details
-#' # SimYes
-#'   DETAILS
+#' @title opiClose_for_SimYes
+#' @description Does nothing.
+#' @usage NULL
+#' @return A list with elements:
+#'   * \code{err} Always \code{NULL}.
 #'
-simYes.opiSetBackground <- function(col, gridCol) { 
-    return (simDisplay.setBackground(col, gridCol))
-}
+opiClose_for_SimYes <- function() list(err = NULL)
 
-#' @rdname opiPresent
-#' @details
-#' # SimYes
-#'   \code{opiPresent(stim, nextStim=NULL)}
-#'   
-#'   If the chosen OPI implementation is \code{SimYes}, then the response to a
-#'   stimuli is always yes, hence \code{\link{opiPresent}} always returns
-#'   \code{err=NULL}, \code{seen=TRUE}, and \code{time=0}.
+#' @title opiQueryDevice_for_SimYes
+#' @description
+#' Returns name of the machine.
 #'
-simYes.opiPresent <- function(stim, nextStim=NULL) {
-    simDisplay.present(stim$x, stim$y, stim$color, stim$duration, stim$responseWindow)
+#' @usage NULL
+#' @return A list with elements:
+#'   * \code{isSim} Always \code{TRUE}.
+#'   * \code{machine} that is set to `"SimYes"`.
+#'
+opiQueryDevice_for_SimYes <- function() list(isSim = TRUE, machine = "SimYes")
 
-    return ( list(
-        err = NULL,
-        seen= TRUE,
-        time= 0
-    ))
-}
+#' @title opiInitialise_for_SimYes
+#' @description
+#' Does nothing.
+#'
+#' @usage NULL
+#' @param ... Any object you like, it is ignored.
+#'
+#' @return A list with elements:
+#'   * \code{err} Always \code{NULL}.
+#'
+opiInitialise_for_SimYes <- function(...) list(err = NULL)
+
+#' @title opiSetup_for_SimYes
+#' @description
+#' Does nothing.
+#'
+#' @usage NULL
+#' @param settings Any object you like, it is ignored.
+#'
+#' @return A list with elements:
+#'   * \code{err} Always \code{NULL}.
+#'
+opiSetup_for_SimYes <- function(settings) list(err = NULL)
+
+#' @title opiPresent_for_SimYes
+#' @description
+#' Always respond 'yes' immediately to any parameter.
+#'
+#' @usage NULL
+#' @param stim Anything you like, it is ignored.
+#' @param ... Any parameters you like, they are ignored.
+#'
+#' @return A list with elements:
+#'   * \code{err} Always \code{FALSE}.
+#'   * \code{seen} Always \code{TRUE}.
+#'   * \code{time} Always \code{NA}.
+#'
+opiPresent_for_SimYes <- function(stim, ...) list(err = NULL, seen = TRUE, time = NA)

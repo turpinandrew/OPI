@@ -19,10 +19,10 @@ curves to the data.
 }
 \details{
 A data frame with 30620 observations on the following 3 variables.
-\itemize{
-\item \code{Rt} Reaction time in ms.
-\item \code{Dist} Distance of stimuli from threshold in dB.
-\item \code{Person} Identifier of each subject.
+\describe{
+\item{\code{Rt}}{Reaction time in ms.}
+\item{\code{Dist}}{Distance of stimuli from threshold in dB.}
+\item{\code{Person}}{Identifier of each subject.}
 }
 }
 \references{

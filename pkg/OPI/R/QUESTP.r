@@ -14,19 +14,20 @@
 # Author: Giovanni Montesano    (giovmontesano@gmail.com)
 # Date: August 2022
 #
-# Copyright [2022] [Giovanni Montesano]
+# Copyright 2022 Giovanni Montesano
+# This program is part of the OPI (http://perimetry.org/OPI).
+# OPI is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 ##########################
@@ -124,50 +125,57 @@ combvec <- function(ListM){
 #' required, then the simpler \code{QUESTP} can be used, which is a wrapper for the four functions
 #' that maintain state. See examples below.
 #' @return
-#' ## Single location
+#' \subsection{Single location}{
 #'   \code{QUESTP} returns a list containing
-#' 
-#'   * \code{npres} Total number of presentations used.
-#'   * \code{respSeq} Response sequence stored as a data frame: column 1 is a string identified of a (potentially)
+#'   \itemize{
+#'     \item{npres:}{ Total number of presentations used.}
+#'     \item{respSeq:}{ Response sequence stored as a data frame: column 1 is a string identified of a (potentially)
 #'       multidimensional stimulus values of stimuli (dimensions chained into a string), column 2
 #'       is 1/0 for seen/not-seen, column 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not
 #'       present in stim objects returned from \code{makeStim}). All additional columns report each stimulus
-#'       dimension, one for each row.
-#'   * \code{pdfs} If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each presentation, otherwise NULL.
-#'   * \code{final} The mean (default, strongly suggested)/median/mode of the parameters' pdf, depending on \code{Choice}.
-#'   * \code{opiResp} A list of responses received from each successful call to \code{opiPresent} within \code{QUESTP}.
-#' 
-#' ## Multiple locations
+#'       dimension, one for each row}
+#'     \item{pdfs:}{ If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each
+#'       presentation, otherwise NULL.}
+#'     \item{final}{ The mean (default, strongly suggested)/median/mode of the parameters' pdf, depending on \code{Choice}.}
+#'     \item{opiResp}{A list of responses received from each successful call to \code{opiPresent}
+#'       within \code{QUESP}.}
+#'   }
+#' }
+#' \subsection{Multilple locations}{
 #'   \code{QUESTP.start} returns a list that can be passed to \code{QUESTP.step}, \code{QUESTP.stop}, and
-#'   \code{QUESTP.final}. It represents the state of a QUESTP at a single location at a point in time and contains the following.
-#' 
-#'   *  \code{name} \code{QUESTP}
-#'   *  A copy of all of the parameters supplied to QUESTP.start: \code{stimDomain},
+#'   \code{QUESTP.final}. It represents the state of a QUESTP at a single location at a point in time
+#'   and contains the following.
+#'   \itemize{
+#'     \item{name:}{ \code{QUESTP}}
+#'     \item{}{ A copy of all of the parameters supplied to QUESTP.start: \code{stimDomain},
 #'       \code{paramDomain}, \code{likelihoods}, \code{priors}, \code{stopType}, \code{stopValue},
 #'       \code{maxSeenLimit}, \code{minNotSeenLimit}, \code{minPresentations}, \code{maxPresentations},
-#'       \code{makeStim}, and \code{opiParams}.
-#'   *  \code{pdf} Current pdf: vector of probabilities, collating all parameter domains.
-#'   *  \code{priorsP} List of starting pdfs, one for each parameter.
-#'   *  \code{numPresentations} The number of times \code{QUESTP.step} has been called on this state.
-#'   *  \code{stimuli} A vector containing the stimuli used at each call of \code{QUESTP.step}.
-#'   *  \code{responses} A vector containing the responses received at each call of \code{QUESTP.step}.
-#'   *  \code{responseTimes} A vector containing the response times received at each call of \code{QUESTP.step}.
-#'   *  \code{fixated} A vector containing TRUE/FALSE if fixation was OK according to
+#'       \code{makeStim}, and \code{opiParams}.}
+#'     \item{pdf:}{ Current pdf: vector of probabilities, collating all parameter domains.}
+#'     \item{priorsP:}{ List of starting pdfs, one for each parameter.}
+#'     \item{numPresentations:}{ The number of times \code{QUESTP.step} has been called on this state.}
+#'     \item{stimuli:}{ A vector containing the stimuli used at each call of \code{QUESTP.step}.}
+#'     \item{responses:}{ A vector containing the responses received at each call of
+#'       \code{QUESTP.step}.}
+#'     \item{responseTimes:}{ A vector containing the response times received at each call of
+#'       \code{QUESTP.step}.}
+#'     \item{fixated:}{ A vector containing TRUE/FALSE if fixation was OK according to
 #'       \code{checkFixationOK} for each call of \code{QUESTP.step} (defaults to TRUE if
-#'       \code{checkFixationOK} not present).
-#'   *  \code{opiResp}A list of responses received from each call to \code{opiPresent} within \code{QUESTP.step}.
-#' 
+#'       \code{checkFixationOK} not present).}
+#'     \item{opiResp}{A list of responses received from each call to \code{opiPresent} within \code{QUESTP.step}.}
+#'   }
 #'   \code{QUESTP.step} returns a list containing
-#'    * \code{state} The new state after presenting a stimuli and getting a response.
-#'    * \code{resp} The return from the \code{opiPresent} call that was made.
-#'
-#'   \code{QUESTP.stop} returns \code{TRUE} if the QUESTP has reached its stopping criteria, and \code{FALSE} otherwise.
-#' 
+#'   \itemize{
+#'     \item{state:}{ The new state after presenting a stimuli and getting a response.}
+#'     \item{resp:}{ The return from the \code{opiPresent} call that was made.}
+#'   }
+#'   \code{QUESTP.stop} returns \code{TRUE} if the QUESTP has reached its stopping criteria, and
+#'     \code{FALSE} otherwise.
 #'   \code{QUESTP.final} returns an estimate of parameters based on state. If \code{state$Choice}
 #'   is \code{mean} then the mean is returned (the only one that really makes sense for QUEST+).
 #'   If \code{state$Choice} is \code{mode} then the
 #'   mode is returned. If \code{state$Choice} is \code{median} then the median is returned.
-#'
+#' }
 #' @references
 #' Andrew B. Watson; QUEST+: A general multidimensional Bayesian adaptive psychometric method.
 #' Journal of Vision 2017;17(3):10. doi: https://doi.org/10.1167/17.3.10.
@@ -181,7 +189,7 @@ combvec <- function(ListM){
 #'
 #' @examples
 #' chooseOpi("SimHenson")
-#' if(!is.null(opiInitialize(type="C", cap=6)))
+#' if(!is.null(opiInitialize(type="C", cap=6)$err))
 #'     stop("opiInitialize failed")
 #'
 #' #########################################################
@@ -241,13 +249,13 @@ combvec <- function(ListM){
 #'        pch = c(16, 16, 16), pt.cex = c(0, 0, 1),
 #'        horiz = TRUE, xpd = TRUE, xjust = 0)
 #'
-#' if (!is.null(opiClose()))
+#' if (!is.null(opiClose()$err))
 #'   warning("opiClose() failed")
 #'
 #'
 #'
 #' chooseOpi("SimHenson")
-#' if(!is.null(opiInitialize(type="C", cap=6)))
+#' if(!is.null(opiInitialize(type="C", cap=6)$err))
 #'     stop("opiInitialize failed")
 #'
 #' ######################################################################
@@ -314,12 +322,12 @@ combvec <- function(ListM){
 #'        horiz = FALSE, xpd = TRUE, xjust = 0)
 #' abline(v = loc$threshold, lty = "dashed")
 #'
-#' if (!is.null(opiClose()))
+#' if (!is.null(opiClose()$err))
 #'   warning("opiClose() failed")
 #'
 #'
 #' chooseOpi("SimHenson")
-#' if(!is.null(opiInitialize(type="C", cap=6)))
+#' if(!is.null(opiInitialize(type="C", cap=6)$err))
 #'   stop("opiInitialize failed")
 #'
 #' #########################################################
@@ -377,9 +385,9 @@ combvec <- function(ListM){
 #' }
 #'
 #'
+#' \dontrun{
 #' set.seed(111)
 #' #QUEST+ - takes some time to calculate likelihoods
-#' \dontrun{
 #' QP <- QUESTP(Fun = pSeen,
 #'              stimDomain = list(0:50, Sizes),
 #'              paramDomain = list(seq(0, 40, 1), # Domain for total summation intercept
@@ -390,7 +398,6 @@ combvec <- function(ListM){
 #'              ttHelper=ttHelper_SS(loc), tt = 30,
 #'              fpr=loc$fpr, fnr=loc$fnr,
 #'              verbose = 2)
-#'
 #' #Stimulus sizes
 #' G <- log10(c(pi*(0.1/2)^2, pi*(0.21/2)^2, pi*(0.43/2)^2, pi*(0.86/2)^2, pi*(1.72/2)^2));
 #' SizesP <- seq(min(G), max(G), .05)
@@ -409,9 +416,9 @@ combvec <- function(ListM){
 #'        col=c("blue", "red","red"), lty=c(1,1,0),
 #'        pch = c(16, 16, 16), pt.cex = c(0, 0, 1),
 #'        horiz = TRUE, xpd = TRUE, xjust = 0)
-#' }
 #'
-#' if (!is.null(opiClose()))
+#' }
+#' if (!is.null(opiClose()$err))
 #'   warning("opiClose() failed")
 #'
 #' @export
@@ -627,7 +634,7 @@ QUESTP.step <- function(state, nextStim = NULL) {
 
     #stim <- getTargetStim(state)
 
-    if (length(stim) > 1 && opiQueryDevice()$isSim) { 
+    if (length(stim) > 1 && substr(opiQueryDevice()$machine, 1, 3) == "Sim") {
         if (is.function(state$opiParams$ttH)){
             state$opiParams$tt <- max(state$opiParams$ttH(stim), 0)
         }else{

@@ -6,28 +6,26 @@
 \alias{OPI-package}
 \title{OPI: Open Perimetry Interface}
 \description{
-Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 with partial implementations on the Centervue Compass, Kowa AP 7000, Android phones and the CrewT IMO. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
-}
-\note{
-\code{.OpiEnv$machine_name} is set to the name of the chosen OPI set by the \code{chooseOPI} function call.
+Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 and CrewT ImoVifa (Topcon Tempo) with partial implementations on the Centervue Compass, Kowa AP 7000 and Android phones. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://people.eng.unimelb.edu.au/aturpin/opi/index.html}
+  \item \url{https://opi.lei.org.au/}
 }
 
 }
 \author{
-\strong{Maintainer}: Andrew Turpin \email{andrew.turpin@lei.org.au} [copyright holder]
+\strong{Maintainer}: Andrew Turpin \email{andrew.turpin@lei.org.au} (ORCID: 0000-0003-2559-8769) [copyright holder]
 
 Other contributors:
 \itemize{
   \item David Lawson [contributor, copyright holder]
+  \item Ivan Marin-Franch [contributor, copyright holder]
   \item Matthias Muller [contributor]
-  \item Jonathan Dennis [contributor, copyright holder]
+  \item Jonathan Denniss [contributor, copyright holder]
   \item Astrid Zeman [contributor]
-  \item Ivan Marin-Franch [contributor]
+  \item Giovanni Montesano [contributor]
 }
 
 }
