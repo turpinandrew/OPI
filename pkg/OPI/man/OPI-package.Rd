@@ -6,7 +6,7 @@
 \alias{OPI-package}
 \title{OPI: Open Perimetry Interface}
 \description{
-Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 and CrewT ImoVifa (Topcon Tempo) with partial implementations on the Centervue Compass, Kowa AP 7000 and Android phones. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
+Implementation of the Open Perimetry Interface (OPI) for simulating and controlling visual field machines using R. The OPI is a standard for interfacing with visual field testing machines (perimeters) first started as an open source project with support of Haag-Streit in 2010. It specifies basic functions that allow many visual field tests to be constructed. As of February 2022 it is fully implemented on the Haag-Streit Octopus 900 and 'CrewT ImoVifa' ('Topcon Tempo') with partial implementations on the Centervue Compass, Kowa AP 7000 and Android phones. It also has a cousin: the R package 'visualFields', which has tools for analysing and manipulating visual field data.
 }
 \seealso{
 Useful links:

@@ -139,7 +139,7 @@ opiQueryDevice <- function() {
 #' Specific parameters and return values can be seen in the machine specific versions
 #' listed below in the ’See Also’.
 #'
-#' @param settings A list containing the same names as that returned by [opi_queryDevice].
+#' @param settings A list containing specific settings for a machine.
 #'
 #' @return Each implementation should(!) return a list with at least the following elements:
 #'   * \code{err} \code{NULL} if no error, otherwise a string describing the error.

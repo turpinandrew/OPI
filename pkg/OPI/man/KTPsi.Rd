@@ -188,6 +188,7 @@ KTPsi(makeStim = makeStim, stopType="H", stopValue=  3, tt=30, fpr=0.03)
 KTPsi(makeStim = makeStim, stopType="N", stopValue= 27, verbose = 0, tt=30, fpr=0.03)
 
      # For multiple locations...
+\dontrun{
 states <- lapply(1:10, function(loc) KTPsi.start(makeStim = makeStim))
 unfinished <- 1:10
 while (length(unfinished) > 0) {
@@ -195,6 +196,7 @@ while (length(unfinished) > 0) {
      states[[loc]] <- KTPsi.step(states[[loc]])$state
      if (KTPsi.stop(states[[loc]]))
          unfinished <- unfinished[-1]
+}
 }
 
 }
