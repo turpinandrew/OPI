@@ -4,24 +4,15 @@ OPI_VERSION := $(shell cat OPI/DESCRIPTION | grep Version | sed 's/Version: //')
 
 # R files for OPI package
 OPI_R =	\
-    dbTocd.r \
-    fourTwo.r full_threshold.r zest.r mocs.r \
-    imoClient.r kowaAP7000Client.r octopus600.r octopus900Client.r \
-    opi.r \
-    simDisplay.r simG.r simH.r simH_RT.r simNo.r simYes.r
-
-# Rd files for OPI package
-OPI_MAN	= \
-    FT.Rd RtDbUnits.Rd RtSigmaUnits.Rd ZEST.Rd cdTodb.Rd\
-    chooseOpi.Rd dbTocd.Rd fourTwo.Rd opiClose.Rd opiInitialize.Rd opiKineticStimulus.Rd\
-    opiPresent.Rd opiQueryDevice.Rd opiSetBackground.Rd opiStaticStimulus.Rd\
-    opiTemporalStimulus.Rd
+    Compass.r Display.r ImoVifa.r KTPsi.r KowaAP7000Client.r OPI-package.r Octopus600.r \
+    Octopus900.r PhoneHMD.r PicoVR.r QUESTP.r SimGaussian.r SimHenson.r SimHensonRT.r SimNo.r \
+    SimYes.r data-RtDbUnits.r data-RtSigmaUnits.r dbTocd.r fourTwo.r full_threshold.r mocs.r \
+    opi.r pix2deg.r zest.r
 
 OPI_ROOT	=	DESCRIPTION \
 				NAMESPACE
 
 OPI_FILES	=	$(addprefix OPI/,$(OPI_ROOT)) \
-				$(addprefix OPI/man/,$(OPI_MAN)) \
 				$(addprefix OPI/R/,$(OPI_R))
 
 

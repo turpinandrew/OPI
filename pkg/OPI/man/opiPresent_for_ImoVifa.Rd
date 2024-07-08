@@ -54,17 +54,20 @@ A list containing:
 \itemize{
 \item \code{err} \code{NULL} if there was no error, a string message if there is an error.
 \item \code{eyedStart} Diameter of pupil at stimulus onset (pixels).
-\item \code{eyexEnd} x co-ordinate of pupil at button press (degrees from image
-centre. Image is 640x480). Note that for multi-part stimuli
-(t=0), the eye taken is the \emph{last} eye in the list of components.
-\item \code{eyeyEnd} y co-ordinate (pixels). See eyexEnd for more details.
+\item \code{eyexEnd} x co-ordinate of pupil at button press (pixels from image
+centre. Image is 640x480, left < 0). Note that for
+multi-part stimuli (t=0), the eye taken is the \emph{last} eye
+in the list of components.
+\item \code{eyeyEnd} y co-ordinate (pixels). See eyexEnd for more details. (up > 0)
 \item \code{eyedEnd} Diameter of pupil at button press or response window expiry (pixels).
 \item \code{eyexStart} x co-ordinates of pupil at stimulus onset (pixels from
-image centre. Image is 640x480). For a multi-part
-stimulus (t=0), the eye taken is the \emph{first} eye in the list of components.
+image centre. Image is 640x480, left < 0). For a
+multi-part stimulus (t=0), the eye taken is the \emph{first}
+eye in the list of components.
 \item \code{time} Response time from stimulus onset if button pressed (ms).
 \item \code{seen} '1' if seen, '0' if not.
-\item \code{eyeyStart} y co-ordinates (pixels from image centre). See eyexStart for more details.
+\item \code{eyeyStart} y co-ordinates (pixels from image centre). See eyexStart
+for more details. (up > 0)
 }
 }
 \description{
