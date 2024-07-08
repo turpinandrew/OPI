@@ -161,3 +161,6 @@
 
 ## OPI 3.0.1 
   * Eye tracking for ImoVifa/Tempo added.
+
+## OPI 3.0.2 
+  * Changed eye tracking for ImoVifa/Tempo to return pixels, not degrees and mm.

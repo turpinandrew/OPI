@@ -7,6 +7,12 @@
 A list containing:
 \itemize{
 \item \code{err} \code{NULL} if there was no error, a string message if there is an error.
+\item \code{rightEyex} x co-ordinates of right pupil (pixels from image centre)
+\item \code{rightEyey} y co-ordinates of right pupil (pixels from image centre)
+\item \code{leftEyex} x co-ordinates of left pupil (pixels from image centre)
+\item \code{leftEyey} y co-ordinates of left pupil (pixels from image centre)
+\item \code{leftEyed} Diameter of left pupil (pixels)
+\item \code{rightEyed} Diameter of right pupil (pixels)
 }
 }
 \description{
