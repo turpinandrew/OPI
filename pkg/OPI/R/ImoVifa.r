@@ -316,9 +316,11 @@ opiQueryDevice_for_ImoVifa <- function() {
 #'  * \code{eyexEnd} x co-ordinate of pupil at button press (pixels from image
 #'                   centre. Image is 640x480, left < 0). Note that for
 #'                   multi-part stimuli (t=0), the eye taken is the *last* eye
-#'                   in the list of components.
-#'  * \code{eyeyEnd} y co-ordinate (pixels). See eyexEnd for more details. (up > 0)
-#'  * \code{eyedEnd} Diameter of pupil at button press or response window expiry (pixels).
+#'                   in the list of components. Not valid for not-seen response.
+#'  * \code{eyeyEnd} y co-ordinate (pixels). See eyexEnd for more details. (up >
+#'                   0). Not valid for not-seen response.
+#'  * \code{eyedEnd} Diameter of pupil at button press or response window expiry
+#'                   (pixels). Not valid for not-seen response.
 #'  * \code{eyexStart} x co-ordinates of pupil at stimulus onset (pixels from
 #'                     image centre. Image is 640x480, left < 0). For a
 #'                     multi-part stimulus (t=0), the eye taken is the *first*

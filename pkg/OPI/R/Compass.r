@@ -43,12 +43,17 @@ if (exists(".opi_env") && !exists("Compass", where = .opi_env)) {
 
     # Utility functions for validating inputs
     .opi_env$Compass$minCheck <- function(x, limit, txt) {
+        if (is.null(x))
+            return()
+
         if (x < limit) {
             opiClose()
             stop(paste("opiPresent: ", txt, "is too small (minimum ", limit, ")"))
         }
     }
     .opi_env$Compass$maxCheck <- function(x, limit, txt) {
+        if (is.null(x))
+            return()
         if (x > limit) {
             opiClose()
             stop(paste("opiPresent: ", txt, "is too big (maximum ", limit, ")"))
@@ -211,6 +216,9 @@ opiPresent_for_Compass <- function(stim, nextStim = NULL) {
     .opi_env$Compass$minCheck(stim$duration, .opi_env$Compass$MIN_DURATION, "Stimulus duration")
     .opi_env$Compass$minCheck(stim$responseWindow, .opi_env$Compass$MIN_RESP_WINDOW, "Stimulus responseWindow")
     .opi_env$Compass$maxCheck(stim$responseWindow, .opi_env$Compass$MAX_RESP_WINDOW, "Stimulus responseWindow")
+    .opi_env$Compass$minCheck(stim$t, .opi_env$Compass$MIN_DURATION, "Stimulus duration")
+    .opi_env$Compass$minCheck(stim$w, .opi_env$Compass$MIN_RESP_WINDOW, "Stimulus responseWindow")
+    .opi_env$Compass$maxCheck(stim$w, .opi_env$Compass$MAX_RESP_WINDOW, "Stimulus responseWindow")
     lev <- round(cdTodb(stim$level, .opi_env$Compass$ZERO_DB_IN_ASB / pi), 0)
     .opi_env$Compass$minCheck(lev, .opi_env$Compass$MIN_DB, "Stimulus level")
     .opi_env$Compass$maxCheck(lev, .opi_env$Compass$MAX_DB, "Stimulus level")

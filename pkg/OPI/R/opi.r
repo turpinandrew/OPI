@@ -27,7 +27,7 @@ packageStartupMessage("OPI version", utils::packageVersion("OPI"))
 assign("machine_list", list(
     # "Jovp",  Not needed as a standalone, use subclasses: Display, ...
     #"Icare",  Not needed as a standalone, use subclasses: O900, O600
-    #"Maia",  TODO?
+    "MAIA",
     "Compass",
     "ImoVifa",
     "Tempo",
