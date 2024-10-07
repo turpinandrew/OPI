@@ -254,7 +254,7 @@ opiPresent_for_MAIA <- function(stim, nextStim = NULL) {
 #'     * \code{x} is one of 0, +-2.4, +-4.8 degrees.
 #'     * \code{y} is one of 0, +-2.4, +-4.8 degrees.
 #'     * \code{t} is 0 for big circle off, 1 for big circle on.
-#'     * \code{p} power integer in range[0..11023].
+#'     * \code{p} power integer in range 0..1023.
 #'   * \code{bg} which is 0 for no background and other for some background
 #'   * \code{tracking} which is 0 for no tracking and other for some tracking
 #'   * \code{open} If present, will send OPI-OPEN to MAIA and look for prl, onh, fundus image

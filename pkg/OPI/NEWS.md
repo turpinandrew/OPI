@@ -164,3 +164,6 @@
 
 ## OPI 3.0.2 
   * Changed eye tracking for ImoVifa/Tempo to return pixels, not degrees and mm.
+
+## OPI 3.0.3 
+  * Added MAIA perimeter
