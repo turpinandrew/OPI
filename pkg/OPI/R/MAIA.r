@@ -24,7 +24,7 @@
 ###################################################################
 if (exists(".opi_env") && !exists("MAIA", where = .opi_env)) {
     assign("MAIA", new.env(25), envir = .opi_env)
-    .opi_env$MAIA$endian <- "big"   # endian-ness of the MAIA OS
+    .opi_env$MAIA$endian <- "little"   # endian-ness of the MAIA OS
 
     .opi_env$MAIA$ZERO_DB_IN_ASB <- 10000
 
@@ -329,6 +329,7 @@ opiSetup_for_MAIA <- function(settings) {
         msg <- "OPI-OPEN"
         writeLines(msg, .opi_env$MAIA$socket)
         n <- readBin(.opi_env$MAIA$socket, "integer", size = 4, endian = .opi_env$MAIA$endian)
+print(paste0("OPI-OPEN: n=", n))
         if (n > 15) {
             prlx <- readBin(.opi_env$MAIA$socket, "double", size = 4, endian = .opi_env$MAIA$endian)
             prly <- readBin(.opi_env$MAIA$socket, "double", size = 4, endian = .opi_env$MAIA$endian)
