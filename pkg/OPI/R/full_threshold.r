@@ -151,6 +151,10 @@
 #' ##############################################
 #' # This section is for multiple FTs
 #' ##############################################
+#' chooseOpi("SimHenson")
+#' if (!is.null(opiInitialize(type="C", cap=6)$err))
+#'   stop("opiInitialize failed")
+#'
 #' makeStimHelper <- function(db,n, x, y) {  # returns a function of (db,n)
 #'   ff <- function(db, n) db+n
 #'   body(ff) <- substitute({

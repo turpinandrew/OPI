@@ -29,5 +29,6 @@ listed below in the ’See Also’.
 \code{\link[=opiPresent_for_ImoVifa]{opiPresent_for_ImoVifa()}},
 \code{\link[=opiPresent_for_PhoneHMD]{opiPresent_for_PhoneHMD()}}, \code{\link[=opiPresent_for_Display]{opiPresent_for_Display()}}, \code{\link[=opiPresent_for_PicoVR]{opiPresent_for_PicoVR()}},
 \code{\link[=opiPresent_for_SimNo]{opiPresent_for_SimNo()}}, \code{\link[=opiPresent_for_SimYes]{opiPresent_for_SimYes()}}, \code{\link[=opiPresent_for_SimHenson]{opiPresent_for_SimHenson()}},
+\code{\link[=opiPresent_for_SimHensonRT]{opiPresent_for_SimHensonRT()}},
 \code{\link[=opiPresent_for_SimGaussian]{opiPresent_for_SimGaussian()}}
 }

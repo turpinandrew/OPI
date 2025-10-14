@@ -54,7 +54,7 @@ want it scaled somehow to match \code{rtData}.
 }
 \examples{
     # Stimulus is Size III white-on-white as in the HFA
-chooseOpi("SimHensonRt")
+chooseOpi("SimHensonRT")
 data(RtSigmaUnits)
 res <- opiInitialize(type = "C", cap = 6, rtData = RtSigmaUnits)
 if (!is.null(res$err))
@@ -63,11 +63,6 @@ if (!is.null(res$err))
 dist <- (10 - 30) / min(exp(-0.098 * 30 + 3.62), 6)
 result <- opiPresent(stim = list(level = dbTocd(20)), tt = 30, fpr = 0.15, fnr = 0.01, dist=dist)
 print(result, quote = FALSE)
-
-res <- opiClose()
-if (!is.null(res$err))
-  stop(paste("opiClose() failed:", res$err))
-
 
 if (!is.null(opiClose()))
   warning("opiClose() failed")

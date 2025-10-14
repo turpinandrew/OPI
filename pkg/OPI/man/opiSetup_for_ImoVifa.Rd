@@ -71,9 +71,11 @@ Elements in \code{bgCol} can take on values in the range \code{[0.0, 1.0]}.
 \code{fixRotation} can take on values in the range \code{[0.0, 360.0]}.
 }
 \examples{
+\dontrun{
 chooseOpi("ImoVifa")
 opiInitialise(list(port = 50001, ip = "localhost"))
 result <- opiSetup(settings = list(eye = "BOTH"))
+}
 
 }
 \seealso{

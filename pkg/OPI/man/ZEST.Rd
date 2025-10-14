@@ -112,8 +112,8 @@ overriding \code{state$minStimulus}, \code{state$maxStimulus} and \code{state$st
 \itemize{
 \item \code{npres} Total number of presentations used.
 \item \code{respSeq} Response sequence stored as a matrix: row 1 is dB values of stimuli, row 2
-\item is 1/0 for seen/not-seen, row 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not
-\item present in stim objects returned from \code{makeStim}).
+is 1/0 for seen/not-seen, row 3 is fixated 1/0 (always 1 if \code{checkFixationOK} not
+present in stim objects returned from \code{makeStim}).
 \item \code{pdfs} If \code{verbose} is bigger than 0, then this is a list of the pdfs used for each presentation, otherwise NULL.
 \item \code{final} The mean/median/mode of the final pdf, depending on \code{stimChoice}, which is the determined threshold.
 \item \code{opiResp} A list of responses received from each successful call to \code{opiPresent} within \code{ZEST}.

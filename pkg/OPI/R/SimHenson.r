@@ -109,6 +109,7 @@ opiInitialise_for_SimHenson <- function(type = "C", A = -0.081, B = 3.27, cap = 
         return(list(err = msg))
     }
 
+    assign("machine_is_initialised", TRUE, .opi_env)
     return(list(err = NULL))
 }
 
@@ -169,8 +170,8 @@ opiSetup_for_SimHenson <- function(...) list(err = NULL)
 #'   stop(paste("opiClose() failed:", res$err))
 #'
 opiPresent_for_SimHenson <- function(stim, fpr = 0.03, fnr = 0.01, tt = 30, ...) {
-    if (!exists(".opi_env") || !exists("sim_henson", where = .opi_env))
-        return(list(err = "You have not called opiInitialise."))
+    if (!exists(".opi_env") || !.opi_env$machine_is_initialised)
+        return(list(err = "You have not called opiInitialise()."))
 
     if (is.null(stim) || ! "level" %in% names(stim))
         return(list(err = "'stim' should be a list with a name 'level'. stim$level is the cd/m^2 to present."))
@@ -180,6 +181,7 @@ opiPresent_for_SimHenson <- function(stim, fpr = 0.03, fnr = 0.01, tt = 30, ...)
 
     pr_seeing <- fpr + (1 - fpr - fnr) * (1 - stats::pnorm(level, mean = tt, sd = px_var))
 
+    assign("machine_is_initialised", TRUE, .opi_env)
     return(list(
         err = NULL,
         seen = stats::runif(1) < pr_seeing,

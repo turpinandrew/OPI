@@ -15,7 +15,9 @@
 # limitations under the License.
 #
 
-packageStartupMessage("OPI version", utils::packageVersion("OPI"))
+#.onAttach <- function(libname, pkgname) {
+#    packageStartupMessage("OPI version", utils::packageVersion("OPI"))
+#}
 
 # Used for holding state of the OPI
 
@@ -69,6 +71,7 @@ chooseOPI <- function(machine = NULL) {
     if (machine == "Tempo") machine <- "ImoVifa"
 
     assign("chosen_machine", machine, .opi_env)
+    assign("machine_is_initialised", FALSE, .opi_env)
     return(NULL)
 }
 
@@ -95,6 +98,7 @@ chooseOpi <- chooseOPI
 #' [opiInitialise_for_Octopus900()],
 #' [opiInitialise_for_Compass()],
 #' [opiInitialise_for_SimNo()], [opiInitialise_for_SimYes()], [opiInitialise_for_SimHenson()],
+#' [opiInitialise_for_SimHensonRT()],
 #' [opiInitialise_for_SimGaussian()]
 #  [opiInitialise_for_Kowa()],
 #' @export
@@ -124,6 +128,7 @@ opiInitialize <- opiInitialise
 # [opiQueryDevice_for_Kowa()], [opiQueryDevice_for_O600()],
 #' [opiQueryDevice_for_PhoneHMD()], [opiQueryDevice_for_Display()], [opiQueryDevice_for_PicoVR()],
 #' [opiQueryDevice_for_SimNo()], [opiQueryDevice_for_SimYes()], [opiQueryDevice_for_SimHenson()],
+#' [opiQueryDevice_for_SimHensonRT()],
 #' [opiQueryDevice_for_SimGaussian()]
 #' @export
 opiQueryDevice <- function() {
@@ -151,11 +156,14 @@ opiQueryDevice <- function() {
 #' [opiSetup_for_ImoVifa()],
 #' [opiSetup_for_PhoneHMD()], [opiSetup_for_Display()], [opiSetup_for_PicoVR()],
 #' [opiSetup_for_SimNo()], [opiSetup_for_SimYes()], [opiSetup_for_SimHenson()],
+#' [opiSetup_for_SimHensonRT()],
 #' [opiSetup_for_SimGaussian()]
 #' @export
 opiSetup <- function(settings) {
     if (is.null(.opi_env$chosen_machine))
-        stop("you should use chooseOPI() before calling opiSetup.")
+        stop("you should use chooseOPI() before calling opiSetup().")
+    if (!.opi_env$machine_is_initialised)
+        stop("you should call opiInitialise() before calling opiSetup().")
 
     return(do.call(paste0("opiSetup_for_", .opi_env$chosen_machine), list(settings)))
 }
@@ -175,13 +183,17 @@ opiSetup <- function(settings) {
 #' [opiClose_for_ImoVifa()],
 #' [opiClose_for_PhoneHMD()], [opiClose_for_Display()], [opiClose_for_PicoVR()],
 #' [opiClose_for_SimNo()], [opiClose_for_SimYes()], [opiClose_for_SimHenson()],
+#' [opiClose_for_SimHensonRT()],
 #' [opiClose_for_SimGaussian()]
 # [opiClose_for_Kowa()], [opiClose_for_O600()],
 #' @export
 opiClose <- function() {
     if (is.null(.opi_env$chosen_machine))
-        stop("you should use chooseOPI() before calling opiClose.")
+        stop("you should use chooseOPI() before calling opiClose().")
+    if (!.opi_env$machine_is_initialised)
+        stop("you should call opiInitialise() before calling opiClose().")
 
+    assign("machine_is_initialised", FALSE, .opi_env)
     return(do.call(paste0("opiClose_for_", .opi_env$chosen_machine), args = list()))
 }
 
@@ -205,12 +217,15 @@ opiClose <- function() {
 #' [opiPresent_for_ImoVifa()],
 #' [opiPresent_for_PhoneHMD()], [opiPresent_for_Display()], [opiPresent_for_PicoVR()],
 #' [opiPresent_for_SimNo()], [opiPresent_for_SimYes()], [opiPresent_for_SimHenson()],
+#' [opiPresent_for_SimHensonRT()],
 #' [opiPresent_for_SimGaussian()]
 # [opiPresent_for_Kowa()], [opiPresent_for_O600()],
 #' @export
 opiPresent <- function(stim, ...) {
     if (is.null(.opi_env$chosen_machine))
         stop("you should use chooseOPI() before calling opiPresent.")
+    if (!.opi_env$machine_is_initialised)
+        stop("you should call opiInitialise() before calling opiPresent().")
 
         # for backwards compatability for version < OPI 3.0
     if ("level" %in% names(stim) && !("lum" %in% names(stim))) {

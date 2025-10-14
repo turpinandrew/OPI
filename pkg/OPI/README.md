@@ -49,5 +49,3 @@ and he can put you in touch with the right person.
 [OPI www page](https://opi.lei.org.au)
 
 [OPI github](https://github.com/turpinandrew/OPI)
-
-[OPI Discourse Forum](https://openperimetry.org/)

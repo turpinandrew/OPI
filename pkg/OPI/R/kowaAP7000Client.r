@@ -114,6 +114,8 @@ opiInitialise_for_KowaAP7000 <- function(ip = "192.168.1.2", port = 44965) {
     if (res != "OK")
         stop(paste("Trouble initialising AP-7000. OPI-SET-MODE returns ",res))
 
+    assign("machine_is_initialised", TRUE, .opi_env)
+
     return(list(err = NULL))
 }
 

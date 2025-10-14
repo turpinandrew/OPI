@@ -152,6 +152,8 @@ opiInitialise_for_O600 <- function(ipAddress = "", eye = "",
   assign("eye", eye, envir = .opi_env$O600)
   assign("pulsar", pulsar, envir = .opi_env$O600)
 
+  assign("machine_is_initialised", TRUE, .opi_env)
+
 	return(list(err = NULL))
 }
 

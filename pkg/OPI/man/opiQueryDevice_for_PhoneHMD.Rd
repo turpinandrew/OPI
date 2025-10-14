@@ -14,10 +14,12 @@ This is for internal use only. Use \code{\link[=opiQueryDevice]{opiQueryDevice()
 \code{chooseOPI("PhoneHMD")} to call this function.
 }
 \examples{
+\dontrun{
 chooseOpi("PhoneHMD")
 opiInitialise(list(port = 50001, ip = "localhost"))
 opiSetup(list(eye = "BOTH"))
 result <- opiQueryDevice()
+}
 
 }
 \seealso{

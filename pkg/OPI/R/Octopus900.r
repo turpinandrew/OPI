@@ -205,9 +205,10 @@ opiInitialise_for_Octopus900 <- function(serverPort = 50001,
 
     setupBackgroundConstants()
 
-    if (res == "0")
+    if (res == "0") {
+        assign("machine_is_initialised", TRUE, .opi_env)
         return(list(err = NULL))
-    else
+    } else
         return(list(err = res))
 }
 

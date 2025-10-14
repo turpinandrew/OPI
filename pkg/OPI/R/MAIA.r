@@ -103,6 +103,8 @@ opiInitialise_for_MAIA <- function(ip = "192.168.1.2", port = 5555, ...) {
 
     assign("socket", socket, envir = .opi_env$MAIA)
 
+    assign("machine_is_initialised", TRUE, .opi_env)
+
     return(err = NULL)
 }
 
@@ -218,9 +220,21 @@ opiPresent_for_MAIA <- function(stim, nextStim = NULL) {
         if (present_count %% 10 == 0)
             warning(paste("opiPresent: I have tried presenting", present_count, "times."))
 
+#print(paste(present_count, "Sending opipresent:", Sys.time()))
         writeLines(msg, .opi_env$MAIA$socket)
-        res <- readLines(.opi_env$MAIA$socket, n = 1)
-        s <- strsplit(res, " ", fixed = TRUE)[[1]]
+#print(paste(present_count, "Reading opipresent:", Sys.time()))
+        #res <- readLines(.opi_env$MAIA$socket, n = 1)
+        res <- NULL
+        keepGoing <- TRUE
+        while(keepGoing) {
+            cc <- readBin(.opi_env$MAIA$socket, "raw", size = 1, endian = .opi_env$MAIA$endian)
+            if (cc == 0x0a)
+                keepGoing <- FALSE
+            else
+                res <- c(res, cc)
+        }
+#print(paste(present_count, "Done opipresent   :", Sys.time()))
+        s <- strsplit(rawToChar(res), " ", fixed = TRUE)[[1]]
 
         present_bad <- s[1] > 0
     }
@@ -310,7 +324,6 @@ opiSetup_for_MAIA <- function(settings) {
 
         writeLines(sprintf("OPI-SET-BACKGROUND %s", bg), .opi_env$MAIA$socket)
         res <- readLines(.opi_env$MAIA$socket, n = 1)
-
         if (substr(res, 1, 1) == "1")
             error <- paste(error, "\nopiSetup(bg) failed")
     }
@@ -320,9 +333,12 @@ opiSetup_for_MAIA <- function(settings) {
 
         writeLines(sprintf("OPI-SET-TRACKING %s", trackingOn), .opi_env$MAIA$socket)
         res <- readLines(.opi_env$MAIA$socket, n = 1)
-
         if (substr(res, 1, 1) == "1")
             error <- paste(error, "\nopiSetup(tracking) failed")
+
+        #res <- readBin(.opi_env$MAIA$socket, "integer", size = 4, endian = .opi_env$MAIA$endian)
+        #if (res == 1)
+        #    error <- paste(error, "\nopiSetup(tracking) failed")
     }
 
     if ("open" %in% names(settings)) {

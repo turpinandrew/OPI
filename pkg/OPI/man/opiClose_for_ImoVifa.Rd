@@ -14,10 +14,12 @@ This is for internal use only. Use \code{\link[=opiClose]{opiClose()}} after
 \code{chooseOPI("ImoVifa")} to call this function.
 }
 \examples{
+\dontrun{
 chooseOpi("ImoVifa")
 opiInitialise(list(port = 50001, ip = "localhost"))
 opiSetup(list(eye = "BOTH"))
 result <- opiClose()
+}
 
 }
 \seealso{

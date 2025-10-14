@@ -150,7 +150,7 @@ opiInitialise_for_SimHensonRT <- function(type = "C", A = -0.081, B = 3.27, cap 
         return(list(err = msg))
     }
     if (nrow(rtData) < 100)
-        warning("opiInitialize (SimHensonRT): Less than 100 rows in rtData; that's wierd")
+        warning("opiInitialize (SimHensonRT): Less than 100 rows in rtData; that's weird")
     if (ncol(rtData) != 3
         || !("Rt" %in% colnames(rtData))
         || !("Dist" %in% colnames(rtData))
@@ -168,8 +168,8 @@ opiInitialise_for_SimHensonRT <- function(type = "C", A = -0.081, B = 3.27, cap 
     }
 
     assign("rtFP", rtFP, envir = .opi_env$sim_henson)
-print(paste(.opi_env$sim_henson$cap, .opi_env$sim_henson$A, .opi_env$sim_henson$B))
 
+    assign("machine_is_initialised", TRUE, .opi_env)
     return(list(err = NULL))
 }
 
@@ -228,7 +228,7 @@ opiSetup_for_SimHensonRT <- function(...) list(err = NULL)
 #'
 #' @examples
 #'     # Stimulus is Size III white-on-white as in the HFA
-#' chooseOpi("SimHensonRt")
+#' chooseOpi("SimHensonRT")
 #' data(RtSigmaUnits)
 #' res <- opiInitialize(type = "C", cap = 6, rtData = RtSigmaUnits)
 #' if (!is.null(res$err))
@@ -238,16 +238,11 @@ opiSetup_for_SimHensonRT <- function(...) list(err = NULL)
 #' result <- opiPresent(stim = list(level = dbTocd(20)), tt = 30, fpr = 0.15, fnr = 0.01, dist=dist)
 #' print(result, quote = FALSE)
 #'
-#' res <- opiClose()
-#' if (!is.null(res$err))
-#'   stop(paste("opiClose() failed:", res$err))
-#'
-#'
 #' if (!is.null(opiClose()))
 #'   warning("opiClose() failed")
 opiPresent_for_SimHensonRT <- function(stim, fpr = 0.03, fnr = 0.01, tt = 30, dist = 5, ...) {
-    if (!exists(".opi_env") || !exists("sim_henson", where = .opi_env))
-        return(list(err = "You have not called opiInitialise."))
+    if (!exists(".opi_env") || !.opi_env$machine_is_initialised)
+        return(list(err = "You have not called opiInitialise()."))
 
     if (is.null(stim) || ! "level" %in% names(stim))
         return(list(err = "'stim' should be a list with a name 'level'. stim$level is the cd/m^2 to present."))
@@ -266,6 +261,7 @@ opiPresent_for_SimHensonRT <- function(stim, fpr = 0.03, fnr = 0.01, tt = 30, di
 
     level <- cdTodb(stim$level, .opi_env$sim_henson$maxStim)
     px_var <- min(.opi_env$sim_henson$cap, exp(.opi_env$sim_henson$A*tt + .opi_env$sim_henson$B)) # variability of patient, henson formula
+
     if (stats::runif(1) < 1 - stats::pnorm(level, mean = tt, sd = px_var)) {
         ds <- abs(.opi_env$sim_henson$rtData$Dist - dist)
         m <- utils::head(which.min(ds), 1)

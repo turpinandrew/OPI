@@ -24,8 +24,10 @@ This is for internal use only. Use \code{\link[=opiInitialise]{opiInitialise()}}
 \code{port} can take on values in the range \code{[0, 65535]}.
 }
 \examples{
+\dontrun{
 chooseOpi("ImoVifa")
 result <- opiInitialise(address = list(port = 50001, ip = "localhost"))
+}
 
 }
 \seealso{

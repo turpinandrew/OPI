@@ -58,6 +58,7 @@ opiInitialise_for_SimGaussian <- function(sd = 1.0, maxStim = 10000 / pi, ...) {
     assign("sd",      sd,      envir = .opi_env$sim_gaussian)
     assign("maxStim", maxStim, envir = .opi_env$sim_gaussian)
 
+    assign("machine_is_initialised", TRUE, .opi_env)
     return(list(err = NULL))
 }
 

@@ -20,5 +20,6 @@ listed below in the ’See Also’.
 \code{\link[=opiQueryDevice_for_Octopus900]{opiQueryDevice_for_Octopus900()}},
 \code{\link[=opiQueryDevice_for_PhoneHMD]{opiQueryDevice_for_PhoneHMD()}}, \code{\link[=opiQueryDevice_for_Display]{opiQueryDevice_for_Display()}}, \code{\link[=opiQueryDevice_for_PicoVR]{opiQueryDevice_for_PicoVR()}},
 \code{\link[=opiQueryDevice_for_SimNo]{opiQueryDevice_for_SimNo()}}, \code{\link[=opiQueryDevice_for_SimYes]{opiQueryDevice_for_SimYes()}}, \code{\link[=opiQueryDevice_for_SimHenson]{opiQueryDevice_for_SimHenson()}},
+\code{\link[=opiQueryDevice_for_SimHensonRT]{opiQueryDevice_for_SimHensonRT()}},
 \code{\link[=opiQueryDevice_for_SimGaussian]{opiQueryDevice_for_SimGaussian()}}
 }

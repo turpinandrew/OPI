@@ -30,5 +30,6 @@ listed below in the ’See Also’.
 \code{\link[=opiInitialise_for_Octopus900]{opiInitialise_for_Octopus900()}},
 \code{\link[=opiInitialise_for_Compass]{opiInitialise_for_Compass()}},
 \code{\link[=opiInitialise_for_SimNo]{opiInitialise_for_SimNo()}}, \code{\link[=opiInitialise_for_SimYes]{opiInitialise_for_SimYes()}}, \code{\link[=opiInitialise_for_SimHenson]{opiInitialise_for_SimHenson()}},
+\code{\link[=opiInitialise_for_SimHensonRT]{opiInitialise_for_SimHensonRT()}},
 \code{\link[=opiInitialise_for_SimGaussian]{opiInitialise_for_SimGaussian()}}
 }

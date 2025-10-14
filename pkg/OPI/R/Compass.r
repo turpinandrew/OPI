@@ -133,6 +133,8 @@ opiInitialise_for_Compass <- function(ip = "192.168.1.2", port = 44965, ...) {
         onhy <- readBin(socket, "double", size = 4, endian = .opi_env$Compass$endian)
         im <- openssl::base64_encode(readBin(socket, "raw", n = (n - 16), size = 1, endian = .opi_env$Compass$endian))
 
+        assign("machine_is_initialised", TRUE, .opi_env)
+
         return(list(err = NULL, prl = c(prlx, prly), onh = c(onhx, onhy), image = im))
     }
 }

@@ -48,7 +48,10 @@ opiQueryDevice_for_SimNo <- function() list(isSim = TRUE, machine = "SimNo")
 #' @return A list with elements:
 #'   * \code{err} Always \code{NULL}.
 #'
-opiInitialise_for_SimNo <- function(...) list(err = NULL)
+opiInitialise_for_SimNo <- function(...) { 
+    assign("machine_is_initialised", TRUE, .opi_env)
+    list(err = NULL)
+}
 
 #' @title opiSetup_for_SimNo
 #' @description
