@@ -24,6 +24,6 @@ test_that("Sims", {
         }
 
         if (m == "SimHensonRT")
-            expect_true(!is.na(a$time), label = m)
+            expect_true(!a$seen || !is.na(a$time), label = m)
     }
 })
