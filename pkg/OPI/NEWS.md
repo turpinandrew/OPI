@@ -175,3 +175,6 @@
 
 ## OPI 3.0.5
   * Fixed bug where initialise was not recorded internally in some machines
+
+## OPI 3.0.6
+  * Fixed bug in test case of SimHensonRT
