@@ -2,7 +2,7 @@
 % Please edit documentation in R/MAIA.r
 \name{opiInitialise_for_MAIA}
 \alias{opiInitialise_for_MAIA}
-\title{Implementation of opiInitialise for the ImoVifa machine.}
+\title{Implementation of opiInitialise for the MAIA machine.}
 \arguments{
 \item{ip}{IP address on which server is listening as a string}
 

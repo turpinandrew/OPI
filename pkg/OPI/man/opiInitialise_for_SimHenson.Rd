@@ -20,6 +20,8 @@
 
 \item{maxStim}{The maximum stimulus value (0 dB) in cd/\eqn{\mbox{m}^2}{m^2}.}
 
+\item{response_time}{A function of that is called to generate a response time for each presentation}
+
 \item{...}{Any other parameters you like, they are ignored.}
 }
 \value{

@@ -16,7 +16,7 @@ listed below in the ’See Also’.
 }
 \seealso{
 \code{\link[=opiQueryDevice_for_ImoVifa]{opiQueryDevice_for_ImoVifa()}},
-\code{\link[=opiQueryDevice_for_Compass]{opiQueryDevice_for_Compass()}},
+\code{\link[=opiQueryDevice_for_Compass]{opiQueryDevice_for_Compass()}}, \code{\link[=opiQueryDevice_for_Envision]{opiQueryDevice_for_Envision()}},
 \code{\link[=opiQueryDevice_for_Octopus900]{opiQueryDevice_for_Octopus900()}},
 \code{\link[=opiQueryDevice_for_PhoneHMD]{opiQueryDevice_for_PhoneHMD()}}, \code{\link[=opiQueryDevice_for_Display]{opiQueryDevice_for_Display()}}, \code{\link[=opiQueryDevice_for_PicoVR]{opiQueryDevice_for_PicoVR()}},
 \code{\link[=opiQueryDevice_for_SimNo]{opiQueryDevice_for_SimNo()}}, \code{\link[=opiQueryDevice_for_SimYes]{opiQueryDevice_for_SimYes()}}, \code{\link[=opiQueryDevice_for_SimHenson]{opiQueryDevice_for_SimHenson()}},

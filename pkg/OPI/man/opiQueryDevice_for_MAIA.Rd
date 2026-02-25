@@ -2,7 +2,7 @@
 % Please edit documentation in R/MAIA.r
 \name{opiQueryDevice_for_MAIA}
 \alias{opiQueryDevice_for_MAIA}
-\title{Implementation of opiQueryDevice for the ImoVifa machine.}
+\title{Implementation of opiQueryDevice for the MAIA machine.}
 \value{
 A list containing constants and their values used in the OPI MAIA module.
 }

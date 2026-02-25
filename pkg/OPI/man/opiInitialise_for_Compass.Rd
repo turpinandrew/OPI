@@ -2,7 +2,7 @@
 % Please edit documentation in R/Compass.r
 \name{opiInitialise_for_Compass}
 \alias{opiInitialise_for_Compass}
-\title{Implementation of opiInitialise for the ImoVifa machine.}
+\title{Implementation of opiInitialise for the Compass machine.}
 \arguments{
 \item{ip}{IP address on which server is listening as a string}
 
@@ -33,7 +33,7 @@ Warning: this returns a list, not a single error code.
 \dontrun{
   # Set up the Compass
   chooseOpi("Compass")
-  result <- opiInitialize(ip = "192.168.1.7", port = 44965)
+  result <- opiInitialize(ip = "192.168.1.7", port = 50008)
   if (is.null(result$err))
     print(result$prl)
 }

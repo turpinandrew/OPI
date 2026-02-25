@@ -5,7 +5,7 @@
 \alias{.opi_env}
 \title{Global environment for OPI to hold machine specific constants, etc.}
 \format{
-An object of class \code{environment} of length 11.
+An object of class \code{environment} of length 12.
 }
 \usage{
 .opi_env

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Compass.r
 \name{opiQueryDevice_for_Compass}
 \alias{opiQueryDevice_for_Compass}
-\title{Implementation of opiQueryDevice for the ImoVifa machine.}
+\title{Implementation of opiQueryDevice for the Compass machine.}
 \value{
 A list containing constants and their values used in the OPI Compass module.
 }
