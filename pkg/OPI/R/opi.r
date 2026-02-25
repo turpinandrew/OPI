@@ -33,6 +33,7 @@ assign("machine_list", list(
     "Compass",
     "ImoVifa",
     "Tempo",
+    "Envision",
     "Kowa",
     "Octopus900",
     "O600",  # Never really supported?
@@ -101,6 +102,8 @@ chooseOpi <- chooseOPI
 #' [opiInitialise_for_SimHensonRT()],
 #' [opiInitialise_for_SimGaussian()]
 #  [opiInitialise_for_Kowa()],
+#' [opiInitialise_for_Envision()]
+#' 
 #' @export
 opiInitialise <- function(...) {
     if (is.null(.opi_env$chosen_machine))
@@ -123,7 +126,7 @@ opiInitialize <- opiInitialise
 #' @return A list specific to each machine.
 #'
 #' @seealso [opiQueryDevice_for_ImoVifa()],
-#' [opiQueryDevice_for_Compass()],
+#' [opiQueryDevice_for_Compass()], [opiQueryDevice_for_Envision()],
 #' [opiQueryDevice_for_Octopus900()],
 # [opiQueryDevice_for_Kowa()], [opiQueryDevice_for_O600()],
 #' [opiQueryDevice_for_PhoneHMD()], [opiQueryDevice_for_Display()], [opiQueryDevice_for_PicoVR()],
@@ -157,7 +160,7 @@ opiQueryDevice <- function() {
 #' [opiSetup_for_PhoneHMD()], [opiSetup_for_Display()], [opiSetup_for_PicoVR()],
 #' [opiSetup_for_SimNo()], [opiSetup_for_SimYes()], [opiSetup_for_SimHenson()],
 #' [opiSetup_for_SimHensonRT()],
-#' [opiSetup_for_SimGaussian()]
+#' [opiSetup_for_SimGaussian()], [opiSetup_for_Envision()]
 #' @export
 opiSetup <- function(settings) {
     if (is.null(.opi_env$chosen_machine))
@@ -184,7 +187,7 @@ opiSetup <- function(settings) {
 #' [opiClose_for_PhoneHMD()], [opiClose_for_Display()], [opiClose_for_PicoVR()],
 #' [opiClose_for_SimNo()], [opiClose_for_SimYes()], [opiClose_for_SimHenson()],
 #' [opiClose_for_SimHensonRT()],
-#' [opiClose_for_SimGaussian()]
+#' [opiClose_for_SimGaussian()], [opiClose_for_Envision()]
 # [opiClose_for_Kowa()], [opiClose_for_O600()],
 #' @export
 opiClose <- function() {
@@ -218,7 +221,7 @@ opiClose <- function() {
 #' [opiPresent_for_PhoneHMD()], [opiPresent_for_Display()], [opiPresent_for_PicoVR()],
 #' [opiPresent_for_SimNo()], [opiPresent_for_SimYes()], [opiPresent_for_SimHenson()],
 #' [opiPresent_for_SimHensonRT()],
-#' [opiPresent_for_SimGaussian()]
+#' [opiPresent_for_SimGaussian()], [opiPresent_for_Envision()],
 # [opiPresent_for_Kowa()], [opiPresent_for_O600()],
 #' @export
 opiPresent <- function(stim, ...) {

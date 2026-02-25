@@ -60,6 +60,7 @@ opiQueryDevice_for_SimHenson <- function() list(isSim = TRUE, machine = "SimHens
 #' @param B Addend of `t` in the formula (ignored if `type != 'X'`).
 #' @param cap Maximum dB value for the stdev of the FoS curve.
 #' @param maxStim The maximum stimulus value (0 dB) in cd/\eqn{\mbox{m}^2}{m^2}.
+#' @param response_time A function of that is called to generate a response time for each presentation
 #' @param ... Any other parameters you like, they are ignored.
 #'
 #' @return A list with elements:
@@ -72,7 +73,8 @@ opiQueryDevice_for_SimHenson <- function() list(isSim = TRUE, machine = "SimHens
 #' if (!is.null(res$err))
 #'   stop(paste("opiInitialize() failed:", res$err))
 #'
-opiInitialise_for_SimHenson <- function(type = "C", A = -0.081, B = 3.27, cap = 6, maxStim = 10000 / pi, ...) {
+opiInitialise_for_SimHenson <- function(type = "C", A = -0.081, B = 3.27, cap = 6, maxStim = 10000 / pi,
+    response_time = \() NA) {
     if (!is.element(type, c("N", "G", "C", "X"))) {
         msg <- paste("Bad 'type' specified for SimHenson in opiInitialize():", type)
         warning(msg)
@@ -108,6 +110,8 @@ opiInitialise_for_SimHenson <- function(type = "C", A = -0.081, B = 3.27, cap = 
         warning(msg)
         return(list(err = msg))
     }
+
+    assign("response_time", response_time, envir = .opi_env$sim_henson)
 
     assign("machine_is_initialised", TRUE, .opi_env)
     return(list(err = NULL))
@@ -181,10 +185,12 @@ opiPresent_for_SimHenson <- function(stim, fpr = 0.03, fnr = 0.01, tt = 30, ...)
 
     pr_seeing <- fpr + (1 - fpr - fnr) * (1 - stats::pnorm(level, mean = tt, sd = px_var))
 
+    seen <- stats::runif(1) < pr_seeing
+
     assign("machine_is_initialised", TRUE, .opi_env)
     return(list(
         err = NULL,
-        seen = stats::runif(1) < pr_seeing,
-        time = NA
+        seen = seen,
+        time = ifelse(seen, .opi_env$sim_henson$response_time(), -1)
     ))
 }

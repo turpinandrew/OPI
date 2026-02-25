@@ -61,7 +61,7 @@ if (exists(".opi_env") && !exists("Compass", where = .opi_env)) {
     }
 }
 
-#' Implementation of opiInitialise for the ImoVifa machine.
+#' Implementation of opiInitialise for the Compass machine.
 #'
 #' This is for internal use only. Use [opiInitialise()] with
 #' these Arguments and you will get the Value back.
@@ -87,11 +87,11 @@ if (exists(".opi_env") && !exists("Compass", where = .opi_env)) {
 #' \dontrun{
 #'   # Set up the Compass
 #'   chooseOpi("Compass")
-#'   result <- opiInitialize(ip = "192.168.1.7", port = 44965)
+#'   result <- opiInitialize(ip = "192.168.1.7", port = 50008)
 #'   if (is.null(result$err))
 #'     print(result$prl)
 #' }
-opiInitialise_for_Compass <- function(ip = "192.168.1.2", port = 44965, ...) {
+opiInitialise_for_Compass <- function(ip = "192.168.1.2", port = 50008, ...) {
     if ("socket" %in% ls(envir = .opi_env$Compass))
         return(list(err = "Compass already connected. Did you opiClose()?", prl = NULL, onh = NULL, image = NULL))
 
@@ -324,11 +324,11 @@ opiSetup_for_Compass <- function(settings) {
         if (t == 1 && (!(x %in% c(-3, 0, 3)))) {
             return(list(err = "opiSetup: fixation type 1 can only be at ({-3,0,+3}, 0)"))
         }
-        writeLines(paste("OPI-SET-FIXATION",x,y,t), .opi_env$Compass$socket)
+        writeLines(paste("OPI-SET-FIXATION", x, y, t), .opi_env$Compass$socket)
         res <- readLines(.opi_env$Compass$socket, n = 1)
         s <- strsplit(res, " ", fixed = TRUE)[[1]]
         if (s[1] != 0) {
-            return(list(err = paste("opiSetBackground: failed to set fixation: ", s[1])))
+            return(list(err = paste("opiSetup: failed to set fixation: ", s[1])))
         }
     }
 
@@ -383,7 +383,7 @@ opiClose_for_Compass <- function() {
     return(list(err = NULL, fixations = fixations))
 }
 
-#' Implementation of opiQueryDevice for the ImoVifa machine.
+#' Implementation of opiQueryDevice for the Compass machine.
 #'
 #' This is for internal use only. Use [opiQueryDevice()] with
 #' these Arguments and you will get the Value back.

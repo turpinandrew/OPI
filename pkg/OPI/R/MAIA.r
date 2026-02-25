@@ -66,7 +66,7 @@ if (exists(".opi_env") && !exists("MAIA", where = .opi_env)) {
     }
 }
 
-#' Implementation of opiInitialise for the ImoVifa machine.
+#' Implementation of opiInitialise for the MAIA machine.
 #'
 #' This is for internal use only. Use [opiInitialise()] with
 #' these Arguments and you will get the Value back.
@@ -420,7 +420,7 @@ opiClose_for_MAIA <- function() {
     return(list(err = NULL, fixations = fixations))
 }
 
-#' Implementation of opiQueryDevice for the ImoVifa machine.
+#' Implementation of opiQueryDevice for the MAIA machine.
 #'
 #' This is for internal use only. Use [opiQueryDevice()] with
 #' these Arguments and you will get the Value back.
