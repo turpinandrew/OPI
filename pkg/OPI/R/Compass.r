@@ -306,7 +306,7 @@ opiSetup_for_Compass <- function(settings) {
         }
     }
 
-    if ("fixation" %in% settings) {
+    if ("fixation" %in% names(settings)) {
         fixation <- settings$fixation
         if (length(fixation) != 3) {
             return(list(err = "opiSetup: fixation parameter must have 3 fields c(x,y,t)"))
@@ -347,6 +347,13 @@ opiSetup_for_Compass <- function(settings) {
 #'
 #' This is for internal use only. Use [opiClose()] with
 #' these Arguments and you will get the Value back.
+#'
+#' WARNING: as at Feb 2026, this will only return data once per
+#' Exam initiated on the Compass machine. If you want data
+#' returned after one opiClose call, "Stop Exam" on the Compass machine
+#' and create a new Exam. `opiInitialise` etc will still work as
+#' normal if you start a second session with the same Exam, but
+#' no data will be returned by `opiClose`.
 #'
 #' @usage NULL
 #'
