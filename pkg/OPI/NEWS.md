@@ -181,5 +181,6 @@
 
 ## OPI 3.1.0
   * Added simple response time function to SimHenson
-  * Added Envision support
+  * Added Envision support (Thanks to Ivan)
+  * Fixed bug for setting fixation marker in Compass (thanks to Pete Jones for spotting)
   * Minor doco fixes for Compass and MAIA

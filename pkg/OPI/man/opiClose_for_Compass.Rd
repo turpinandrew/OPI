@@ -19,3 +19,11 @@ A list with elements
 This is for internal use only. Use \code{\link[=opiClose]{opiClose()}} with
 these Arguments and you will get the Value back.
 }
+\details{
+WARNING: as at Feb 2026, this will only return data once per
+Exam initiated on the Compass machine. If you want data
+returned after one opiClose call, "Stop Exam" on the Compass machine
+and create a new Exam. \code{opiInitialise} etc will still work as
+normal if you start a second session with the same Exam, but
+no data will be returned by \code{opiClose}.
+}
