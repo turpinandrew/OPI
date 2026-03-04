@@ -3,9 +3,6 @@
 \name{opiQueryDevice_for_Envision}
 \alias{opiQueryDevice_for_Envision}
 \title{Implementation of opiQueryDevice for the Envision HMP.}
-\usage{
-opiQueryDevice()
-}
 \value{
 A list containing:
 \itemize{

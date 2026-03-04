@@ -27,3 +27,17 @@ test_that("Sims", {
             expect_true(!a$seen || !is.na(a$time), label = m)
     }
 })
+
+test_that("SimHenson response time", {
+
+        chooseOPI("SimHenson")
+        err <- opiInitialise(response_time = function() 666)
+
+        a <- opiPresent(stim = list(x = 0, y = 0, level = 10))
+
+        expect_named(a, c("err", "seen", "time"))
+        expect_equal(a$err, NULL)
+        expect_equal(a$time, 666)
+
+        opiClose()
+})

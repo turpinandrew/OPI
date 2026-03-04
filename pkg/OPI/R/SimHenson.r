@@ -74,7 +74,7 @@ opiQueryDevice_for_SimHenson <- function() list(isSim = TRUE, machine = "SimHens
 #'   stop(paste("opiInitialize() failed:", res$err))
 #'
 opiInitialise_for_SimHenson <- function(type = "C", A = -0.081, B = 3.27, cap = 6, maxStim = 10000 / pi,
-    response_time = \() NA) {
+    response_time = function() NA) {
     if (!is.element(type, c("N", "G", "C", "X"))) {
         msg <- paste("Bad 'type' specified for SimHenson in opiInitialize():", type)
         warning(msg)

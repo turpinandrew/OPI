@@ -17,7 +17,7 @@ URL: https://opi.lei.org.au/
 Imports: jsonlite, Rfast, abind, openssl
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Collate: opi.r Display.r PicoVR.r PhoneHMD.r ImoVifa.r dbTocd.r data-RtDbUnits.r data-RtSigmaUnits.r SimYes.r SimNo.r SimHenson.r SimGaussian.r zest.r mocs.r fourTwo.r full_threshold.r pix2deg.r QUESTP.r KTPsi.r Compass.r Octopus900.r Octopus600.r OPI-package.r SimHensonRT.r KowaAP7000Client.r MAIA.r Envision.r
 Suggests: 

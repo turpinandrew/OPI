@@ -86,7 +86,7 @@ opiInitialise_for_Envision <- function(address = NULL) {
 #' This is for internal use only. Use [opiQueryDevice()] after
 #' \code{chooseOPI("Envision")} to call this function.
 #'
-#' @usage opiQueryDevice()
+#' @usage NULL
 #'
 #' @return A list containing:
 #'  * \code{err} \code{NULL} if there was no error, a string message if there is an error.
