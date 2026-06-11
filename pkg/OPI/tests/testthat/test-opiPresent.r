@@ -37,7 +37,7 @@ test_that("SimHenson response time", {
 
         expect_named(a, c("err", "seen", "time"))
         expect_equal(a$err, NULL)
-        expect_equal(a$time, 666)
+        expect_lt(abs(a$time -  666), 1e-6)
 
         opiClose()
 })

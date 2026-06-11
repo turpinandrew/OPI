@@ -184,3 +184,7 @@
   * Added Envision support (Thanks to Ivan)
   * Fixed bug for setting fixation marker in Compass (thanks to Pete Jones for spotting)
   * Minor doco fixes for Compass and MAIA
+
+### OPI 3.1.1
+  * opiPresent test failed only in the r-devel-linux-x86_64-fedora-clang image
+    at an integer comparison. Change it to a float comparison...
